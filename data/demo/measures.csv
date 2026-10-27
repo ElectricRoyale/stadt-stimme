@@ -1,0 +1,13 @@
+external_id,facility_external_id,title,description,status
+M-001,E-001,Sanierung Hallendach,Undichtes Dach erneuern und dämmen; das Bad bleibt dafür drei Monate geschlossen.,offen
+M-002,E-001,Längere Öffnungszeiten am Wochenende,Öffnung samstags und sonntags bis 20 Uhr.,offen
+M-003,E-002,Zehn zusätzliche Krippenplätze,Anbau eines Gruppenraums für Kinder unter drei Jahren.,offen
+M-004,E-003,Schulhof neu gestalten,Entsiegelung und Spielgeräte für den Pausenhof.,offen
+M-005,E-003,WLAN in allen Klassenzimmern,Flächendeckendes WLAN für digitalen Unterricht.,in Umsetzung
+M-006,E-004,Sonntagsöffnung der Bibliothek,Öffnung sonntags von 11 bis 17 Uhr mit Selbstverbuchung.,offen
+M-007,E-005,Überdachte Fahrradstellplätze,120 überdachte und abschließbare Stellplätze am Bahnhof.,offen
+M-008,E-005,Barrierefreier Zugang zu Gleis 2,Aufzug oder Rampe zum Mittelbahnsteig.,beschlossen
+M-009,E-006,Neue Ausstattung Proberaum,Schallschutz und Instrumente für den Bandproberaum.,offen
+M-010,E-007,Kunstrasen statt Naturrasen,Ganzjährig bespielbarer Kunstrasenplatz.,offen
+M-011,E-007,Flutlichtanlage,LED-Flutlicht für Training in den Wintermonaten.,verworfen
+M-012,E-008,Barrierefreier Eingang,Automatische Tür und Rampe am Haupteingang.,offen
