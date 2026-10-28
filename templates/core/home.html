@@ -4,7 +4,7 @@
   <h1>Deine Stimme für deine Stadt</h1>
   <p>Verteile 100 Punkte auf die Vorhaben, um die sich deine Stadt als Nächstes kümmern soll.</p>
   {% if not participant %}
-    <p><a class="button" href="{% url 'access:redeem' %}">Code aus dem Brief eingeben</a></p>
+    <p><a class="ss-btn ss-btn--primary" href="{% url 'access:redeem' %}">Code aus dem Brief eingeben</a></p>
   {% endif %}
   <p class="notice" role="status">StadtStimme befindet sich im Aufbau. Die Punktevergabe folgt in einer der nächsten Phasen.</p>
 {% endblock %}

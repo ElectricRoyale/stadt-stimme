@@ -17,6 +17,9 @@ DEBUG = env_bool("DJANGO_DEBUG", default=False)
 DEMO_MODE = env_bool("STADTSTIMME_DEMO_MODE", default=False)
 DEMO_DATA_DIR = BASE_DIR / "data" / "demo"
 
+# Name der Stadt, wie er auf den Seiten und im Brief erscheint.
+CITY_NAME = env_str("STADTSTIMME_CITY_NAME", default="Musterstadt")
+
 # Ohne DEBUG muss ein eigener Schlüssel gesetzt sein, sonst bricht der Start ab.
 _DEV_SECRET_KEY = "dev-only-insecure-secret-key"  # noqa: S105
 SECRET_KEY = env_str("DJANGO_SECRET_KEY", default=_DEV_SECRET_KEY if DEBUG else None)
@@ -63,6 +66,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "apps.access.context_processors.participant",
+                "apps.core.context_processors.city",
             ],
         },
     },

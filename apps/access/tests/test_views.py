@@ -17,10 +17,24 @@ def test_redeem_page_renders_accessible_form(client: Client) -> None:
     assert 'autocomplete="off"' in content
 
 
+def test_redeem_page_follows_login_sketch(client: Client, settings: Settings) -> None:
+    settings.CITY_NAME = "Beispielstadt"
+
+    content = client.get("/zugang/").content.decode()
+
+    assert "Deine Stimme für Beispielstadt." in content
+    assert '<details class="code-help">' in content
+    assert "Ohne Code umsehen" in content
+    assert 'id="code-zaehler"' in content
+    assert "Code aus dem QR-Code übernommen" not in content
+
+
 def test_qr_link_prefills_code_without_logging_in(client: Client, issued: IssuedCode) -> None:
     response = client.get(f"/zugang/?code={issued.code}")
 
-    assert issued.code in response.content.decode()
+    content = response.content.decode()
+    assert issued.code in content
+    assert "Code aus dem QR-Code übernommen" in content
     assert SESSION_KEY not in client.session
 
 
@@ -52,6 +66,7 @@ def test_wrong_code_shows_message(client: Client) -> None:
     assert "Diesen Code kennen wir nicht" in content
     assert 'aria-invalid="true"' in content
     assert 'role="alert"' in content
+    assert "Code aus dem QR-Code übernommen" not in content
 
 
 def test_lockout_returns_429(client: Client, issued: IssuedCode, settings: Settings) -> None:

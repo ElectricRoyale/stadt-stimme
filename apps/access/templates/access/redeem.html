@@ -1,27 +1,77 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Code eingeben · StadtStimme{% endblock %}
 
-{% block content %}
-  <h1>Code eingeben</h1>
-  <p>Deinen persönlichen Code findest du im Brief deiner Stadt. Du brauchst kein Konto und keine E-Mail-Adresse.</p>
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  <script src="{% static 'js/code-input.js' %}" defer></script>
+{% endblock %}
 
-  {% if form.errors %}
-    <div class="error-summary" role="alert">
-      {% for error in form.code.errors %}<p>{{ error }}</p>{% endfor %}
+{% block body %}
+<div class="login">
+  <section class="login__brand" aria-label="Über StadtStimme">
+    <div class="login__logo">
+      {% include "partials/logo.html" with size=36 %}
+      <span class="login__name">StadtStimme</span>
+      <span class="login__city">{{ city_name }}</span>
     </div>
-  {% endif %}
+    <div class="login__pitch">
+      <h2>Deine Stimme für {{ city_name }}.</h2>
+      <ol class="login__benefits">
+        <li><span aria-hidden="true">1</span>Verteile 100 Punkte auf Orte und Themen, die dir wichtig sind.</li>
+        <li><span aria-hidden="true">2</span>Schlag vor, was die Stadt angehen soll.</li>
+        <li><span aria-hidden="true">3</span>Sieh, was die Stadt daraus macht.</li>
+      </ol>
+    </div>
+    <p class="login__privacy">StadtStimme speichert keinen Namen und keine Adresse. Dein Code ist dein Zugang.</p>
+  </section>
 
-  <form method="post" class="stack" novalidate>
-    {% csrf_token %}
-    <div class="field">
-      <label for="{{ form.code.id_for_label }}">{{ form.code.label }}</label>
-      <p id="code-hinweis" class="hint">16 Zeichen, z. B. ABCD-EFGH-JKMN-PQRS. Groß- und Kleinschreibung ist egal.</p>
-      <input type="text" name="{{ form.code.html_name }}" id="{{ form.code.id_for_label }}"
-             value="{{ form.code.value|default_if_none:'' }}" class="code-input"
-             {% for name, value in form.code.field.widget.attrs.items %}{{ name }}="{{ value }}" {% endfor %}
-             {% if form.code.errors %}aria-invalid="true"{% endif %} required>
+  <main id="inhalt" class="login__main">
+    <div class="login__panel">
+      <div class="login__logo login__logo--compact">
+        {% include "partials/logo.html" with size=32 %}
+        <span class="login__name">StadtStimme</span>
+        <span class="login__city">{{ city_name }}</span>
+      </div>
+
+      <div class="login__intro">
+        <h1>Code eingeben</h1>
+        <p>Deinen persönlichen Code findest du im Brief deiner Stadt. Du brauchst kein Konto und keine E-Mail-Adresse.</p>
+      </div>
+
+      {% if form.errors %}
+        <div class="login__alert" role="alert">
+          {% for error in form.code.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% elif from_qr %}
+        <p class="login__status" role="status"><strong>Code aus dem QR-Code übernommen.</strong> Prüf ihn kurz und tippe auf Anmelden.</p>
+      {% endif %}
+
+      <form method="post" class="login__form" novalidate>
+        {% csrf_token %}
+        <div class="login__field">
+          <label for="{{ form.code.id_for_label }}">{{ form.code.label }}</label>
+          <span id="code-hinweis" class="login__hint">16 Zeichen, z. B. ABCD-EFGH-JKMN-PQRS. Groß- und Kleinschreibung ist egal.</span>
+          <input type="text" name="{{ form.code.html_name }}" id="{{ form.code.id_for_label }}"
+                 value="{{ form.code.value|default_if_none:'' }}" class="code-input"
+                 placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="{{ form.code.field.max_length }}"
+                 {% for name, value in form.code.field.widget.attrs.items %}{{ name }}="{{ value }}" {% endfor %}
+                 {% if form.code.errors %}aria-invalid="true"{% endif %} required data-code-counter="code-zaehler">
+          <span id="code-zaehler" class="code-counter" hidden></span>
+        </div>
+        <button type="submit" class="ss-btn ss-btn--primary login__submit">Anmelden</button>
+      </form>
+
+      <p class="login__note">Du bleibst auf diesem Gerät angemeldet, bis du dich abmeldest. Auf einem anderen Gerät meldest du dich einfach mit demselben Code an.</p>
+
+      {% include "access/_code_hilfe.html" %}
+
+      <div class="login__guest">
+        <a href="{% url 'core:home' %}" class="ss-btn ss-btn--secondary">Ohne Code umsehen</a>
+        <span>Die Ergebnisse sind öffentlich. Zum Verteilen der Punkte und für Vorschläge brauchst du deinen Code.</span>
+      </div>
     </div>
-    <button type="submit" class="button">Anmelden</button>
-  </form>
+  </main>
+</div>
 {% endblock %}
