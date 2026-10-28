@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "apps.access",
     "apps.points",
     "apps.reporting",
+    "apps.proposals",
 ]
 
 MIDDLEWARE = [
@@ -139,6 +140,11 @@ ACCESS_LOCKOUT_MINUTES = env_int("STADTSTIMME_LOCKOUT_MINUTES", default=60)
 
 # Punkte verfallen nach so vielen Tagen ohne Aktivität (ADR-003).
 POINTS_EXPIRY_DAYS = env_int("STADTSTIMME_POINTS_EXPIRY_DAYS", default=183)
+
+# Vorschläge (ADR-014). Prüffrist und Schwelle sind Platzhalter, bis die Stadt sie festlegt.
+PROPOSAL_REVIEW_DAYS = env_int("STADTSTIMME_PROPOSAL_REVIEW_DAYS", default=14)
+PROPOSAL_SUPPORT_THRESHOLD = env_int("STADTSTIMME_PROPOSAL_SUPPORT_THRESHOLD", default=50)
+PROPOSALS_PER_DAY = env_int("STADTSTIMME_PROPOSALS_PER_DAY", default=5)
 
 # Die Sitzung hält so lange wie die Punkte ohne Aktivität gelten (ADR-003: 6 Monate).
 SESSION_COOKIE_AGE = env_int("STADTSTIMME_SESSION_DAYS", default=183) * 24 * 60 * 60

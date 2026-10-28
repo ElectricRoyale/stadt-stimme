@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Danke · StadtStimme{% endblock %}
+
+{% block head %}<link rel="stylesheet" href="{% static 'css/proposals.css' %}">{% endblock %}
+
+{% block main_class %}prop{% endblock %}
+
+{% block content %}
+  <section class="ss-card prop-done" aria-labelledby="prop-done-title">
+    <span class="prop-done__icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m5 12 5 5 9-10"/></svg></span>
+    <h1 id="prop-done-title">Danke! Dein Vorschlag ist eingegangen.</h1>
+    <p>„{{ proposal.title }}“ · {{ proposal.category.name }} · {{ proposal.where }} · Nummer {{ proposal.number }}</p>
+    <ol>
+      <li>Die Verwaltung schaut ihn innerhalb von {{ review_days }} Tagen an und schaltet ihn frei.</li>
+      <li>Andere können ihn unterstützen. Ab {{ support_threshold }} Unterstützungen wird er vertieft geprüft.</li>
+      <li>Wird er übernommen, nimmt die Stadt ihn als Maßnahme auf. Dann kannst du dem Ort oder dem Thema Punkte geben.</li>
+    </ol>
+    <div class="prop-actions">
+      <a href="{% url 'proposals:new' %}" class="ss-btn ss-btn--primary">Noch einen Vorschlag machen</a>
+      <a href="{% url 'reporting:overview' %}" class="ss-btn ss-btn--secondary">Zur Übersicht</a>
+    </div>
+  </section>
+{% endblock %}

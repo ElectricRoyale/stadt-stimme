@@ -9,6 +9,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("zugang/", include("apps.access.urls")),
     path("verteilen/", include("apps.points.urls")),
     path("", include("apps.reporting.urls")),
+    path("vorschlaege/", include("apps.proposals.urls")),
 ]
 
 if settings.DEMO_MODE:
