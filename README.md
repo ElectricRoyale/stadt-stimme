@@ -112,7 +112,7 @@ pytest                                  # Tests gegen PostgreSQL
 
 ```
 config/          Einstellungen (alles über Umgebungsvariablen), URLs, WSGI
-apps/core/       Startseite, Health-Check, Demo-Admin-Befehl
+apps/core/       Einstieg (Weiterleitung), Health-Check, Demo-Admin-Befehl
 apps/catalog/    Einrichtungen, Gebäude, Maßnahmen, Ausgaben; CSV-Import und Admin
 apps/access/     Aktivierungscodes, Code-Login, Sperre nach Fehlversuchen
 templates/       Basis-Template (mobile-first, deutsch)

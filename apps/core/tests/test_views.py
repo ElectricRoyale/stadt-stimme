@@ -26,8 +26,17 @@ def test_health_rejects_post(client: Client) -> None:
     assert client.post(reverse("core:health")).status_code == 405
 
 
-def test_home_is_german_and_mobile_ready(client: Client) -> None:
+@pytest.mark.django_db
+def test_home_redirects_to_code_entry(client: Client) -> None:
     response = client.get(reverse("core:home"))
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("access:redeem")
+
+
+@pytest.mark.django_db
+def test_pages_are_german_and_mobile_ready(client: Client) -> None:
+    response = client.get(reverse("access:redeem"))
     html = response.content.decode()
 
     assert response.status_code == 200

@@ -70,9 +70,9 @@ jobs:
           docker compose logs app | grep -q "5 Demo-Codes angelegt"
       - name: Keine Fehler im Start-Log
         run: "! docker compose logs app | grep -E '\\[ERROR\\]|Traceback'"
-      - name: Startseite und Demo-Admin
+      - name: Einstieg, Code-Eingabe und Demo-Admin
         run: |
-          curl --fail --silent http://localhost:8000/ | grep -q "StadtStimme"
+          curl --fail --silent --location http://localhost:8000/ | grep -q "Code eingeben"
           curl --fail --silent http://localhost:8000/zugang/ | grep -q "Code eingeben"
           curl --silent -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ | grep -q 302
       - name: Logs bei Fehler
