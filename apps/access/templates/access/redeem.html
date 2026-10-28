@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Code eingeben · StadtStimme{% endblock %}
+
+{% block content %}
+  <h1>Code eingeben</h1>
+  <p>Deinen persönlichen Code findest du im Brief deiner Stadt. Du brauchst kein Konto und keine E-Mail-Adresse.</p>
+
+  {% if form.errors %}
+    <div class="error-summary" role="alert">
+      {% for error in form.code.errors %}<p>{{ error }}</p>{% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" class="stack" novalidate>
+    {% csrf_token %}
+    <div class="field">
+      <label for="{{ form.code.id_for_label }}">{{ form.code.label }}</label>
+      <p id="code-hinweis" class="hint">16 Zeichen, z. B. ABCD-EFGH-JKMN-PQRS. Groß- und Kleinschreibung ist egal.</p>
+      <input type="text" name="{{ form.code.html_name }}" id="{{ form.code.id_for_label }}"
+             value="{{ form.code.value|default_if_none:'' }}" class="code-input"
+             {% for name, value in form.code.field.widget.attrs.items %}{{ name }}="{{ value }}" {% endfor %}
+             {% if form.code.errors %}aria-invalid="true"{% endif %} required>
+    </div>
+    <button type="submit" class="button">Anmelden</button>
+  </form>
+{% endblock %}
