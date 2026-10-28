@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.catalog",
     "apps.access",
+    "apps.points",
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,9 @@ DEFAULT_FROM_EMAIL = env_str("DEFAULT_FROM_EMAIL", default="StadtStimme <noreply
 ACCESS_CODE_PEPPER = env_str("STADTSTIMME_CODE_PEPPER", default=SECRET_KEY)
 ACCESS_MAX_FAILED_ATTEMPTS = env_int("STADTSTIMME_MAX_FAILED_ATTEMPTS", default=10)
 ACCESS_LOCKOUT_MINUTES = env_int("STADTSTIMME_LOCKOUT_MINUTES", default=60)
+
+# Punkte verfallen nach so vielen Tagen ohne Aktivität (ADR-003).
+POINTS_EXPIRY_DAYS = env_int("STADTSTIMME_POINTS_EXPIRY_DAYS", default=183)
 
 # Die Sitzung hält so lange wie die Punkte ohne Aktivität gelten (ADR-003: 6 Monate).
 SESSION_COOKIE_AGE = env_int("STADTSTIMME_SESSION_DAYS", default=183) * 24 * 60 * 60

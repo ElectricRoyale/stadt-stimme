@@ -32,7 +32,7 @@ def participant_required(view: Callable[..., HttpResponse]) -> View:
 def redeem(request: HttpRequest) -> HttpResponse:
     if request.method == "GET":
         if current_participant(request) is not None:
-            return redirect("access:account")
+            return redirect("points:distribute")
         # Der QR-Code auf dem Brief verlinkt mit ?code=…; eingelöst wird erst per Absenden.
         prefilled = request.GET.get("code", "").strip()
         form = RedeemForm(initial={"code": prefilled})
@@ -45,7 +45,7 @@ def redeem(request: HttpRequest) -> HttpResponse:
     result = redeem_code(form.cleaned_data["code"], client=_client_address(request))
     if result.participant is not None:
         log_in(request, result.participant)
-        return redirect("access:account")
+        return redirect("points:distribute")
 
     error = result.error or RedeemError.UNKNOWN
     form.add_error("code", error.value)

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Punkte verteilen · StadtStimme{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/points.css' %}">
+  <script src="{% static 'js/points-distribute.js' %}" defer></script>
+{% endblock %}
+
+{% block main_class %}distribute{% endblock %}
+
+{% block content %}
+<form method="post" class="distribute__form" novalidate data-budget="{{ budget }}">
+  {% csrf_token %}
+  <div class="distribute__intro">
+    <h1>Worum soll sich die Stadt als Nächstes kümmern?</h1>
+    <p>Gib deine {{ budget }} Punkte einem ganzen Thema oder direkt einer Einrichtung. Du kannst jederzeit umverteilen.</p>
+  </div>
+
+  {% if form.errors %}
+    <div class="distribute__alert" role="alert">
+      {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+      {% for field in form %}{% for error in field.errors %}<p>{{ field.label }}: {{ error }}</p>{% endfor %}{% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="distribute__layout">
+    <div class="distribute__list">
+      {% include "points/_budget.html" with variant="inline" %}
+
+      <div class="distribute__legend" aria-hidden="true">
+        <span><span class="swatch swatch--stripes"></span>ganzes Thema</span>
+        <span><span class="swatch swatch--dot"></span>Einrichtung</span>
+      </div>
+
+      {% for theme in groups %}
+        <section class="theme" aria-labelledby="thema-{{ theme.group.category.pk }}" data-theme
+                 style="--cat: var(--ss-cat-{{ theme.group.category.color }}); --cat-tint: var(--ss-cat-{{ theme.group.category.color }}-tint);">
+          <h2 id="thema-{{ theme.group.category.pk }}" class="theme__title">
+            <span><span class="theme__dot" aria-hidden="true"></span>{{ theme.group.category.name }}</span>
+            <span class="theme__sum"><span data-theme-sum>{{ theme.group.points }}</span> P.</span>
+          </h2>
+          {% for item in theme.rows %}
+            {% include "points/_target.html" with row=item.row field=item.field budget=budget %}
+          {% endfor %}
+        </section>
+      {% empty %}
+        <p class="notice">Noch keine Einrichtungen angelegt. Die Stadt importiert sie über den Katalog.</p>
+      {% endfor %}
+    </div>
+
+    <aside class="distribute__aside" aria-label="Deine Verteilung">
+      {% include "points/_budget.html" with variant="large" %}
+      <div class="ss-card distribute__themes">
+        <h2>Deine Punkte je Thema</h2>
+        {% for theme in groups %}
+          <div class="theme-sum" style="--cat: var(--ss-cat-{{ theme.group.category.color }});" data-theme-summary="thema-{{ theme.group.category.pk }}">
+            <div class="theme-sum__row"><span>{{ theme.group.category.name }}</span><strong data-theme-sum>{{ theme.group.points }}</strong></div>
+            <div class="meter"><span data-theme-bar style="width: {{ theme.group.points }}%"></span></div>
+          </div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="ss-btn ss-btn--primary distribute__save">Verteilung speichern</button>
+    </aside>
+  </div>
+
+  <footer class="distribute__footer">
+    <p data-remaining-note{% if not remaining %} hidden{% endif %}>Noch <span data-remaining>{{ remaining }}</span> Punkte frei. Du kannst trotzdem speichern und später umverteilen.</p>
+    <button type="submit" class="ss-btn ss-btn--primary distribute__save">Verteilung speichern</button>
+  </footer>
+</form>
+{% endblock %}

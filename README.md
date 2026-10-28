@@ -1,12 +1,12 @@
 # StadtStimme
 
-Digitale Bürgerbeteiligung für Kommunen: Bürgerinnen und Bürger verteilen 100 Punkte auf Vorhaben,
-um die sich ihre Stadt als Nächstes kümmern soll. Die Ergebnisse werden öffentlich mit den
+Digitale Bürgerbeteiligung für Kommunen: Bürgerinnen und Bürger verteilen 100 Punkte auf
+Einrichtungen und Themen, um die sich ihre Stadt als Nächstes kümmern soll. Die Ergebnisse werden öffentlich mit den
 Ausgaben der Kommune verglichen.
 
-> **Stand:** Phase 2 (Code-Login). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich im
-> Admin pflegen und per CSV importieren. Bürgerinnen und Bürger melden sich mit dem Code aus dem
-> Brief an. Die Punktevergabe folgt in Phase 3.
+> **Stand:** Phase 3 (Punktevergabe). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich
+> im Admin pflegen und per CSV importieren. Bürgerinnen und Bürger melden sich mit dem Code aus dem
+> Brief an und verteilen ihre 100 Punkte unter `/verteilen/`.
 
 ## Schnellstart
 
@@ -84,6 +84,18 @@ docker compose exec app python manage.py create_access_codes 20 --batch "Test" >
 Für den Betrieb einen eigenen `STADTSTIMME_CODE_PEPPER` setzen und nie wieder ändern: Ein
 neuer Wert macht alle ausgegebenen Codes ungültig. Ohne eigenen Wert gilt `DJANGO_SECRET_KEY`.
 
+## Punkte verteilen
+
+Jede Person hat 100 Punkte und gibt sie an Einrichtungen oder an ein ganzes Thema
+(„Sport allgemein“, ADR-011). Sie kann jederzeit umverteilen. Punkte verfallen nach
+183 Tagen ohne Aktivität (ADR-003, `STADTSTIMME_POINTS_EXPIRY_DAYS`). Ergebnisse zählen
+verfallene Punkte sofort nicht mehr mit. Gelöscht werden sie, sobald die Person zurückkommt,
+oder mit diesem Befehl (z. B. täglich per Cron):
+
+```bash
+docker compose exec app python manage.py expire_points
+```
+
 ## Entwicklung
 
 Python 3.12+ und Docker.
@@ -115,15 +127,16 @@ config/          Einstellungen (alles über Umgebungsvariablen), URLs, WSGI
 apps/core/       Einstieg (Weiterleitung), Health-Check, Demo-Admin-Befehl
 apps/catalog/    Einrichtungen, Gebäude, Maßnahmen, Ausgaben; CSV-Import und Admin
 apps/access/     Aktivierungscodes, Code-Login, Sperre nach Fehlversuchen
+apps/points/     Punkte verteilen, Verfall
 templates/       Basis-Template (mobile-first, deutsch)
-static/          CSS ohne Build-Schritt
+static/          CSS, Schrift und kleine Skripte ohne Build-Schritt
 data/demo/       Fiktive Demo-Daten „Musterstadt“
 docker/          Entrypoint: Migrationen, Demo-Admin, Start
 docs/            Entscheidungen (ADRs)
 ```
 
-Fachliche Module kommen phasenweise als eigene Django-Apps dazu: `voting`,
-`reporting`, `notifications`. Fachlogik liegt jeweils in `services.py`, Views bleiben dünn.
+Fachliche Module kommen phasenweise als eigene Django-Apps dazu: `reporting`,
+`notifications`. Fachlogik liegt jeweils in `services.py`, Views bleiben dünn.
 
 ## Fahrplan
 
@@ -134,7 +147,7 @@ Fachliche Module kommen phasenweise als eigene Django-Apps dazu: `voting`,
 | 2 | Code-Login (Zwischenlösung) | Rate-Limit greift, kein Code im Klartext |
 | 3 | Punktevergabe | 5 Testpersonen in unter 5 Minuten |
 | 4 | Transparenz: Ergebnisse, Vergleich, Stichtags-Export | Stichtagswerte reproduzierbar |
-| 5 | Rückfluss, Verfall, Benachrichtigungen | Job-Tests grün |
+| 5 | Benachrichtigungen (Verfall bereits in Phase 3, Rückfluss entfällt laut ADR-011) | Job-Tests grün |
 | 6 | Zugang final, Barrierefreiheit, Datenschutz, Pilot | Freigabe Datenschutz |
 
 Entscheidungen: [docs/DECISIONS.md](docs/DECISIONS.md)

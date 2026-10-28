@@ -15,6 +15,7 @@ from django.utils import timezone
 
 from apps.access.codes import generate_code, hash_code, keyed_hash, normalize_code
 from apps.access.models import AccessCode, AccessCodeStatus, FailedAttempt, Participant
+from apps.access.signals import participant_active_again
 
 
 class RedeemError(Enum):
@@ -103,7 +104,11 @@ def active_participant(participant_id: int) -> Participant | None:
 def _touch(participant: Participant) -> None:
     """Höchstens ein Schreibzugriff pro Tag; Grundlage für den Verfall nach ADR-003."""
     now = timezone.now()
-    if timezone.localdate(participant.last_active_at) < timezone.localdate(now):
+    previous = participant.last_active_at
+    if timezone.localdate(previous) < timezone.localdate(now):
+        participant_active_again.send(
+            sender=Participant, participant=participant, previous_active_at=previous
+        )
         participant.last_active_at = now
         participant.save(update_fields=["last_active_at"])
 
