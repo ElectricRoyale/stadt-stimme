@@ -1,0 +1,66 @@
+/* Mobile-first Basisstil. Kein Build-Schritt, keine externen Ressourcen (ADR-007). */
+:root {
+  --color-text: #1b1b1b;
+  --color-muted: #555;
+  --color-bg: #fff;
+  --color-accent: #0b5cad;
+  --color-notice-bg: #eef4fb;
+  --space: 1rem;
+  --max-width: 40rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 100%;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-text: #f2f2f2;
+    --color-muted: #bbb;
+    --color-bg: #121212;
+    --color-accent: #7fb6ff;
+    --color-notice-bg: #1d2a3a;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space);
+}
+
+.site-header {
+  padding: var(--space);
+  border-bottom: 1px solid var(--color-muted);
+}
+
+.brand {
+  font-weight: 700;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.notice {
+  padding: var(--space);
+  background: var(--color-notice-bg);
+  border-radius: 0.5rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+}
+
+.skip-link:focus {
+  left: var(--space);
+  top: var(--space);
+  padding: 0.5rem;
+  background: var(--color-bg);
+  outline: 3px solid var(--color-accent);
+}
+
+:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
