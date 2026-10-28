@@ -68,6 +68,8 @@ jobs:
         run: |
           docker compose logs app | grep -q "Import gespeichert"
           docker compose logs app | grep -q "5 Demo-Codes angelegt"
+      - name: Keine Fehler im Start-Log
+        run: "! docker compose logs app | grep -E '\\[ERROR\\]|Traceback'"
       - name: Startseite und Demo-Admin
         run: |
           curl --fail --silent http://localhost:8000/ | grep -q "StadtStimme"
