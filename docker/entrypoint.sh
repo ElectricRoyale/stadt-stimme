@@ -4,5 +4,6 @@ set -eu
 
 python manage.py migrate --noinput
 python manage.py ensure_demo_admin
+python manage.py load_demo_data
 
 exec "$@"

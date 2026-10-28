@@ -15,6 +15,7 @@ DEBUG = env_bool("DJANGO_DEBUG", default=False)
 # Demo-Modus: aktiviert den Django Admin mit Demo-Zugang (ADR-001, Admin-Login zurückgestellt).
 # Nur für lokale Vorführungen und die Abgabe, nie für einen öffentlichen Betrieb.
 DEMO_MODE = env_bool("STADTSTIMME_DEMO_MODE", default=False)
+DEMO_DATA_DIR = BASE_DIR / "data" / "demo"
 
 # Ohne DEBUG muss ein eigener Schlüssel gesetzt sein, sonst bricht der Start ab.
 _DEV_SECRET_KEY = "dev-only-insecure-secret-key"  # noqa: S105
@@ -30,7 +31,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "import_export",
     "apps.core",
+    "apps.catalog",
 ]
 
 MIDDLEWARE = [

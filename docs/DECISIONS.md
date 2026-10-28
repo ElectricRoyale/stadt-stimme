@@ -13,6 +13,7 @@ Eine überholte Entscheidung wird nicht gelöscht, sondern als ersetzt markiert.
 | ADR-005 | Jede Punkteänderung als unveränderliches Ereignis; aktueller Stand als Read Model; Stichtagswerte aus dem Log. | Vorgeschlagen |
 | ADR-006 | Vergleich Bürgerpriorität vs. Ausgaben als Anteile pro Einrichtung, Ausgaben des letzten abgeschlossenen Haushaltsjahres. | Akzeptiert |
 | ADR-007 | Tech-Stack: Django + htmx + PostgreSQL, Start per `docker compose up`. | Akzeptiert |
+| ADR-008 | Gebäude als optionale Ebene unter der Einrichtung. Eine Maßnahme kann einem Gebäude ihrer Einrichtung zugeordnet werden; Punkte und Vergleich bleiben pro Einrichtung (ADR-002, ADR-006). | Akzeptiert |
 
 ## Zurückgestellt bis zur Teamabstimmung
 

@@ -62,6 +62,8 @@ jobs:
         run: docker compose up -d --build --wait --wait-timeout 180
       - name: Health-Check
         run: curl --fail --silent http://localhost:8000/healthz/
+      - name: Demo-Daten geladen
+        run: docker compose logs app | grep -q "Import gespeichert"
       - name: Startseite und Demo-Admin
         run: |
           curl --fail --silent http://localhost:8000/ | grep -q "StadtStimme"
