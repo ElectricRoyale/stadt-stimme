@@ -1,4 +1,4 @@
-"""Katalog: Einrichtungen, ihre Maßnahmen und die zugehörigen Ausgaben (ADR-002, ADR-006)."""
+"""Katalog: Einrichtungen, Gebäude, Maßnahmen und Ausgaben (ADR-002, ADR-006)."""
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -49,6 +49,40 @@ class Facility(models.Model):
         return self.name
 
 
+class Building(models.Model):
+    """Gebäude oder Standort einer Einrichtung, z. B. Hauptgebäude und Turnhalle einer Schule.
+
+    Optional: Eine Einrichtung mit nur einem Gebäude braucht keinen Eintrag. Verglichen wird
+    weiter pro Einrichtung (ADR-006); das Gebäude präzisiert nur, wo eine Maßnahme ansetzt.
+    """
+
+    external_id = models.CharField(
+        "Externe ID",
+        max_length=64,
+        unique=True,
+        help_text="Schlüssel aus dem Quellsystem; macht den CSV-Import wiederholbar.",
+    )
+    facility = models.ForeignKey(
+        Facility,
+        on_delete=models.PROTECT,
+        related_name="buildings",
+        verbose_name="Einrichtung",
+    )
+    name = models.CharField("Name", max_length=200)
+    address = models.CharField("Adresse", max_length=200, blank=True)
+    description = models.TextField("Kurzbeschreibung", blank=True)
+    created_at = models.DateTimeField("Angelegt", auto_now_add=True)
+    updated_at = models.DateTimeField("Geändert", auto_now=True)
+
+    class Meta:
+        verbose_name = "Gebäude"
+        verbose_name_plural = "Gebäude"
+        ordering = ["facility__name", "name"]
+
+    def __str__(self) -> str:
+        return f"{self.facility}: {self.name}"
+
+
 class MeasureStatus(models.TextChoices):
     OPEN = "offen", "offen"
     DECIDED = "beschlossen", "beschlossen"
@@ -72,6 +106,15 @@ class Measure(models.Model):
         related_name="measures",
         verbose_name="Einrichtung",
     )
+    building = models.ForeignKey(
+        Building,
+        on_delete=models.PROTECT,
+        related_name="measures",
+        verbose_name="Gebäude",
+        null=True,
+        blank=True,
+        help_text="Optional; muss zur gewählten Einrichtung gehören.",
+    )
     title = models.CharField("Titel", max_length=200)
     description = models.TextField("Beschreibung", blank=True)
     status = models.CharField(
@@ -90,6 +133,12 @@ class Measure(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    def clean(self) -> None:
+        super().clean()
+        building = self.building
+        if building is not None and self.facility_id and building.facility_id != self.facility_id:
+            raise ValidationError({"building": "Das Gebäude gehört zu einer anderen Einrichtung."})
 
 
 class ExpenditureKind(models.TextChoices):

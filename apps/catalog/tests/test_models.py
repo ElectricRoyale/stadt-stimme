@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 from apps.catalog.models import (
+    Building,
     Category,
     Expenditure,
     ExpenditureKind,
@@ -83,3 +84,21 @@ def test_expenditure_rejects_implausible_values(
 ) -> None:
     with pytest.raises(ValidationError):
         _expenditure(pool, **overrides).full_clean()
+
+
+@pytest.mark.django_db
+def test_measure_rejects_building_of_other_facility(pool: Facility, library: Facility) -> None:
+    reading_room = Building.objects.create(external_id="G-1", facility=library, name="Lesesaal")
+    measure = Measure(external_id="M-1", facility=pool, building=reading_room, title="Dach")
+
+    with pytest.raises(ValidationError) as error:
+        measure.full_clean()
+
+    assert "building" in error.value.message_dict
+
+
+@pytest.mark.django_db
+def test_measure_accepts_building_of_own_facility(pool: Facility) -> None:
+    hall = Building.objects.create(external_id="G-1", facility=pool, name="Schwimmhalle")
+
+    Measure(external_id="M-1", facility=pool, building=hall, title="Dach").full_clean()

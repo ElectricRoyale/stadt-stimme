@@ -10,6 +10,7 @@ from django.db import models
 from import_export import fields, resources, widgets
 
 from apps.catalog.models import (
+    Building,
     Category,
     Expenditure,
     ExpenditureKind,
@@ -94,11 +95,29 @@ class FacilityResource(_CatalogResource):
         fields = ["external_id", "name", "category", "address", "description"]
 
 
+class BuildingResource(_CatalogResource):
+    facility = fields.Field(
+        attribute="facility",
+        column_name="facility_external_id",
+        widget=ExternalIdWidget(Facility),
+    )
+
+    class Meta(_CatalogResource.Meta):
+        model = Building
+        import_id_fields = ["external_id"]
+        fields = ["external_id", "facility", "name", "address", "description"]
+
+
 class MeasureResource(_CatalogResource):
     facility = fields.Field(
         attribute="facility",
         column_name="facility_external_id",
         widget=ExternalIdWidget(Facility),
+    )
+    building = fields.Field(
+        attribute="building",
+        column_name="building_external_id",
+        widget=ExternalIdWidget(Building, required=False),
     )
     status = fields.Field(
         attribute="status", column_name="status", widget=ChoiceWidget(MeasureStatus)
@@ -107,7 +126,7 @@ class MeasureResource(_CatalogResource):
     class Meta(_CatalogResource.Meta):
         model = Measure
         import_id_fields = ["external_id"]
-        fields = ["external_id", "facility", "title", "description", "status"]
+        fields = ["external_id", "facility", "building", "title", "description", "status"]
 
 
 class ExpenditureResource(_CatalogResource):

@@ -1,4 +1,4 @@
-"""Importiert den Katalog aus einem Verzeichnis (facilities.csv, measures.csv, expenditures.csv)."""
+"""Importiert den Katalog aus einem Verzeichnis (Einrichtungen, Gebäude, Maßnahmen, Ausgaben)."""
 
 from pathlib import Path
 from typing import Any
@@ -9,10 +9,10 @@ from apps.catalog.services import ImportReport, import_catalog
 
 
 class Command(BaseCommand):
-    help = "Importiert Einrichtungen, Maßnahmen und Ausgaben aus CSV-Dateien (wiederholbar)."
+    help = "Importiert Einrichtungen, Gebäude, Maßnahmen und Ausgaben aus CSV (wiederholbar)."
 
     def add_arguments(self, parser: CommandParser) -> None:
-        parser.add_argument("directory", type=Path, help="Verzeichnis mit den drei CSV-Dateien")
+        parser.add_argument("directory", type=Path, help="Verzeichnis mit den vier CSV-Dateien")
         parser.add_argument(
             "--dry-run",
             action="store_true",

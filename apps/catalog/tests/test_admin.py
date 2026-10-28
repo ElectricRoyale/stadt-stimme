@@ -11,7 +11,7 @@ from apps.catalog.services import import_catalog
 
 pytestmark = pytest.mark.django_db
 
-MODELS = ["category", "facility", "measure", "expenditure"]
+MODELS = ["category", "facility", "building", "measure", "expenditure"]
 
 
 @pytest.fixture
@@ -30,19 +30,21 @@ def test_changelist_shows_demo_data(admin_client_in_demo: Client, model: str) ->
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize("model", ["facility", "measure", "expenditure"])
+@pytest.mark.parametrize("model", ["facility", "building", "measure", "expenditure"])
 def test_csv_import_page_is_available(admin_client_in_demo: Client, model: str) -> None:
     response = admin_client_in_demo.get(f"/admin/catalog/{model}/import/")
 
     assert response.status_code == 200
 
 
-def test_facility_change_page_lists_measures(admin_client_in_demo: Client) -> None:
+def test_facility_change_page_lists_buildings_and_measures(admin_client_in_demo: Client) -> None:
     pool = Facility.objects.get(external_id="E-001")
 
     response = admin_client_in_demo.get(f"/admin/catalog/facility/{pool.pk}/change/")
 
-    assert "Sanierung Hallendach" in response.content.decode()
+    content = response.content.decode()
+    assert "Technikgebäude" in content
+    assert "Sanierung Hallendach" in content
 
 
 def test_csv_upload_shows_preview_before_saving(

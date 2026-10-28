@@ -4,7 +4,7 @@ Digitale Bürgerbeteiligung für Kommunen: Bürgerinnen und Bürger verteilen 10
 um die sich ihre Stadt als Nächstes kümmern soll. Die Ergebnisse werden öffentlich mit den
 Ausgaben der Kommune verglichen.
 
-> **Stand:** Phase 1 (Katalog). Einrichtungen, Maßnahmen und Ausgaben lassen sich im Admin
+> **Stand:** Phase 1 (Katalog). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich im Admin
 > pflegen und per CSV importieren. Die Bürgeransicht folgt ab Phase 2.
 
 ## Schnellstart
@@ -35,12 +35,12 @@ Sind Ports belegt, lassen sie sich über eine `.env`-Datei ändern (Vorlage: `.e
 
 ## Daten pflegen und importieren
 
-Im Admin unter **Katalog** lassen sich Kategorien, Einrichtungen, Maßnahmen und Ausgaben
-bearbeiten. Jede Liste hat **Importieren** (CSV mit Vorschau vor dem Speichern) und
+Im Admin unter **Katalog** lassen sich Kategorien, Einrichtungen, Gebäude, Maßnahmen und
+Ausgaben bearbeiten. Jede Liste hat **Importieren** (CSV mit Vorschau vor dem Speichern) und
 **Exportieren**. Beim Import über die Oberfläche gilt die Reihenfolge Einrichtungen,
-Maßnahmen, Ausgaben.
+Gebäude, Maßnahmen, Ausgaben.
 
-Alle drei Dateien auf einmal, in einer Transaktion (bei einem Fehler wird nichts gespeichert):
+Alle vier Dateien auf einmal, in einer Transaktion (bei einem Fehler wird nichts gespeichert):
 
 ```bash
 docker compose exec app python manage.py import_catalog data/demo --dry-run   # nur prüfen
@@ -79,7 +79,7 @@ pytest                                  # Tests gegen PostgreSQL
 ```
 config/          Einstellungen (alles über Umgebungsvariablen), URLs, WSGI
 apps/core/       Startseite, Health-Check, Demo-Admin-Befehl
-apps/catalog/    Einrichtungen, Maßnahmen, Ausgaben; CSV-Import und Admin
+apps/catalog/    Einrichtungen, Gebäude, Maßnahmen, Ausgaben; CSV-Import und Admin
 templates/       Basis-Template (mobile-first, deutsch)
 static/          CSS ohne Build-Schritt
 data/demo/       Fiktive Demo-Daten „Musterstadt“
@@ -95,7 +95,7 @@ Fachliche Module kommen phasenweise als eigene Django-Apps dazu: `access`, `voti
 | Phase | Inhalt | Gate |
 | --- | --- | --- |
 | 0 | Fundament | CI grün, Start mit `docker compose up` |
-| 1 | Katalog: Einrichtungen, Maßnahmen, Ausgaben, CSV-Import | Demo-Daten vollständig importiert |
+| 1 | Katalog: Einrichtungen, Gebäude, Maßnahmen, Ausgaben, CSV-Import | Demo-Daten vollständig importiert |
 | 2 | Code-Login (Zwischenlösung) | Rate-Limit greift, kein Code im Klartext |
 | 3 | Punktevergabe | 5 Testpersonen in unter 5 Minuten |
 | 4 | Transparenz: Ergebnisse, Vergleich, Stichtags-Export | Stichtagswerte reproduzierbar |

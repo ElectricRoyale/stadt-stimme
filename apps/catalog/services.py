@@ -1,8 +1,8 @@
-"""Import des Katalogs aus einem Verzeichnis mit drei CSV-Dateien.
+"""Import des Katalogs aus einem Verzeichnis mit vier CSV-Dateien.
 
-Die Dateien hängen voneinander ab (Maßnahmen verweisen auf Einrichtungen, Ausgaben auf beide).
-Deshalb laufen alle drei in einer Transaktion: Bei einem einzigen Fehler oder im Probelauf
-wird alles zurückgerollt.
+Die Dateien hängen voneinander ab (Gebäude und Maßnahmen verweisen auf Einrichtungen, Ausgaben
+auf Einrichtungen und Maßnahmen). Deshalb laufen alle in einer Transaktion: Bei einem einzigen
+Fehler oder im Probelauf wird alles zurückgerollt.
 """
 
 from dataclasses import dataclass, field
@@ -16,10 +16,16 @@ from import_export.results import Result
 from tablib.exceptions import InvalidDimensions
 
 from apps.catalog.models import Facility
-from apps.catalog.resources import ExpenditureResource, FacilityResource, MeasureResource
+from apps.catalog.resources import (
+    BuildingResource,
+    ExpenditureResource,
+    FacilityResource,
+    MeasureResource,
+)
 
 CATALOG_FILES: tuple[tuple[str, type[ModelResource]], ...] = (
     ("facilities.csv", FacilityResource),
+    ("buildings.csv", BuildingResource),
     ("measures.csv", MeasureResource),
     ("expenditures.csv", ExpenditureResource),
 )
@@ -64,7 +70,7 @@ def catalog_is_empty() -> bool:
 
 
 def import_catalog(directory: Path, *, dry_run: bool = False) -> ImportReport:
-    """Importiert facilities.csv, measures.csv und expenditures.csv aus ``directory``."""
+    """Importiert die Dateien aus ``CATALOG_FILES`` in dieser Reihenfolge aus ``directory``."""
     report = ImportReport(dry_run=dry_run)
     with transaction.atomic():
         for filename, resource_class in CATALOG_FILES:
