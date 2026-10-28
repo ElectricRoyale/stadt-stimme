@@ -58,6 +58,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Strenge Dateirechte wie bei manchen Checkouts (umask 077)
+        run: chmod -R go-rwx .
       - name: Stack starten wie die Prüfer
         run: docker compose up -d --build --wait --wait-timeout 180
       - name: Health-Check
