@@ -25,4 +25,5 @@ USER app
 
 EXPOSE 8000
 ENTRYPOINT ["docker/entrypoint.sh"]
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--access-logfile", "-"]
+# Ohne Control-Socket: Er bräuchte ein Home-Verzeichnis und wird hier nicht genutzt.
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--access-logfile", "-", "--no-control-socket"]

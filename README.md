@@ -42,6 +42,10 @@ Beenden mit `Strg+C`, alles inklusive Datenbank löschen mit `docker compose dow
 
 Sind Ports belegt, lassen sie sich über eine `.env`-Datei ändern (Vorlage: `.env.example`).
 
+Das Projekt sollte nicht in einem synchronisierten Cloud-Ordner liegen (OneDrive, iCloud,
+Dropbox). Docker darf solche Ordner unter macOS oft nicht lesen und bricht beim Bauen mit einer
+Rechte-Abfrage ab.
+
 > **Demo-Modus:** Die Standardwerte sind nur für die lokale Vorführung gedacht. Alle Ports sind
 > an `127.0.0.1` gebunden, der Admin-Zugang ist ein Demo-Zugang. Nicht öffentlich betreiben.
 
