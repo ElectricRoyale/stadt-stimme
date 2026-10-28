@@ -18,6 +18,9 @@
         <a href="{% url 'reporting:overview' %}"{% if request.resolver_match.view_name == 'reporting:overview' %} aria-current="page"{% endif %}>Übersicht</a>
         {% if participant %}
           <a href="{% url 'points:distribute' %}"{% if request.resolver_match.view_name == 'points:distribute' %} aria-current="page"{% endif %}>Punkte verteilen</a>
+        {% endif %}
+        <a href="{% url 'reporting:results' %}"{% if request.resolver_match.view_name == 'reporting:results' %} aria-current="page"{% endif %}>Ergebnisse</a>
+        {% if participant %}
           <a href="{% url 'access:account' %}"{% if request.resolver_match.view_name == 'access:account' %} aria-current="page"{% endif %}>Mein Bereich</a>
           <form method="post" action="{% url 'access:logout' %}" class="inline-form">
             {% csrf_token %}

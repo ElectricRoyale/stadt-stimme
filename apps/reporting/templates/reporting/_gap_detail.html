@@ -1,0 +1,16 @@
+{# Detailansicht einer Lücke; results-map.js tauscht die Werte über data-field aus. #}
+<p class="res-detail__kicker"><span class="res-mark cat-{{ row.category.color }}{% if row.is_theme %} res-mark--theme{% endif %}" data-field="mark" aria-hidden="true"></span><span data-field="kicker">{{ row.kicker }}</span></p>
+<h2 id="res-detail-title" data-field="name">{{ row.name }}</h2>
+<div class="res-bar">
+  <p class="res-bar__label"><span>Anteil Bürgerpunkte</span><strong data-field="wish">{{ row.wish }} %</strong></p>
+  <div class="res-bar__track"><span class="bar bar--citizens" data-bar="wish" style="--v: {{ row.wish }}; --max: {{ results.scale_max }};"></span></div>
+</div>
+<div class="res-bar">
+  <p class="res-bar__label"><span>Anteil Ist-Ausgaben{% if results.fiscal_year %} {{ results.fiscal_year }}{% endif %}</span><strong data-field="spend">{{ row.spend }} %</strong></p>
+  <div class="res-bar__track"><span class="bar bar--city" data-bar="spend" style="--v: {{ row.spend }}; --max: {{ results.scale_max }};"></span></div>
+</div>
+<p class="res-detail__summary" data-field="summary">{{ row.summary }}</p>
+{% if participant %}
+  <p class="res-detail__mine">Von dir: <strong data-field="mine">{{ row.mine }} Punkte</strong></p>
+{% endif %}
+<a class="ss-btn ss-btn--primary" data-field="give" href="{% url 'points:distribute' %}#id_{{ row.key }}">{% if row.is_theme %}Punkte an „{{ row.name }} allgemein“ geben{% else %}Punkte geben{% endif %}</a>

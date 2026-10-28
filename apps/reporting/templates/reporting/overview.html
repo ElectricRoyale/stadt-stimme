@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
   <script src="{% static 'vendor/leaflet/leaflet.js' %}" defer></script>
+  <script src="{% static 'js/map-base.js' %}" defer></script>
   <script src="{% static 'js/dashboard-map.js' %}" defer></script>
 {% endblock %}
 
@@ -34,8 +35,8 @@
   <h1 class="dash__title">{{ city_name }} auf einen Blick</h1>
 
   <dl class="dash-tiles">
-    <div class="ss-card dash-tile"><dt>Ergebnisse</dt><dd>{% if stats.top_theme %}Platz 1: {{ stats.top_theme.category.name }}{% else %}Noch keine Punkte{% endif %}</dd></div>
-    <div class="ss-card dash-tile"><dt>Stadthaushalt{% if stats.fiscal_year %} {{ stats.fiscal_year }}{% endif %}</dt><dd>{% if stats.biggest_gap %}Größte Lücke: {{ stats.biggest_gap.category.name }}{% else %}Keine Lücke erkennbar{% endif %}</dd></div>
+    <div class="ss-card dash-tile"><dt>Ergebnisse</dt><dd><a href="{% url 'reporting:results' %}">{% if stats.top_theme %}Platz 1: {{ stats.top_theme.category.name }}{% else %}Noch keine Punkte{% endif %}</a></dd></div>
+    <div class="ss-card dash-tile"><dt>Stadthaushalt{% if stats.fiscal_year %} {{ stats.fiscal_year }}{% endif %}</dt><dd><a href="{% url 'reporting:results' %}">{% if stats.biggest_gap %}Größte Lücke: {{ stats.biggest_gap.category.name }}{% else %}Keine Lücke erkennbar{% endif %}</a></dd></div>
     <div class="ss-card dash-tile"><dt>Mitgemacht</dt><dd>{{ stats.participants }} {% if stats.participants == 1 %}Person{% else %}Personen{% endif %}</dd></div>
   </dl>
 

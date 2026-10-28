@@ -1,0 +1,61 @@
+/* Ergebnisse (Skizze „Karte 4 · Wunsch vs. Ausgaben“). Baut auf dashboard.css auf. */
+.res-intro { display: flex; flex-direction: column; gap: var(--ss-space-1); max-width: 720px; }
+.res-intro h1 { margin: 0; font-size: var(--ss-text-display); font-weight: 800; line-height: 1.15; }
+.res-intro p:last-child { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ss-muted); }
+
+.res-notice { padding: var(--ss-space-3) var(--ss-space-4); border-radius: var(--ss-radius-sm); background: var(--ss-sunken); font-size: var(--ss-text-sm); }
+.res-notice p { margin: 0; }
+.res-notice p + p { margin-top: var(--ss-space-1); }
+
+.res-legend { display: flex; flex-wrap: wrap; gap: var(--ss-space-2) var(--ss-space-5); font-size: 13px; color: var(--ss-muted); }
+.res-legend > span { display: flex; align-items: center; gap: 6px; }
+
+.gap-tag--citizens { background: var(--ss-series-citizens); color: var(--ss-on-dark); }
+.gap-tag--city { background: var(--ss-series-city); color: var(--ss-on-dark); }
+.gap-tag--even { background: var(--ss-sunken); color: var(--ss-muted); }
+
+/* Marker: Pille mit dem Unterschied statt Kreis */
+.gap-pin > span { width: auto; min-width: 48px; height: 36px; padding: 0 10px; border-radius: var(--ss-radius-pill); font-size: 15px; }
+.gap-pin--citizens > span { background: var(--ss-series-citizens); }
+.gap-pin--city > span { background: var(--ss-series-city); }
+.gap-pin--even > span { background: var(--ss-sunken); color: var(--ss-muted); }
+
+/* Detail */
+.res-detail { display: flex; flex: 1 1 320px; flex-direction: column; gap: 14px; min-width: 0; box-sizing: border-box; padding: var(--ss-space-5); }
+.res-detail:focus { outline: none; }
+.res-detail h2 { margin: 0; font-size: var(--ss-text-xl); font-weight: 800; }
+.res-detail__kicker { display: flex; align-items: center; gap: var(--ss-space-2); margin: 0; font-size: 13px; font-weight: 600; color: var(--ss-subtle); }
+.res-detail__summary { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ss-muted); }
+.res-detail__mine { margin: 0; padding: 10px var(--ss-space-3); border-radius: var(--ss-radius-sm); background: var(--ss-primary-soft); font-size: var(--ss-text-sm); }
+.res-detail__mine strong { color: var(--ss-series-mine); }
+.res-detail .ss-btn { text-align: center; }
+.res-bar { display: flex; flex-direction: column; gap: 6px; }
+.res-bar__label { display: flex; justify-content: space-between; gap: var(--ss-space-2); margin: 0; font-size: var(--ss-text-sm); }
+.res-bar__track { height: 12px; border-radius: 6px; background: var(--ss-sunken); overflow: hidden; }
+.res-bar .bar { border-radius: 6px; }
+
+.res-mark { display: inline-block; flex-shrink: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--cat); }
+.res-mark--theme { border-radius: 3px; background: repeating-linear-gradient(135deg, var(--cat) 0 3px, var(--cat-tint) 3px 6px); }
+
+/* Listen */
+.res-list { flex: 1 1 340px; min-width: 0; padding: var(--ss-space-4) var(--ss-space-5); }
+.res-list h2 { margin: 0 0 var(--ss-space-2); font-size: var(--ss-text-md); font-weight: 800; }
+.res-list__hint { margin: calc(-1 * var(--ss-space-1)) 0 var(--ss-space-2); font-size: 13px; color: var(--ss-subtle); }
+.res-list ol { margin: 0; padding: 0; list-style: none; }
+.res-list a.res-list__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--ss-hit);
+  padding: 0 var(--ss-space-2);
+  border-bottom: 1px solid var(--ss-divider);
+  color: var(--ss-ink);
+  font-size: var(--ss-text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.res-list__item:hover { background: var(--ss-sunken); }
+.res-list__item[aria-current="true"] { background: var(--ss-primary-soft); }
+.res-list__name { flex-grow: 1; }
+.res-list__empty { padding: var(--ss-space-2) 0; font-size: var(--ss-text-sm); color: var(--ss-subtle); }

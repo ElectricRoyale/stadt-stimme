@@ -4,10 +4,11 @@ Digitale Bürgerbeteiligung für Kommunen: Bürgerinnen und Bürger verteilen 10
 Einrichtungen und Themen, um die sich ihre Stadt als Nächstes kümmern soll. Die Ergebnisse werden öffentlich mit den
 Ausgaben der Kommune verglichen.
 
-> **Stand:** Phase 4 (Übersicht). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich
+> **Stand:** Phase 4 (Übersicht und Ergebnisse). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich
 > im Admin pflegen und per CSV importieren. Bürgerinnen und Bürger melden sich mit dem Code aus dem
 > Brief an und verteilen ihre 100 Punkte unter `/verteilen/`. Die öffentliche Übersicht unter
-> `/uebersicht/` zeigt die Ergebnisse auf einer Karte und im Vergleich zu den Ausgaben.
+> `/uebersicht/` zeigt die Punkte auf einer Karte, `/ergebnisse/` den Unterschied zwischen Wunsch
+> und Ausgaben je Einrichtung.
 
 ## Schnellstart
 
@@ -97,11 +98,13 @@ oder mit diesem Befehl (z. B. täglich per Cron):
 docker compose exec app python manage.py expire_points
 ```
 
-## Übersicht und Karte
+## Übersicht, Ergebnisse und Karte
 
-`/uebersicht/` ist ohne Code erreichbar. Pro Thema steht der Anteil der Punkte neben dem Anteil
+`/uebersicht/` und `/ergebnisse/` sind ohne Code erreichbar. Pro Thema steht der Anteil der Punkte neben dem Anteil
 an den Ist-Ausgaben des letzten abgeschlossenen Haushaltsjahres (ADR-006, ADR-012). Die Karte
 zeigt Einrichtungen mit Koordinaten (Spalten `latitude`, `longitude` im CSV, optional).
+`/ergebnisse/` zeigt je Einrichtung und je Thema die Lücke in Prozentpunkten: Anteil der
+Bürgerpunkte minus Anteil der Ist-Ausgaben (ADR-013).
 
 Leaflet liegt im Repo, die Kartenkacheln lädt der Browser direkt von OpenStreetMap. Dabei geht
 die IP-Adresse an den Kachelserver; das gehört in die Datenschutzerklärung. Ein anderer
@@ -139,7 +142,7 @@ apps/core/       Einstieg (Weiterleitung), Health-Check, Demo-Admin-Befehl
 apps/catalog/    Einrichtungen, Gebäude, Maßnahmen, Ausgaben; CSV-Import und Admin
 apps/access/     Aktivierungscodes, Code-Login, Sperre nach Fehlversuchen
 apps/points/     Punkte verteilen, Verfall
-apps/reporting/  Öffentliche Übersicht: Vergleich je Thema, Karte
+apps/reporting/  Öffentliche Übersicht und Ergebnisse: Vergleich, Karte
 templates/       Basis-Template (mobile-first, deutsch)
 static/          CSS, Schrift und kleine Skripte ohne Build-Schritt
 data/demo/       Fiktive Demo-Daten „Musterstadt“
