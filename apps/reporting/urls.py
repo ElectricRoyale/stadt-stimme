@@ -5,5 +5,6 @@ from apps.reporting import views
 app_name = "reporting"
 
 urlpatterns = [
-    path("", views.overview, name="overview"),
+    path("uebersicht/", views.overview, name="overview"),
+    path("ergebnisse/", views.results, name="results"),
 ]

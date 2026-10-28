@@ -32,6 +32,12 @@
 .dash-tile { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; min-height: 88px; padding: 14px var(--ss-space-4); border-radius: var(--ss-radius-md); }
 .dash-tile dt { font-size: var(--ss-text-sm); font-weight: 700; color: var(--ss-muted); }
 .dash-tile dd { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.25; }
+.dash-tile { position: relative; }
+.dash-tile a { color: var(--ss-ink); text-decoration: none; }
+.dash-tile a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.dash-tile:has(a):hover { box-shadow: 0 0 0 2px var(--ss-primary); }
+.dash-tile a:focus-visible { outline: none; }
+.dash-tile:has(a:focus-visible) { box-shadow: var(--ss-focus-ring); }
 
 .dash__grid { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--ss-space-5); }
 .dash__side { display: flex; flex: 1 1 340px; flex-direction: column; gap: var(--ss-space-5); min-width: 0; }

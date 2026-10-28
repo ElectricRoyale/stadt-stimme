@@ -1,36 +1,16 @@
-from datetime import date, timedelta
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 from django.utils import timezone
 
-from apps.access.models import Participant
-from apps.access.services import create_codes, redeem_code
-from apps.catalog.models import Expenditure, ExpenditureKind, Facility
 from apps.points.services import Target, save_distribution
 from apps.reporting.map_data import map_payload
 from apps.reporting.statistics import build_overview, share
 from apps.reporting.tests.conftest import Catalog
+from apps.reporting.tests.helpers import LAST_YEAR, new_person, spend
 
 pytestmark = pytest.mark.django_db
-LAST_YEAR = timezone.localdate().year - 1
-
-
-def _person() -> Participant:
-    result = redeem_code(create_codes(1, batch="T")[0].code, client="10.0.0.1")
-    assert result.participant is not None
-    return result.participant
-
-
-def _spend(facility: Facility, amount: str, year: int = LAST_YEAR) -> None:
-    Expenditure.objects.create(
-        facility=facility,
-        fiscal_year=year,
-        amount=Decimal(amount),
-        kind=ExpenditureKind.ACTUAL,
-        source="Test",
-        as_of=date(year + 1, 1, 31),
-    )
 
 
 def test_share_rounds_and_handles_zero() -> None:
@@ -40,12 +20,12 @@ def test_share_rounds_and_handles_zero() -> None:
 
 def test_overview_compares_citizens_with_spending(catalog: Catalog) -> None:
     save_distribution(
-        _person(), {Target("f", catalog.bad.pk): 60, Target("c", catalog.sport.pk): 20}
+        new_person(), {Target("f", catalog.bad.pk): 60, Target("c", catalog.sport.pk): 20}
     )
-    save_distribution(_person(), {Target("f", catalog.schule.pk): 20})
-    _spend(catalog.bad, "100000")
-    _spend(catalog.schule, "300000")
-    _spend(catalog.schule, "999999", year=LAST_YEAR - 1)  # älteres Jahr zählt nicht
+    save_distribution(new_person(), {Target("f", catalog.schule.pk): 20})
+    spend(catalog.bad, "100000")
+    spend(catalog.schule, "300000")
+    spend(catalog.schule, "999999", year=LAST_YEAR - 1)  # älteres Jahr zählt nicht
 
     stats = build_overview()
 
@@ -61,7 +41,7 @@ def test_overview_compares_citizens_with_spending(catalog: Catalog) -> None:
 
 
 def test_expired_points_are_not_counted(catalog: Catalog) -> None:
-    person = _person()
+    person = new_person()
     save_distribution(person, {Target("f", catalog.bad.pk): 50})
     person.last_active_at = timezone.now() - timedelta(days=400)
     person.save(update_fields=["last_active_at"])

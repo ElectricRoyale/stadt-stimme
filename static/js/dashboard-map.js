@@ -6,7 +6,7 @@
   var dataNode = document.getElementById("dash-map-data");
   var mapNode = document.getElementById("dash-map");
   var detail = document.getElementById("dash-detail");
-  if (!dataNode || !mapNode || !detail || !window.L) return;
+  if (!dataNode || !mapNode || !detail || !window.L || !window.StadtStimmeMap) return;
 
   var data = JSON.parse(dataNode.textContent);
   var loggedIn = mapNode.dataset.loggedIn === "1";
@@ -21,12 +21,7 @@
   document.querySelectorAll("[data-select]").forEach(function (node) { node.disabled = false; });
 
   // Karte
-  mapNode.textContent = "";
-  var map = L.map(mapNode, { scrollWheelZoom: false, zoomControl: true });
-  L.tileLayer(mapNode.dataset.tiles, { maxZoom: 19, attribution: mapNode.dataset.attribution }).addTo(map);
-  var located = data.places.map(function (p) { return [p.lat, p.lng]; });
-  if (located.length) map.fitBounds(located, { padding: [40, 40], maxZoom: 16 });
-  else map.setView([51.16, 10.45], 6);
+  var map = window.StadtStimmeMap.create(mapNode, data.places.map(function (p) { return [p.lat, p.lng]; }));
   var layer = L.layerGroup().addTo(map);
 
   function el(tag, className, text) {
@@ -37,13 +32,7 @@
   }
 
   function pin(lat, lng, size, label, text, classes, onPick) {
-    var html = el("span", "", text);
-    html.style.setProperty("--size", size + "px");
-    var icon = L.divIcon({ className: "map-pin " + classes, html: html.outerHTML, iconSize: [Math.max(size, 44), Math.max(size, 44)] });
-    var marker = L.marker([lat, lng], { icon: icon, title: label, alt: label, keyboard: true, riseOnHover: true });
-    marker.on("click", onPick);
-    marker.on("keypress", function (e) { if (e.originalEvent.key === "Enter" || e.originalEvent.key === " ") onPick(); });
-    return marker;
+    return window.StadtStimmeMap.pin(lat, lng, { size: size, label: label, text: text, classes: classes, onPick: onPick });
   }
 
   function render() {

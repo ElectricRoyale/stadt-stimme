@@ -8,7 +8,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("", include("apps.core.urls")),
     path("zugang/", include("apps.access.urls")),
     path("verteilen/", include("apps.points.urls")),
-    path("uebersicht/", include("apps.reporting.urls")),
+    path("", include("apps.reporting.urls")),
 ]
 
 if settings.DEMO_MODE:
