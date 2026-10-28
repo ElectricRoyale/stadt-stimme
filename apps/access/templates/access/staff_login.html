@@ -1,0 +1,38 @@
+{% extends "access/login_base.html" %}
+
+{% block title %}Anmelden für die Stadtverwaltung · StadtStimme{% endblock %}
+
+{% block panel %}
+      <div class="login__intro">
+        <h1>Stadtverwaltung</h1>
+        <p>Für Mitarbeitende der Stadt: Katalog pflegen, Ausgaben importieren, Vorschläge freigeben.</p>
+      </div>
+
+      {% if not enabled %}
+        <p class="login__status" role="status">Die Anmeldung für die Stadtverwaltung ist in dieser Installation noch nicht freigeschaltet. Das Konzept dafür wird noch abgestimmt.</p>
+      {% else %}
+        {% if error %}<div class="login__alert" role="alert"><p>{{ error }}</p></div>{% endif %}
+
+        <form method="post" class="login__form" novalidate>
+          {% csrf_token %}
+          <div class="login__field">
+            <label for="id_username">Benutzername</label>
+            <input type="text" name="username" id="id_username" class="login__input"
+                   value="{{ username }}" autocomplete="username" autocapitalize="none" spellcheck="false" required
+                   {% if error %}aria-invalid="true"{% endif %}>
+          </div>
+          <div class="login__field">
+            <label for="id_password">Passwort</label>
+            <input type="password" name="password" id="id_password" class="login__input"
+                   autocomplete="current-password" required {% if error %}aria-invalid="true"{% endif %}>
+          </div>
+          <button type="submit" class="ss-btn ss-btn--primary login__submit">Anmelden</button>
+        </form>
+
+        {% if demo_mode %}<p class="login__note">Demo-Zugang: <strong>demo</strong> / <strong>demo</strong></p>{% endif %}
+      {% endif %}
+
+      <div class="login__guest">
+        <a href="{% url 'access:redeem' %}" class="ss-btn ss-btn--secondary">Ich bin Bürgerin oder Bürger</a>
+      </div>
+{% endblock %}

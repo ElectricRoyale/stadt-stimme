@@ -83,6 +83,9 @@ eingibt, landet im selben Zugang.
 docker compose exec app python manage.py create_access_codes 20 --batch "Test" > codes.csv
 ```
 
+Auf der Anmeldeseite wählt man zwischen „Bürgerin oder Bürger“ (Code) und „Stadtverwaltung“
+(`/zugang/stadt/`, Benutzername und Passwort, führt in den Admin; vorerst nur im Demo-Modus).
+
 Für den Betrieb einen eigenen `STADTSTIMME_CODE_PEPPER` setzen und nie wieder ändern: Ein
 neuer Wert macht alle ausgegebenen Codes ungültig. Ohne eigenen Wert gilt `DJANGO_SECRET_KEY`.
 

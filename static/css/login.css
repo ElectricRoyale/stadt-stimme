@@ -145,3 +145,11 @@
 @media (prefers-reduced-motion: reduce) {
   .code-help summary svg { transition: none; }
 }
+
+/* Auswahl: Bürgerin/Bürger oder Stadtverwaltung */
+.login__roles { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: var(--ss-radius-pill); background: var(--ss-sunken); }
+.login__roles a { display: flex; align-items: center; justify-content: center; min-height: var(--ss-hit); padding: 0 var(--ss-space-3); border-radius: var(--ss-radius-pill); color: var(--ss-muted); font-size: var(--ss-text-sm); font-weight: 700; text-align: center; text-decoration: none; }
+.login__roles a:hover { color: var(--ss-ink); }
+.login__roles a[aria-current="page"] { background: var(--ss-surface); color: var(--ss-ink); box-shadow: var(--ss-card-shadow); }
+.login__input { box-sizing: border-box; width: 100%; min-height: var(--ss-hit); padding: 0 var(--ss-space-3); border: 1.5px solid var(--ss-border-strong); border-radius: var(--ss-radius-sm); background: var(--ss-surface); color: var(--ss-ink); font-family: inherit; font-size: var(--ss-text-lg); }
+.login__input[aria-invalid="true"] { border-color: var(--ss-status-budget-fg); }
