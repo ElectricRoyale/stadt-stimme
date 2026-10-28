@@ -1,0 +1,40 @@
+<aside class="ss-card dash-stats" aria-labelledby="dash-stats-title">
+  <div class="dash-stats__intro">
+    <span class="ss-eyebrow">So verteilt sich {{ city_name }}</span>
+    {% if stats.biggest_gap %}
+      <h2 id="dash-stats-title">Größte Lücke: {{ stats.biggest_gap.category.name }}</h2>
+      <p>{{ stats.biggest_gap.citizen_share }} % der Bürgerpunkte, aber nur {{ stats.biggest_gap.spend_share }} % der Ausgaben {{ stats.fiscal_year }}.</p>
+    {% elif stats.total_points %}
+      <h2 id="dash-stats-title">Bürgerwunsch und Ausgaben liegen nah beieinander</h2>
+    {% else %}
+      <h2 id="dash-stats-title">Noch keine Punkte vergeben</h2>
+      <p>Sobald die ersten Personen ihre Punkte verteilen, siehst du hier den Vergleich mit den Ausgaben der Stadt.</p>
+    {% endif %}
+  </div>
+
+  {% if participant %}
+    <a class="dash-stats__mine" href="{% url 'points:distribute' %}"><span>Du hast <strong>{{ stats.mine_used }} vergeben</strong> · {{ remaining }} frei</span><span class="dash-stats__change">Ändern</span></a>
+  {% endif %}
+
+  <div class="dash-stats__legend">
+    <span><span class="bar-key bar-key--citizens" aria-hidden="true"></span>Alle Bürger, Anteil in % (gestreift = ganzes Thema)</span>
+    <span><span class="bar-key bar-key--city" aria-hidden="true"></span>Ausgaben der Stadt{% if stats.fiscal_year %} {{ stats.fiscal_year }}{% endif %}, Anteil in %</span>
+    {% if participant %}<span><span class="bar-key bar-key--mine" aria-hidden="true"></span>Deine Punkte (von {{ budget }})</span>{% endif %}
+  </div>
+
+  <ul class="dash-stats__themes">
+    {% for theme in stats.themes %}
+      <li>
+        <button type="button" class="dash-theme" data-select="c-{{ theme.category.pk }}" disabled
+                aria-label="{{ theme.category.name }}: {{ theme.citizen_share }} Prozent der Bürgerpunkte, {{ theme.spend_share }} Prozent der Ausgaben{% if participant %}, {{ theme.mine }} deiner Punkte{% endif %}"
+                style="--cat: var(--ss-cat-{{ theme.category.color }}); --cat-tint: var(--ss-cat-{{ theme.category.color }}-tint); --max: {{ stats.scale_max }};">
+          <span class="dash-theme__head"><span class="dash-theme__name"><span class="dot" aria-hidden="true"></span>{{ theme.category.name }}</span></span>
+          <span class="dash-theme__row" aria-hidden="true"><span class="dash-theme__track"><span class="bar bar--citizens" style="--v: {{ theme.places_share }}"></span><span class="bar bar--citizens-general" style="--v: {{ theme.general_share }}"></span></span><span class="dash-theme__value">{{ theme.citizen_share }} %</span></span>
+          <span class="dash-theme__row" aria-hidden="true"><span class="dash-theme__track"><span class="bar bar--city" style="--v: {{ theme.spend_share }}"></span></span><span class="dash-theme__value">{{ theme.spend_share }} %</span></span>
+          {% if participant %}<span class="dash-theme__row" aria-hidden="true"><span class="dash-theme__track"><span class="bar bar--mine" style="--v: {{ theme.mine }}"></span></span><span class="dash-theme__value dash-theme__value--mine">{{ theme.mine }} P.</span></span>{% endif %}
+        </button>
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="dash-stats__hint" data-js-only hidden>Tippe auf ein Thema oder einen Ort auf der Karte.</p>
+</aside>

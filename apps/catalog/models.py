@@ -3,6 +3,7 @@
 from typing import Any
 
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 
@@ -65,6 +66,23 @@ class Facility(models.Model):
     )
     address = models.CharField("Adresse", max_length=200, blank=True)
     description = models.TextField("Kurzbeschreibung", blank=True)
+    latitude = models.DecimalField(
+        "Breitengrad",
+        max_digits=8,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(-90), MaxValueValidator(90)],
+        help_text="Für die Karte, z. B. 50.868600. Ohne Koordinaten fehlt die Einrichtung dort.",
+    )
+    longitude = models.DecimalField(
+        "Längengrad",
+        max_digits=9,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(-180), MaxValueValidator(180)],
+    )
     created_at = models.DateTimeField("Angelegt", auto_now_add=True)
     updated_at = models.DateTimeField("Geändert", auto_now=True)
 
@@ -75,6 +93,15 @@ class Facility(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def has_location(self) -> bool:
+        return self.latitude is not None and self.longitude is not None
+
+    def clean(self) -> None:
+        super().clean()
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValidationError("Breiten- und Längengrad nur zusammen angeben.")
 
 
 class Building(models.Model):

@@ -1,0 +1,48 @@
+<section class="ss-card dash-map" aria-labelledby="dash-map-title">
+  <div class="dash-map__head">
+    <h2 id="dash-map-title">Wohin fließen die Punkte?</h2>
+    <div class="ss-seg" role="group" aria-label="Kartenebene" data-js-only hidden>
+      <button type="button" data-layer="orte" aria-pressed="true">Gebäude &amp; Orte</button>
+      <button type="button" data-layer="bereiche" aria-pressed="false">Bereiche</button>
+    </div>
+  </div>
+
+  <div class="dash-map__filters" role="group" aria-label="Filter" data-js-only hidden>
+    {% if participant %}
+      <button type="button" class="ss-chip" data-filter-mine aria-pressed="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Nur meine Punkte
+      </button>
+      <span class="dash-map__divider" aria-hidden="true"></span>
+    {% endif %}
+    <button type="button" class="ss-chip" data-filter-theme="" aria-pressed="true">Alle Themen</button>
+    {% for theme in stats.themes %}
+      <button type="button" class="ss-chip" data-filter-theme="{{ theme.category.pk }}" aria-pressed="false"><span class="dot cat-{{ theme.category.color }}" aria-hidden="true"></span>{{ theme.category.name }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="dash-map__canvas" id="dash-map" role="region" aria-label="Karte von {{ city_name }} mit Punkten je Einrichtung"
+       data-tiles="{{ map_tile_url }}" data-attribution="{{ map_attribution }}" data-logged-in="{% if participant %}1{% endif %}">
+    <p class="dash-map__fallback">Die Karte braucht JavaScript. Unten findest du alle Orte als Liste.</p>
+  </div>
+
+  <div class="dash-map__legend" aria-hidden="true">
+    <span><span class="swatch swatch--dot"></span>Kreis = Punkte für eine Einrichtung</span>
+    <span><span class="swatch swatch--stripes"></span>Gestreift = Punkte für ein ganzes Thema</span>
+  </div>
+
+  <details class="dash-list">
+    <summary>Alle Orte und Themen als Liste</summary>
+    <ol>
+      {% for place in stats.places %}
+        <li style="--cat: var(--ss-cat-{{ place.category.color }}); --cat-tint: var(--ss-cat-{{ place.category.color }}-tint);">
+          <button type="button" class="dash-list__item" data-select="{{ place.target.key }}" disabled>
+            <span class="dash-list__mark{% if place.is_general %} dash-list__mark--general{% endif %}" aria-hidden="true"></span>
+            <span class="dash-list__name">{{ place.name }}</span>
+            <strong>{{ place.share }} %</strong>
+          </button>
+        </li>
+      {% endfor %}
+    </ol>
+  </details>
+  {{ map_data|json_script:"dash-map-data" }}
+</section>
