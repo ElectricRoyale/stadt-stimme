@@ -4,8 +4,8 @@ Digitale Bürgerbeteiligung für Kommunen: Bürgerinnen und Bürger verteilen 10
 um die sich ihre Stadt als Nächstes kümmern soll. Die Ergebnisse werden öffentlich mit den
 Ausgaben der Kommune verglichen.
 
-> **Stand:** Phase 0 (Fundament). Projektgerüst, Start per Docker, CI und Demo-Daten.
-> Fachfunktionen folgen ab Phase 1.
+> **Stand:** Phase 1 (Katalog). Einrichtungen, Maßnahmen und Ausgaben lassen sich im Admin
+> pflegen und per CSV importieren. Die Bürgeransicht folgt ab Phase 2.
 
 ## Schnellstart
 
@@ -16,7 +16,8 @@ macOS/Windows, inklusive Apple Silicon).
 docker compose up
 ```
 
-Beim ersten Start wird das Image gebaut; das dauert einige Minuten. Danach:
+Beim ersten Start wird das Image gebaut; das dauert einige Minuten. Im Demo-Modus werden
+die fiktiven Daten „Musterstadt“ automatisch in den leeren Katalog geladen. Danach:
 
 | Was | Adresse | Zugang |
 | --- | --- | --- |
@@ -32,6 +33,23 @@ Sind Ports belegt, lassen sie sich über eine `.env`-Datei ändern (Vorlage: `.e
 > **Demo-Modus:** Die Standardwerte sind nur für die lokale Vorführung gedacht. Alle Ports sind
 > an `127.0.0.1` gebunden, der Admin-Zugang ist ein Demo-Zugang. Nicht öffentlich betreiben.
 
+## Daten pflegen und importieren
+
+Im Admin unter **Katalog** lassen sich Kategorien, Einrichtungen, Maßnahmen und Ausgaben
+bearbeiten. Jede Liste hat **Importieren** (CSV mit Vorschau vor dem Speichern) und
+**Exportieren**. Beim Import über die Oberfläche gilt die Reihenfolge Einrichtungen,
+Maßnahmen, Ausgaben.
+
+Alle drei Dateien auf einmal, in einer Transaktion (bei einem Fehler wird nichts gespeichert):
+
+```bash
+docker compose exec app python manage.py import_catalog data/demo --dry-run   # nur prüfen
+docker compose exec app python manage.py import_catalog data/demo             # speichern
+```
+
+Der Import ist wiederholbar: Zeilen werden über die externe ID aktualisiert statt doppelt
+angelegt. Das Dateiformat beschreibt [data/demo/README.md](data/demo/README.md).
+
 ## Entwicklung
 
 Python 3.12+ und Docker.
@@ -44,6 +62,7 @@ pip install -r requirements-dev.txt
 docker compose up -d db mailpit      # nur Datenbank und Mailpit starten
 export DJANGO_DEBUG=true             # Windows: set DJANGO_DEBUG=true
 python manage.py migrate
+python manage.py import_catalog data/demo
 python manage.py runserver
 ```
 
@@ -60,6 +79,7 @@ pytest                                  # Tests gegen PostgreSQL
 ```
 config/          Einstellungen (alles über Umgebungsvariablen), URLs, WSGI
 apps/core/       Startseite, Health-Check, Demo-Admin-Befehl
+apps/catalog/    Einrichtungen, Maßnahmen, Ausgaben; CSV-Import und Admin
 templates/       Basis-Template (mobile-first, deutsch)
 static/          CSS ohne Build-Schritt
 data/demo/       Fiktive Demo-Daten „Musterstadt“
@@ -67,7 +87,7 @@ docker/          Entrypoint: Migrationen, Demo-Admin, Start
 docs/            Entscheidungen (ADRs)
 ```
 
-Fachliche Module kommen phasenweise als eigene Django-Apps dazu: `catalog`, `access`, `voting`,
+Fachliche Module kommen phasenweise als eigene Django-Apps dazu: `access`, `voting`,
 `reporting`, `notifications`. Fachlogik liegt jeweils in `services.py`, Views bleiben dünn.
 
 ## Fahrplan

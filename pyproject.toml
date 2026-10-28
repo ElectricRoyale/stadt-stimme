@@ -11,6 +11,8 @@ extend-exclude = ["**/migrations/*"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "DJ", "S", "SIM", "RUF"]
+# Django konfiguriert Admin, Meta und Resources deklarativ über Klassenattribute.
+ignore = ["RUF012"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/*" = ["S101", "S105", "S106"]
@@ -20,6 +22,17 @@ python_version = "3.12"
 plugins = ["mypy_django_plugin.main"]
 strict = true
 exclude = ["migrations/"]
+
+[[tool.mypy.overrides]]
+module = ["import_export.*", "tablib.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# django-import-export bringt keine Typen mit; Unterklassen davon sind daher "Any".
+# Admin-Klassen sind zur Laufzeit nicht generisch; Typparameter würden django-stubs-ext erfordern.
+module = ["apps.catalog.resources", "apps.catalog.admin"]
+disallow_subclassing_any = false
+disallow_any_generics = false
 
 [[tool.mypy.overrides]]
 module = ["apps.*.tests.*"]
