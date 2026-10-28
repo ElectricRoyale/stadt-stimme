@@ -24,7 +24,6 @@ def test_redeem_page_follows_login_sketch(client: Client, settings: Settings) ->
 
     assert "Deine Stimme für Beispielstadt." in content
     assert '<details class="code-help">' in content
-    assert "Ohne Code umsehen" in content
     assert 'id="code-zaehler"' in content
     assert "Code aus dem QR-Code übernommen" not in content
 
@@ -106,9 +105,8 @@ def test_logout_requires_post(client: Client) -> None:
     assert client.get("/zugang/abmelden/").status_code == 405
 
 
-def test_header_shows_login_state(client: Client, issued: IssuedCode) -> None:
-    assert "Code eingeben" in client.get("/").content.decode()
-
+def test_home_leads_to_account_when_logged_in(client: Client, issued: IssuedCode) -> None:
     client.post("/zugang/", {"code": issued.code})
 
-    assert "Abmelden" in client.get("/").content.decode()
+    assert client.get("/")["Location"] == "/zugang/mein-bereich/"
+    assert "Abmelden" in client.get("/zugang/mein-bereich/").content.decode()

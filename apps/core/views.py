@@ -1,18 +1,23 @@
-"""Querschnittliche Seiten: Startseite und Health-Check."""
+"""Querschnittliche Seiten: Einstieg und Health-Check."""
 
 import logging
 
 from django.db import DatabaseError, connection
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect
 from django.views.decorators.http import require_GET
+
+from apps.access.session import current_participant
 
 logger = logging.getLogger(__name__)
 
 
 @require_GET
 def home(request: HttpRequest) -> HttpResponse:
-    return render(request, "core/home.html")
+    """Kein eigener Einstieg: Angemeldete landen in ihrem Bereich, alle anderen beim Code."""
+    if current_participant(request) is not None:
+        return redirect("access:account")
+    return redirect("access:redeem")
 
 
 def _database_is_reachable() -> bool:
