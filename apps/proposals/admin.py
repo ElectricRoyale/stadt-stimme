@@ -30,10 +30,10 @@ class ProposalAdmin(admin.ModelAdmin):
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False
 
-    @admin.action(description="Freigeben")
+    @admin.action(description="Freigeben", permissions=["change"])
     def publish(self, request: HttpRequest, queryset: QuerySet[Proposal]) -> None:
         queryset.update(status=ProposalStatus.PUBLISHED)
 
-    @admin.action(description="Ablehnen")
+    @admin.action(description="Ablehnen", permissions=["change"])
     def reject(self, request: HttpRequest, queryset: QuerySet[Proposal]) -> None:
         queryset.update(status=ProposalStatus.REJECTED)

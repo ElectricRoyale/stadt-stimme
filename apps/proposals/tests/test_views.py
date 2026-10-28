@@ -1,5 +1,7 @@
 import pytest
-from django.test import Client
+from django.contrib import admin
+from django.contrib.auth.models import Permission, User
+from django.test import Client, RequestFactory
 
 from apps.access.models import Participant
 from apps.proposals.models import Proposal, ProposalStatus
@@ -107,3 +109,13 @@ def test_support_needs_code_and_published_proposal(
     assert logged_in.post(f"/vorschlaege/{hidden.pk}/unterstuetzen/").status_code == 404
     assert logged_in.post(f"/vorschlaege/{own.pk}/unterstuetzen/").status_code == 400
     assert Client().post(f"/vorschlaege/{own.pk}/unterstuetzen/").status_code == 403
+
+
+def test_publish_needs_change_permission() -> None:
+    viewer = User.objects.create_user("lesend", is_staff=True)
+    viewer.user_permissions.add(Permission.objects.get(codename="view_proposal"))
+    request = RequestFactory().get("/admin/proposals/proposal/")
+    request.user = viewer
+    model_admin = admin.site._registry[Proposal]
+
+    assert "publish" not in model_admin.get_actions(request)
