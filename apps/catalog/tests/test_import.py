@@ -94,6 +94,18 @@ def test_missing_file_is_reported(demo_copy: Path) -> None:
     assert _counts() == (0, 0, 0, 0)
 
 
+def test_row_with_too_many_columns_is_reported(demo_copy: Path) -> None:
+    path = demo_copy / "facilities.csv"
+    extra_row = "E-999,Bad,Sport,Weg 1,Text,überzählig\n"
+    path.write_text(path.read_text(encoding="utf-8") + extra_row, encoding="utf-8")
+
+    report = import_catalog(demo_copy)
+
+    assert [error.file for error in report.errors] == ["facilities.csv"]
+    assert "mehr Spalten" in report.errors[0].message
+    assert _counts() == (0, 0, 0, 0)
+
+
 def test_excel_byte_order_mark_is_accepted(demo_copy: Path) -> None:
     path = demo_copy / "facilities.csv"
     path.write_bytes(b"\xef\xbb\xbf" + path.read_bytes())

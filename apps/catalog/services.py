@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from import_export.resources import ModelResource
 from import_export.results import Result
+from tablib.exceptions import InvalidDimensions
 
 from apps.catalog.models import Facility
 from apps.catalog.resources import ExpenditureResource, FacilityResource, MeasureResource
@@ -78,6 +79,11 @@ def import_catalog(directory: Path, *, dry_run: bool = False) -> ImportReport:
 def _import_file(path: Path, resource_class: type[ModelResource], report: ImportReport) -> None:
     try:
         dataset = _load_csv(path)
+    except InvalidDimensions:
+        report.errors.append(
+            RowError(path.name, None, "Eine Zeile hat mehr Spalten als die Kopfzeile.")
+        )
+        return
     except (OSError, ValueError) as error:
         report.errors.append(RowError(path.name, None, f"Datei nicht lesbar: {error}"))
         return
