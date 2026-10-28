@@ -1,14 +1,36 @@
 """Katalog: Einrichtungen, Gebäude, Maßnahmen und Ausgaben (ADR-002, ADR-006)."""
 
+from typing import Any
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 
 
+class CategoryColor(models.TextChoices):
+    """Die fünf Themenfarben der Design-Tokens (``--ss-cat-<wert>``)."""
+
+    CYAN = "verkehr", "Cyan"
+    VIOLET = "bildung", "Violett"
+    GREEN = "freizeit", "Grün"
+    PINK = "familie", "Pink"
+    STONE = "sicherheit", "Stein"
+
+
 class Category(models.Model):
-    """Grobe Einordnung einer Einrichtung (z. B. Sport, Bildung) für Filter und Vergleich."""
+    """Grobe Einordnung einer Einrichtung (z. B. Sport, Bildung) für Filter und Vergleich.
+
+    Bürger können Punkte auch an ein ganzes Thema geben („… allgemein“, ADR-002).
+    """
 
     name = models.CharField("Name", max_length=80, unique=True)
+    color = models.CharField(
+        "Farbe",
+        max_length=12,
+        choices=CategoryColor.choices,
+        blank=True,
+        help_text="Leer lassen: wird beim Anlegen reihum vergeben.",
+    )
 
     class Meta:
         verbose_name = "Kategorie"
@@ -17,6 +39,12 @@ class Category(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self.color:
+            palette = CategoryColor.values
+            self.color = palette[Category.objects.count() % len(palette)]
+        super().save(*args, **kwargs)
 
 
 class Facility(models.Model):

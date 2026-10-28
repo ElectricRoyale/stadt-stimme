@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 @require_GET
 def home(request: HttpRequest) -> HttpResponse:
-    """Kein eigener Einstieg: Angemeldete landen in ihrem Bereich, alle anderen beim Code."""
+    """Kein eigener Einstieg: Angemeldete verteilen Punkte, alle anderen geben den Code ein."""
     if current_participant(request) is not None:
-        return redirect("access:account")
+        return redirect("points:distribute")
     return redirect("access:redeem")
 
 

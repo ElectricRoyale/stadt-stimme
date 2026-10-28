@@ -25,7 +25,7 @@ class _CsvImportExportAdmin(ImportExportModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ["name", "facility_count"]
+    list_display = ["name", "color", "facility_count"]
     search_fields = ["name"]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Category]:

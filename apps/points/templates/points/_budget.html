@@ -1,0 +1,12 @@
+<section class="ss-card--dark budget budget--{{ variant }}" aria-label="Dein Punktebudget">
+  <div class="budget__head">
+    <p class="budget__count">
+      <span class="budget__number" data-remaining>{{ remaining }}</span>
+      <span class="budget__label">von {{ budget }} Punkten frei</span>
+    </p>
+  </div>
+  <div class="budget__meter" role="img" aria-label="{{ used }} von {{ budget }} Punkten vergeben" data-used-meter>
+    <span data-used-bar style="width: {{ used }}%"></span>
+  </div>
+  <p class="budget__note"><span data-used>{{ used }}</span> Punkte vergeben</p>
+</section>

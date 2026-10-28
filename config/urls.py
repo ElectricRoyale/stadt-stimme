@@ -7,6 +7,7 @@ from django.urls import URLPattern, URLResolver, include, path
 urlpatterns: list[URLPattern | URLResolver] = [
     path("", include("apps.core.urls")),
     path("zugang/", include("apps.access.urls")),
+    path("verteilen/", include("apps.points.urls")),
 ]
 
 if settings.DEMO_MODE:

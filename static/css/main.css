@@ -100,3 +100,27 @@
 .code-counter { font-size: var(--ss-text-xs); color: var(--ss-subtle); }
 .code-counter[data-state="complete"] { color: var(--ss-status-done-fg); }
 .code-counter[data-state="invalid"] { color: var(--ss-status-budget-fg); font-weight: 600; }
+
+.flash {
+  margin-bottom: var(--ss-space-4);
+  padding: var(--ss-space-3);
+  border-radius: var(--ss-radius-sm);
+  background: var(--ss-status-done-bg);
+  color: var(--ss-status-done-fg);
+  font-size: var(--ss-text-sm);
+  font-weight: 600;
+}
+
+.flash p { margin: 0; }
+
+.site-nav a[aria-current="page"] { color: var(--ss-ink); text-decoration: none; }
+
+/* Statusfarben für Tags (Maßnahmenstatus) */
+.tone-idea { background: var(--ss-status-idea-bg); color: var(--ss-status-idea-fg); }
+.tone-plan { background: var(--ss-status-plan-bg); color: var(--ss-status-plan-fg); }
+.tone-budget { background: var(--ss-status-budget-bg); color: var(--ss-status-budget-fg); }
+.tone-done { background: var(--ss-status-done-bg); color: var(--ss-status-done-fg); }
+
+/* Fortschrittsbalken */
+.meter { height: 6px; border-radius: 3px; background: var(--ss-sunken); overflow: hidden; }
+.meter > span { display: block; height: 100%; border-radius: inherit; background: var(--cat, var(--ss-primary)); }
