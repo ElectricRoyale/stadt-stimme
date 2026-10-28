@@ -58,15 +58,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Strenge Dateirechte wie bei manchen Checkouts (umask 077)
+        run: chmod -R go-rwx .
       - name: Stack starten wie die Prüfer
         run: docker compose up -d --build --wait --wait-timeout 180
       - name: Health-Check
         run: curl --fail --silent http://localhost:8000/healthz/
       - name: Demo-Daten geladen
-        run: docker compose logs app | grep -q "Import gespeichert"
+        run: |
+          docker compose logs app | grep -q "Import gespeichert"
+          docker compose logs app | grep -q "5 Demo-Codes angelegt"
       - name: Startseite und Demo-Admin
         run: |
           curl --fail --silent http://localhost:8000/ | grep -q "StadtStimme"
+          curl --fail --silent http://localhost:8000/zugang/ | grep -q "Code eingeben"
           curl --silent -o /dev/null -w "%{http_code}" http://localhost:8000/admin/ | grep -q 302
       - name: Logs bei Fehler
         if: failure()

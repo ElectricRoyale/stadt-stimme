@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "import_export",
     "apps.core",
     "apps.catalog",
+    "apps.access",
 ]
 
 MIDDLEWARE = [
@@ -61,6 +62,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.access.context_processors.participant",
             ],
         },
     },
@@ -114,6 +116,14 @@ EMAIL_HOST_PASSWORD = env_str("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=False)
 DEFAULT_FROM_EMAIL = env_str("DEFAULT_FROM_EMAIL", default="StadtStimme <noreply@localhost>")
 
+# Zugang per Code (ADR-001). Schlüssel für die Code-Hashes: eigener Wert empfohlen, weil ein
+# Wechsel alle bisher ausgegebenen Codes ungültig macht. Ohne eigenen Wert gilt SECRET_KEY.
+ACCESS_CODE_PEPPER = env_str("STADTSTIMME_CODE_PEPPER", default=SECRET_KEY)
+ACCESS_MAX_FAILED_ATTEMPTS = env_int("STADTSTIMME_MAX_FAILED_ATTEMPTS", default=10)
+ACCESS_LOCKOUT_MINUTES = env_int("STADTSTIMME_LOCKOUT_MINUTES", default=60)
+
+# Die Sitzung hält so lange wie die Punkte ohne Aktivität gelten (ADR-003: 6 Monate).
+SESSION_COOKIE_AGE = env_int("STADTSTIMME_SESSION_DAYS", default=183) * 24 * 60 * 60
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = env_bool("DJANGO_SECURE_COOKIES", default=False)
 CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE

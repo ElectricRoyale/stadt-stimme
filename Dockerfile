@@ -16,7 +16,10 @@ COPY . .
 # Statische Dateien zur Build-Zeit sammeln; der Schlüssel wird dafür nur temporär gebraucht.
 RUN DJANGO_SECRET_KEY=build-only python manage.py collectstatic --noinput
 
+# Rechte unabhängig vom Host setzen: Ein Checkout mit strenger umask (z. B. 600/700) wäre für
+# den unprivilegierten Benutzer sonst nicht lesbar (PermissionError beim Start).
 RUN useradd --system --uid 10001 --no-create-home app \
+    && chmod -R a+rX,go-w /app \
     && chmod +x docker/entrypoint.sh
 USER app
 

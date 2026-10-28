@@ -30,7 +30,7 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 # django-import-export bringt keine Typen mit; Unterklassen davon sind daher "Any".
 # Admin-Klassen sind zur Laufzeit nicht generisch; Typparameter würden django-stubs-ext erfordern.
-module = ["apps.catalog.resources", "apps.catalog.admin"]
+module = ["apps.catalog.resources", "apps.catalog.admin", "apps.access.admin"]
 disallow_subclassing_any = false
 disallow_any_generics = false
 
