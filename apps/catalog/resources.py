@@ -92,7 +92,15 @@ class FacilityResource(_CatalogResource):
     class Meta(_CatalogResource.Meta):
         model = Facility
         import_id_fields = ["external_id"]
-        fields = ["external_id", "name", "category", "address", "description"]
+        fields = [
+            "external_id",
+            "name",
+            "category",
+            "address",
+            "description",
+            "latitude",
+            "longitude",
+        ]
 
 
 class BuildingResource(_CatalogResource):

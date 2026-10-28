@@ -14,7 +14,8 @@
   {% block body %}
     <header class="ss-header site-header">
       <a class="brand" href="{% url 'core:home' %}">{% include "partials/logo.html" with size=28 %}<span>StadtStimme</span></a>
-      <nav aria-label="Zugang" class="site-nav">
+      <nav aria-label="Hauptnavigation" class="site-nav">
+        <a href="{% url 'reporting:overview' %}"{% if request.resolver_match.view_name == 'reporting:overview' %} aria-current="page"{% endif %}>Übersicht</a>
         {% if participant %}
           <a href="{% url 'points:distribute' %}"{% if request.resolver_match.view_name == 'points:distribute' %} aria-current="page"{% endif %}>Punkte verteilen</a>
           <a href="{% url 'access:account' %}"{% if request.resolver_match.view_name == 'access:account' %} aria-current="page"{% endif %}>Mein Bereich</a>
@@ -27,6 +28,7 @@
         {% endif %}
       </nav>
     </header>
+    {% block before_main %}{% endblock %}
     <main id="inhalt" class="{% block main_class %}container{% endblock %}">
       {% if messages %}
         <div class="flash" role="status">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>

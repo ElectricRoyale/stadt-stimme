@@ -41,7 +41,7 @@ def test_valid_code_logs_in_and_redirects(client: Client, issued: IssuedCode) ->
     response = client.post("/zugang/", {"code": format_code(issued.code)})
 
     assert response.status_code == 302
-    assert response["Location"] == "/verteilen/"
+    assert response["Location"] == "/uebersicht/"
     assert "Mein Bereich" in client.get("/zugang/mein-bereich/").content.decode()
 
 
@@ -89,7 +89,7 @@ def test_account_requires_session(client: Client) -> None:
 def test_logged_in_user_skips_form(client: Client, issued: IssuedCode) -> None:
     client.post("/zugang/", {"code": issued.code})
 
-    assert client.get("/zugang/")["Location"] == "/verteilen/"
+    assert client.get("/zugang/")["Location"] == "/uebersicht/"
 
 
 def test_logout_ends_session(client: Client, issued: IssuedCode) -> None:
@@ -105,8 +105,8 @@ def test_logout_requires_post(client: Client) -> None:
     assert client.get("/zugang/abmelden/").status_code == 405
 
 
-def test_home_leads_to_distribution_when_logged_in(client: Client, issued: IssuedCode) -> None:
+def test_home_leads_to_overview_when_logged_in(client: Client, issued: IssuedCode) -> None:
     client.post("/zugang/", {"code": issued.code})
 
-    assert client.get("/")["Location"] == "/verteilen/"
+    assert client.get("/")["Location"] == "/uebersicht/"
     assert "Abmelden" in client.get("/zugang/mein-bereich/").content.decode()

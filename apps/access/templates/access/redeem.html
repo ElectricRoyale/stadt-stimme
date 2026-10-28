@@ -66,6 +66,11 @@
       <p class="login__note">Du bleibst auf diesem Gerät angemeldet, bis du dich abmeldest. Auf einem anderen Gerät meldest du dich einfach mit demselben Code an.</p>
 
       {% include "access/_code_hilfe.html" %}
+
+      <div class="login__guest">
+        <a href="{% url 'reporting:overview' %}" class="ss-btn ss-btn--secondary">Ohne Code umsehen</a>
+        <span>Die Ergebnisse sind öffentlich. Zum Verteilen der Punkte brauchst du deinen Code.</span>
+      </div>
     </div>
   </main>
 </div>

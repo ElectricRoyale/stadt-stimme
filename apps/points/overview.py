@@ -162,12 +162,12 @@ def _facility_row(facility: Facility, points: Mapping[Target, int]) -> Row:
         spending=Spending.of(facility.expenditures.all()),
         list_title="Mögliche Maßnahmen",
         entries=[
-            ListEntry(m.title, _sentence_case(m.get_status_display()), STATUS_TONE[m.status])
+            ListEntry(m.title, sentence_case(m.get_status_display()), STATUS_TONE[m.status])
             for m in facility.measures.all()
         ],
         points=points.get(target, 0),
     )
 
 
-def _sentence_case(text: str) -> str:
+def sentence_case(text: str) -> str:
     return text[:1].upper() + text[1:]

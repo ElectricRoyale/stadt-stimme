@@ -108,7 +108,7 @@ def test_missing_file_is_reported(demo_copy: Path) -> None:
 
 def test_row_with_too_many_columns_is_reported(demo_copy: Path) -> None:
     path = demo_copy / "facilities.csv"
-    extra_row = "E-999,Bad,Sport,Weg 1,Text,überzählig\n"
+    extra_row = "E-999,Bad,Sport,Weg 1,Text,50.1,9.1,überzählig\n"
     path.write_text(path.read_text(encoding="utf-8") + extra_row, encoding="utf-8")
 
     report = import_catalog(demo_copy)
@@ -144,3 +144,31 @@ def test_unknown_building_is_reported(replace_in: Replace) -> None:
 
     assert [error.file for error in report.errors] == ["measures.csv"]
     assert "nicht gefunden" in report.errors[0].message
+
+
+def test_coordinates_are_imported() -> None:
+    import_catalog(settings.DEMO_DATA_DIR)
+
+    facility = Facility.objects.get(external_id="E-001")
+    assert facility.has_location
+    assert str(facility.latitude) == "50.871204"
+
+
+def test_coordinates_are_optional(demo_copy: Path) -> None:
+    path = demo_copy / "facilities.csv"
+    rows = [line.rsplit(",", 2)[0] for line in path.read_text(encoding="utf-8").splitlines()]
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+
+    report = import_catalog(demo_copy)
+
+    assert report.ok, report.errors
+    assert not Facility.objects.get(external_id="E-001").has_location
+
+
+def test_latitude_without_longitude_is_reported(replace_in: Replace) -> None:
+    directory = replace_in("facilities.csv", ",50.871204,9.701932", ",50.871204,")
+
+    report = import_catalog(directory)
+
+    assert [error.file for error in report.errors] == ["facilities.csv"]
+    assert "zusammen" in report.errors[0].message

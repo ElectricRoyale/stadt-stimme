@@ -1,6 +1,8 @@
 # Demo-Daten: Musterstadt
 
-Alle Daten sind **fiktiv**. Sie dienen der Entwicklung, den Tests und der Vorführung.
+Alle Daten sind **fiktiv**. Sie dienen der Entwicklung, den Tests und der Vorführung. Die Koordinaten
+liegen beispielhaft in einer echten Kleinstadt, damit die Karte etwas zeigt; sie gehören zu keiner
+realen Einrichtung.
 
 | Datei | Inhalt |
 | --- | --- |
@@ -17,6 +19,7 @@ Alle Daten sind **fiktiv**. Sie dienen der Entwicklung, den Tests und der Vorfü
 | | `name` | ja | Name |
 | | `category` | ja | Kategoriename; unbekannte Kategorien werden angelegt |
 | | `address`, `description` | nein | Adresse, Kurzbeschreibung |
+| | `latitude`, `longitude` | nein | Koordinaten (WGS 84, Punkt als Dezimaltrenner) für die Karte; nur zusammen |
 | buildings.csv | `external_id` | ja | Eindeutiger Schlüssel des Gebäudes |
 | | `facility_external_id` | ja | Einrichtung, zu der das Gebäude gehört |
 | | `name` | ja | Name, z. B. „Turnhalle“ |

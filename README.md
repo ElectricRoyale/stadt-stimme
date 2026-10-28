@@ -4,9 +4,10 @@ Digitale Bürgerbeteiligung für Kommunen: Bürgerinnen und Bürger verteilen 10
 Einrichtungen und Themen, um die sich ihre Stadt als Nächstes kümmern soll. Die Ergebnisse werden öffentlich mit den
 Ausgaben der Kommune verglichen.
 
-> **Stand:** Phase 3 (Punktevergabe). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich
+> **Stand:** Phase 4 (Übersicht). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich
 > im Admin pflegen und per CSV importieren. Bürgerinnen und Bürger melden sich mit dem Code aus dem
-> Brief an und verteilen ihre 100 Punkte unter `/verteilen/`.
+> Brief an und verteilen ihre 100 Punkte unter `/verteilen/`. Die öffentliche Übersicht unter
+> `/uebersicht/` zeigt die Ergebnisse auf einer Karte und im Vergleich zu den Ausgaben.
 
 ## Schnellstart
 
@@ -96,6 +97,16 @@ oder mit diesem Befehl (z. B. täglich per Cron):
 docker compose exec app python manage.py expire_points
 ```
 
+## Übersicht und Karte
+
+`/uebersicht/` ist ohne Code erreichbar. Pro Thema steht der Anteil der Punkte neben dem Anteil
+an den Ist-Ausgaben des letzten abgeschlossenen Haushaltsjahres (ADR-006, ADR-012). Die Karte
+zeigt Einrichtungen mit Koordinaten (Spalten `latitude`, `longitude` im CSV, optional).
+
+Leaflet liegt im Repo, die Kartenkacheln lädt der Browser direkt von OpenStreetMap. Dabei geht
+die IP-Adresse an den Kachelserver; das gehört in die Datenschutzerklärung. Ein anderer
+Kachelserver lässt sich über `STADTSTIMME_MAP_TILE_URL` und `STADTSTIMME_MAP_ATTRIBUTION` setzen.
+
 ## Entwicklung
 
 Python 3.12+ und Docker.
@@ -128,6 +139,7 @@ apps/core/       Einstieg (Weiterleitung), Health-Check, Demo-Admin-Befehl
 apps/catalog/    Einrichtungen, Gebäude, Maßnahmen, Ausgaben; CSV-Import und Admin
 apps/access/     Aktivierungscodes, Code-Login, Sperre nach Fehlversuchen
 apps/points/     Punkte verteilen, Verfall
+apps/reporting/  Öffentliche Übersicht: Vergleich je Thema, Karte
 templates/       Basis-Template (mobile-first, deutsch)
 static/          CSS, Schrift und kleine Skripte ohne Build-Schritt
 data/demo/       Fiktive Demo-Daten „Musterstadt“
@@ -135,7 +147,7 @@ docker/          Entrypoint: Migrationen, Demo-Admin, Start
 docs/            Entscheidungen (ADRs)
 ```
 
-Fachliche Module kommen phasenweise als eigene Django-Apps dazu: `reporting`,
+Fachliche Module kommen phasenweise als eigene Django-Apps dazu, als Nächstes
 `notifications`. Fachlogik liegt jeweils in `services.py`, Views bleiben dünn.
 
 ## Fahrplan
