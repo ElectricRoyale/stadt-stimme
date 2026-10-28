@@ -34,8 +34,9 @@ def redeem(request: HttpRequest) -> HttpResponse:
         if current_participant(request) is not None:
             return redirect("access:account")
         # Der QR-Code auf dem Brief verlinkt mit ?code=…; eingelöst wird erst per Absenden.
-        form = RedeemForm(initial={"code": request.GET.get("code", "")})
-        return render(request, "access/redeem.html", {"form": form})
+        prefilled = request.GET.get("code", "").strip()
+        form = RedeemForm(initial={"code": prefilled})
+        return render(request, "access/redeem.html", {"form": form, "from_qr": bool(prefilled)})
 
     form = RedeemForm(request.POST)
     if not form.is_valid():

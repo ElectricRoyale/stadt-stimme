@@ -15,6 +15,7 @@ Eine überholte Entscheidung wird nicht gelöscht, sondern als ersetzt markiert.
 | ADR-007 | Tech-Stack: Django + htmx + PostgreSQL, Start per `docker compose up`. | Akzeptiert |
 | ADR-008 | Gebäude als optionale Ebene unter der Einrichtung. Eine Maßnahme kann einem Gebäude ihrer Einrichtung zugeordnet werden; Punkte und Vergleich bleiben pro Einrichtung (ADR-002, ADR-006). | Akzeptiert |
 | ADR-009 | Rate-Limit für das Einlösen als eigene Tabelle mit Fehlversuchen in PostgreSQL (IP nur als Hash) statt django-ratelimit, weil django-ratelimit den Datenbank-Cache als nicht atomar ablehnt und sonst Redis nötig wäre. | Akzeptiert |
+| ADR-010 | Oberfläche nach den Design-Tokens „StadtStimme v1.2“ (`static/css/tokens.css`, unverändert aus dem Design-System übernommen). Schrift Public Sans liegt selbst gehostet im Repo (OFL), damit keine Anfragen an Google Fonts gehen. | Akzeptiert |
 
 ## Zurückgestellt bis zur Teamabstimmung
 
