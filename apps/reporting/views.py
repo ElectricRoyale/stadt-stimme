@@ -1,18 +1,17 @@
 """Öffentliche Seiten: Übersicht und Ergebnisse, mit den eigenen Punkten nur nach Anmeldung."""
 
-from datetime import date, timedelta
+from datetime import date
 
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.http import require_GET
 
 from apps.access.models import Participant
 from apps.access.session import current_participant
 from apps.points.models import POINTS_BUDGET
-from apps.points.services import points_of
+from apps.points.services import points_of, valid_until
 from apps.proposals.services import leading_proposals, pending_proposal
 from apps.reporting.dashboard import (
     my_points,
@@ -76,12 +75,7 @@ def _overview_for(request: HttpRequest) -> Overview:
 
 
 def _valid_until(participant: Participant | None) -> date | None:
-    """Punkte verfallen nach der letzten aktiven Nutzung (ADR-003)."""
-    if participant is None:
-        return None
-    return timezone.localdate(participant.last_active_at) + timedelta(
-        days=settings.POINTS_EXPIRY_DAYS
-    )
+    return valid_until(participant) if participant else None
 
 
 def _map_settings() -> dict[str, str]:

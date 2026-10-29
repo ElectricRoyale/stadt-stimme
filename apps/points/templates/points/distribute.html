@@ -4,70 +4,93 @@
 {% block title %}Punkte verteilen · StadtStimme{% endblock %}
 
 {% block head %}
+  <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
   <link rel="stylesheet" href="{% static 'css/points.css' %}">
+  <script src="{% static 'vendor/leaflet/leaflet.js' %}" defer></script>
+  <script src="{% static 'js/map-base.js' %}" defer></script>
   <script src="{% static 'js/points-distribute.js' %}" defer></script>
+  <script src="{% static 'js/points-filter.js' %}" defer></script>
+  <script src="{% static 'js/points-map.js' %}" defer></script>
 {% endblock %}
 
-{% block main_class %}distribute{% endblock %}
+{% block main_class %}dist{% endblock %}
 
 {% block content %}
-<form method="post" class="distribute__form" novalidate data-budget="{{ budget }}">
+<form method="post" class="dist__form" novalidate data-distribute data-budget="{{ budget }}" data-step="{{ step }}">
   {% csrf_token %}
-  <div class="distribute__intro">
-    <h1>Worum soll sich die Stadt als Nächstes kümmern?</h1>
-    <p>Gib deine {{ budget }} Punkte einem ganzen Thema oder direkt einer Einrichtung. Du kannst jederzeit umverteilen.</p>
-  </div>
+  <header class="dist-head">
+    <h1>Punkte verteilen</h1>
+    <p class="dist-head__state" data-state-sentence aria-live="polite">{% if remaining %}Du hast {{ used }} von {{ budget }} Punkten vergeben, {{ remaining }} sind noch frei.{% else %}Alle {{ budget }} Punkte sind vergeben. Du kannst jederzeit umverteilen.{% endif %}</p>
+    <p class="dist-head__hint">Gib Punkte an eine Einrichtung oder an ein ganzes Thema. Gespeichert wird immer die ganze Verteilung auf einmal.</p>
+  </header>
 
   {% if form.errors %}
-    <div class="distribute__alert" role="alert">
+    <div class="dist-alert" role="alert">
       {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
       {% for field in form %}{% for error in field.errors %}<p>{{ field.label }}: {{ error }}</p>{% endfor %}{% endfor %}
     </div>
   {% endif %}
 
-  <div class="distribute__layout">
-    <div class="distribute__list">
-      {% include "points/_budget.html" with variant="inline" %}
+  {# Telefon: Konto, Karte, Liste, Vergleich. Ab 1024 px: Liste links, rechts Konto, Karte und Vergleich, die mitlaufen. #}
+  <div class="dist-grid">
+    <aside class="dist-rail" aria-label="Deine Verteilung" data-rail>
+      <section class="panel dist-rail__ledger" aria-labelledby="verteilung">
+        <h2 id="verteilung" class="dist-card__title">Deine {{ budget }} Punkte</h2>
+        {% include "points/_ledger.html" %}
+        <div class="dist-save-wrap">{% include "points/_save.html" with announce=True %}</div>
+      </section>
 
-      <div class="distribute__legend" aria-hidden="true">
-        <span><span class="swatch swatch--stripes"></span>ganzes Thema</span>
-        <span><span class="swatch swatch--dot"></span>Einrichtung</span>
-      </div>
+      <section class="panel dist-rail__map" aria-labelledby="karte">
+        <h2 id="karte" class="dist-card__title">Wo die Einrichtungen sind</h2>
+        <div class="map-canvas" id="dist-map" role="region" aria-label="Karte von {{ city_name }} mit den Einrichtungen. Die Liste enthält dieselben Ziele."
+             data-tiles="{{ map_tile_url }}" data-attribution="{{ map_attribution }}">
+          <p class="map-canvas__fallback">Die Karte braucht JavaScript. Alle Einrichtungen stehen in der Liste.</p>
+        </div>
+        <ul class="dist-legend" aria-hidden="true">
+          <li><span class="dist-legend__key"></span>Größe = deine Punkte</li>
+          <li><span class="dist-legend__key dist-legend__key--empty"></span>Noch ohne Punkte</li>
+        </ul>
+        <p class="dist-note">Tippe auf ein Quadrat, um zur Einrichtung zu springen.<span data-general-note></span></p>
+        {{ map_places|json_script:"dist-map-data" }}
+      </section>
+
+      <section class="panel dist-rail__compare" aria-labelledby="haushalt">
+        <h2 id="haushalt" class="dist-card__title">Dein Wunsch neben dem Haushalt</h2>
+        {% include "points/_compare.html" %}
+      </section>
+    </aside>
+
+    <div class="dist-list">
+      {% include "points/_filters.html" %}
 
       {% for theme in groups %}
-        <section class="theme" aria-labelledby="thema-{{ theme.group.category.pk }}" data-theme
-                 style="--cat: var(--ss-cat-{{ theme.group.category.color }}); --cat-tint: var(--ss-cat-{{ theme.group.category.color }}-tint);">
-          <h2 id="thema-{{ theme.group.category.pk }}" class="theme__title">
-            <span><span class="theme__dot" aria-hidden="true"></span>{{ theme.group.category.name }}</span>
-            <span class="theme__sum"><span data-theme-sum>{{ theme.group.points }}</span> P.</span>
-          </h2>
-          {% for item in theme.rows %}
-            {% include "points/_target.html" with row=item.row field=item.field budget=budget %}
-          {% endfor %}
+        {% with g=theme.group %}
+        <section class="dist-theme" aria-labelledby="thema-{{ g.category.pk }}" data-theme="{{ g.category.pk }}">
+          <header class="dist-theme__head">
+            <h2 id="thema-{{ g.category.pk }}">{{ g.category.name }}</h2>
+            <p class="dist-theme__sum"><strong><span data-theme-sum>{{ g.points }}</span> P.</strong>{% if fiscal_year %}<span class="dist-theme__spend">Ausgaben {{ fiscal_year }}: {{ g.spend_share }} %</span>{% endif %}</p>
+          </header>
+          <ul class="dist-rows">
+            {% for item in theme.rows %}
+              {% include "points/_target.html" with row=item.row field=item.field %}
+            {% endfor %}
+          </ul>
         </section>
+        {% endwith %}
       {% empty %}
-        <p class="notice">Noch keine Einrichtungen angelegt. Die Stadt importiert sie über den Katalog.</p>
+        <p class="panel__empty panel__empty--box">Noch keine Einrichtungen angelegt. Die Stadt importiert sie über den Katalog.</p>
       {% endfor %}
-    </div>
 
-    <aside class="distribute__aside" aria-label="Deine Verteilung">
-      {% include "points/_budget.html" with variant="large" %}
-      <div class="ss-card distribute__themes">
-        <h2>Deine Punkte je Thema</h2>
-        {% for theme in groups %}
-          <div class="theme-sum" style="--cat: var(--ss-cat-{{ theme.group.category.color }});" data-theme-summary="thema-{{ theme.group.category.pk }}">
-            <div class="theme-sum__row"><span>{{ theme.group.category.name }}</span><strong data-theme-sum>{{ theme.group.points }}</strong></div>
-            <div class="meter"><span data-theme-bar style="width: {{ theme.group.points }}%"></span></div>
-          </div>
-        {% endfor %}
+      <div class="dist-empty" data-filter-empty hidden>
+        <p><strong>Keine Einrichtung passt zu diesem Filter.</strong></p>
+        <p>Prüfe die Schreibweise oder zeige wieder alle Themen.</p>
+        <button type="button" class="btn-outline" data-filter-reset>Filter zurücksetzen</button>
       </div>
-      <button type="submit" class="ss-btn ss-btn--primary distribute__save">Verteilung speichern</button>
-    </aside>
+    </div>
   </div>
 
-  <footer class="distribute__footer">
-    <p data-remaining-note{% if not remaining %} hidden{% endif %}>Noch <span data-remaining>{{ remaining }}</span> Punkte frei. Du kannst trotzdem speichern und später umverteilen.</p>
-    <button type="submit" class="ss-btn ss-btn--primary distribute__save">Verteilung speichern</button>
-  </footer>
+  {# Telefon: Speichern-Leiste über der Tableiste, sobald etwas geändert ist. #}
+  <div class="dist-bar" data-save-bar hidden>{% include "points/_save.html" with compact=True %}</div>
 </form>
 {% endblock %}

@@ -11,9 +11,9 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from django.db.models import Sum
-from django.utils import timezone
 
 from apps.catalog.models import Category, Expenditure, ExpenditureKind, Facility
+from apps.catalog.spending import last_closed_fiscal_year
 from apps.points.services import Target, active_allocations
 
 
@@ -90,7 +90,7 @@ def build_overview(mine: Mapping[Target, int] | None = None) -> Overview:
     by_category = _sum_by(allocations.filter(category__isnull=False), "category_id")
     total = sum(by_facility.values()) + sum(by_category.values())
 
-    fiscal_year = _last_closed_fiscal_year()
+    fiscal_year = last_closed_fiscal_year()
     spend_by_category = _spend_by_category(fiscal_year)
     spend_total = sum(spend_by_category.values(), Decimal(0))
 
@@ -152,18 +152,6 @@ def build_overview(mine: Mapping[Target, int] | None = None) -> Overview:
 def _sum_by(queryset: object, field: str) -> dict[int, int]:
     rows = queryset.values(field).annotate(total=Sum("points"))  # type: ignore[attr-defined]
     return {row[field]: row["total"] for row in rows}
-
-
-def _last_closed_fiscal_year() -> int | None:
-    year: int | None = (
-        Expenditure.objects.filter(
-            kind=ExpenditureKind.ACTUAL, fiscal_year__lt=timezone.localdate().year
-        )
-        .order_by("-fiscal_year")
-        .values_list("fiscal_year", flat=True)
-        .first()
-    )
-    return year
 
 
 def _spend_by_category(fiscal_year: int | None) -> dict[int, Decimal]:

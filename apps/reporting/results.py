@@ -9,9 +9,8 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Literal
 
-from django.db.models import Sum
-
-from apps.catalog.models import Category, Expenditure, ExpenditureKind, Facility
+from apps.catalog.models import Category, Facility
+from apps.catalog.spending import actual_spend_by_facility
 from apps.reporting.statistics import Overview, share
 
 GapTone = Literal["citizens", "city", "even"]
@@ -90,7 +89,7 @@ class Results:
 
 
 def build_results(overview: Overview) -> Results:
-    spend = _spend_by_facility(overview.fiscal_year)
+    spend = actual_spend_by_facility(overview.fiscal_year)
     spend_total = sum(spend.values(), Decimal(0))
     places = [
         GapRow(
@@ -123,14 +122,3 @@ def build_results(overview: Overview) -> Results:
         fiscal_year=overview.fiscal_year,
         total_points=overview.total_points,
     )
-
-
-def _spend_by_facility(fiscal_year: int | None) -> dict[int, Decimal]:
-    if fiscal_year is None:
-        return {}
-    rows = (
-        Expenditure.objects.filter(kind=ExpenditureKind.ACTUAL, fiscal_year=fiscal_year)
-        .values("facility_id")
-        .annotate(total=Sum("amount"))
-    )
-    return {row["facility_id"]: row["total"] for row in rows}

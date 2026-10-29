@@ -1,0 +1,12 @@
+{% comment %}
+Speichern gilt für die ganze Verteilung (ADR-011). Ohne JavaScript ist der Knopf immer aktiv; mit
+JavaScript erst nach einer Änderung, dazu „Verwerfen“ und der Stand in einer Zeile.
+announce=True: nur eine Kopie auf der Seite ist Live-Region. compact=True: Leiste am Telefon.
+{% endcomment %}
+<div class="save{% if compact %} save--compact{% endif %}" data-save>
+  <div class="save__actions">
+    <button type="submit" class="btn-ink save__submit" data-save-submit>Verteilung speichern</button>
+    {% if not compact %}<button type="button" class="save__reset" data-save-reset hidden>Verwerfen</button>{% endif %}
+  </div>
+  <p class="save__status"{% if announce %} role="status"{% endif %} data-save-status>{% if saved_at %}Zuletzt gespeichert am {{ saved_at|date:"j. F Y" }}. Gültig bis {{ valid_until|date:"j. F Y" }}.{% else %}Noch nichts gespeichert.{% endif %}</p>
+</div>

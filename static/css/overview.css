@@ -135,15 +135,6 @@
 .ov-map__fallback { margin: 0; padding: var(--ss-space-4); font-size: var(--ss-fs-small); color: var(--ss-text-muted); }
 .ov-map .leaflet-container { font-family: var(--ss-font); }
 
-.sq-pin { display: flex; align-items: center; justify-content: center; }
-.sq-pin > span { display: block; box-sizing: border-box; width: var(--size); height: var(--size); border: 2px solid #FFFFFF; border-radius: var(--ss-radius-cell); background: var(--ss-red); box-shadow: 0 1px 4px rgba(26, 26, 26, 0.3); transition: transform 0.15s ease-out, opacity 0.2s, background-color 0.3s; }
-.sq-pin:hover > span { transform: scale(1.1); }
-.sq-pin:focus-visible { outline: none; }
-.sq-pin:focus-visible > span,
-.sq-pin.is-selected > span { outline: 2px solid var(--ss-text); outline-offset: 1px; }
-.sq-pin.is-empty > span { background: var(--ss-empty); }
-.sq-pin.is-dim > span { opacity: 0.25; }
-
 .ov-rank { margin: var(--ss-space-5) 0 0; padding: 0; list-style: none; columns: 2 220px; column-gap: var(--ss-space-8); }
 .ov-rank > li { break-inside: avoid; border-top: 1px solid var(--ss-rule); transition: opacity 0.2s; }
 .ov-rank > li.is-dim { opacity: 0.45; }

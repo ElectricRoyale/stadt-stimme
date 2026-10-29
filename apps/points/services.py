@@ -6,7 +6,7 @@ jederzeit umverteilen. Gespeichert wird immer die ganze Verteilung auf einmal.
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Literal
 
 from django.conf import settings
@@ -53,6 +53,19 @@ def expiry_cutoff() -> datetime:
 def active_allocations() -> QuerySet[Allocation]:
     """Alle noch gültigen Punkte; Grundlage für Ergebnisse und Dashboard."""
     return Allocation.objects.filter(participant__last_active_at__gte=expiry_cutoff())
+
+
+def valid_until(participant: Participant) -> date:
+    """Letzter Tag, an dem die Punkte noch zählen; jeder Besuch verlängert die Frist (ADR-003)."""
+    return timezone.localdate(participant.last_active_at) + timedelta(
+        days=settings.POINTS_EXPIRY_DAYS
+    )
+
+
+def last_saved_at(participant: Participant) -> datetime | None:
+    """Zeitpunkt der letzten gespeicherten Verteilung; None, solange nichts vergeben ist."""
+    latest = Allocation.objects.filter(participant=participant).order_by("-updated_at").first()
+    return latest.updated_at if latest else None
 
 
 def points_of(participant: Participant) -> dict[Target, int]:

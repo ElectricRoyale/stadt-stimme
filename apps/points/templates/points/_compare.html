@@ -1,0 +1,25 @@
+{# Deine Punkte je Thema (roter Balken, von 100) neben dem Anteil des Themas an den Ist-Ausgaben (goldene Marke). #}
+<p class="cmp__lead" data-compare-lead
+   data-year="{{ fiscal_year|default_if_none:'' }}">{% if lead %}Du gibst <strong>{{ lead.category.name }}</strong> {{ lead.points }} von {{ budget }} Punkten.{% if fiscal_year %} Im Haushalt {{ fiscal_year }} bekam das Thema {{ lead.spend_share }} %.{% endif %}{% elif used %}Deine Punkte folgen ungefähr dem Haushalt{% if fiscal_year %} {{ fiscal_year }}{% endif %}.{% else %}Noch keine Punkte vergeben.{% endif %}</p>
+<ul class="cmp__legend" aria-hidden="true">
+  <li><span class="cmp__key cmp__key--mine"></span>Deine Punkte je Thema</li>
+  {% if fiscal_year %}<li><span class="cmp__key cmp__key--spend"></span>Ausgaben {{ fiscal_year }}</li>{% endif %}
+</ul>
+<ul class="cmp__rows">
+  {% for theme in groups %}
+    {% with g=theme.group %}
+    <li data-compare-theme="{{ g.category.pk }}" data-name="{{ g.category.name }}" data-spend="{{ g.spend_share }}">
+      <p class="cmp__row">
+        <span>{{ g.category.name }}</span>
+        <span class="cmp__values"><strong data-theme-sum>{{ g.points }}</strong>{% if fiscal_year %}<span class="cmp__spend"> / {{ g.spend_share }} %</span>{% endif %}</span>
+        <span class="ss-visually-hidden">Punkte von dir{% if fiscal_year %}, {{ g.spend_share }} Prozent der Ausgaben{% endif %}</span>
+      </p>
+      <span class="cmp__track" aria-hidden="true">
+        <span class="cmp__bar" data-theme-bar style="width: {{ g.points }}%;"></span>
+        {% if fiscal_year %}<span class="cmp__tick" style="left: {{ g.spend_share }}%;"></span>{% endif %}
+      </span>
+    </li>
+    {% endwith %}
+  {% endfor %}
+</ul>
+<p class="dist-note">{% if fiscal_year %}Ist-Ausgaben des Haushaltsjahres {{ fiscal_year }}, Anteil an allen Ausgaben für Einrichtungen.{% else %}Noch keine Ist-Ausgaben eines abgeschlossenen Haushaltsjahres eingetragen.{% endif %}</p>

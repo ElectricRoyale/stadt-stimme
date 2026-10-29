@@ -4,60 +4,41 @@ from decimal import Decimal
 import pytest
 from django.utils import timezone
 
-from apps.catalog.models import Expenditure, ExpenditureKind, Measure, MeasureStatus
-from apps.points.overview import Spending, build_groups, format_eur
+from apps.catalog.models import Expenditure, ExpenditureKind, Facility, Measure, MeasureStatus
+from apps.points.overview import (
+    build_groups,
+    format_eur,
+    format_share,
+    lead_group,
+    ledger_cells,
+)
 from apps.points.services import Target
 from apps.points.tests.conftest import Catalog
 
-THIS_YEAR = timezone.localdate().year
+LAST_YEAR = timezone.localdate().year - 1
 
 
 @pytest.mark.parametrize(
     ("amount", "text"),
-    [
-        (Decimal("612000"), "612.000 €"),
-        (Decimal("1480000"), "1,5 Mio. €"),
-        (Decimal("0"), "0 €"),
-    ],
+    [(Decimal("612000"), "612.000 €"), (Decimal("1480000"), "1.480.000 €"), (Decimal(0), "0 €")],
 )
 def test_format_eur(amount: Decimal, text: str) -> None:
     assert format_eur(amount) == text
 
 
-def _expense(catalog: Catalog, year: int, amount: str, kind: str) -> Expenditure:
-    return Expenditure.objects.create(
-        facility=catalog.bad,
+def test_format_share() -> None:
+    assert format_share(37.84) == "37,8"
+
+
+def _actual(facility: Facility, amount: str, year: int = LAST_YEAR) -> None:
+    Expenditure.objects.create(
+        facility=facility,
         fiscal_year=year,
         amount=Decimal(amount),
-        kind=kind,
+        kind=ExpenditureKind.ACTUAL,
         source="Test",
-        as_of=date(THIS_YEAR, 1, 1),
+        as_of=date(year, 12, 31),
     )
-
-
-@pytest.mark.django_db
-def test_spending_sums_recent_actuals_and_next_plan(catalog: Catalog) -> None:
-    items = [
-        _expense(catalog, THIS_YEAR - 1, "100000", ExpenditureKind.ACTUAL),
-        _expense(catalog, THIS_YEAR - 2, "200000", ExpenditureKind.ACTUAL),
-        _expense(catalog, THIS_YEAR - 9, "999999", ExpenditureKind.ACTUAL),
-        _expense(catalog, THIS_YEAR, "50000", ExpenditureKind.PLAN),
-        _expense(catalog, THIS_YEAR + 1, "70000", ExpenditureKind.PLAN),
-    ]
-
-    spending = Spending.of(items)
-
-    assert spending.actual_text == "300.000 €"
-    assert spending.actual_label == f"Ausgaben {THIS_YEAR - 2}\u2013{THIS_YEAR - 1}"
-    assert spending.planned_text == "50.000 €"
-    assert spending.planned_label == f"Geplant {THIS_YEAR}"
-
-
-def test_spending_without_data() -> None:
-    spending = Spending.of([])
-
-    assert spending.actual_text == "keine Angaben"
-    assert spending.planned_text == "keine Angaben"
 
 
 @pytest.mark.django_db
@@ -66,17 +47,52 @@ def test_build_groups_puts_general_row_first(catalog: Catalog) -> None:
         external_id="M-1", facility=catalog.bad, title="Dach", status=MeasureStatus.DECIDED
     )
 
-    groups = build_groups({Target("f", catalog.bad.pk): 12})
+    groups = build_groups({Target("f", catalog.bad.pk): 12}, None)
 
     assert [g.category.name for g in groups] == ["Bildung", "Sport"]
     sport = groups[1]
     assert [r.name for r in sport.rows] == ["Sport allgemein", "Hallenbad", "Sporthalle"]
     assert sport.points == 12
-    bad = sport.rows[1]
-    assert [(e.title, e.status, e.tone) for e in bad.entries] == [("Dach", "Beschlossen", "plan")]
+    assert [m.title for m in sport.rows[1].measures] == ["Dach"]
+    assert sport.rows[1].spend_text == "keine Angaben"
 
 
 @pytest.mark.django_db
-def test_categories_get_distinct_colors(catalog: Catalog) -> None:
-    assert catalog.sport.color != catalog.bildung.color
-    assert catalog.sport.color
+def test_spending_shares_use_only_the_given_year(catalog: Catalog) -> None:
+    _actual(catalog.bad, "600000")
+    _actual(catalog.schule, "200000")
+    _actual(catalog.halle, "999999", year=LAST_YEAR - 1)
+
+    groups = build_groups({}, LAST_YEAR)
+
+    bildung, sport = groups
+    assert bildung.spend_share == 25
+    assert sport.spend_share == 75
+    assert sport.rows[1].spend_text == "600.000 € (75,0 %)"
+    assert sport.rows[2].spend is None
+
+
+@pytest.mark.django_db
+def test_ledger_cells_places_before_general_then_free(catalog: Catalog) -> None:
+    groups = build_groups({Target("c", catalog.sport.pk): 2, Target("f", catalog.bad.pk): 3}, None)
+
+    cells = ledger_cells(groups, 10)
+
+    keys = [(c.key, c.general) for c in cells]
+    bad, sport = f"f-{catalog.bad.pk}", f"c-{catalog.sport.pk}"
+    assert keys == [(bad, False)] * 3 + [(sport, True)] * 2 + [(None, False)] * 5
+
+
+@pytest.mark.django_db
+def test_lead_group_is_theme_most_above_its_spending(catalog: Catalog) -> None:
+    _actual(catalog.bad, "900000")
+    _actual(catalog.schule, "100000")
+    groups = build_groups(
+        {Target("f", catalog.schule.pk): 40, Target("f", catalog.bad.pk): 60}, LAST_YEAR
+    )
+
+    lead = lead_group(groups)
+
+    assert lead is not None
+    assert lead.category == catalog.bildung  # 40 Punkte gegen 10 % Ausgaben
+    assert lead_group(build_groups({}, LAST_YEAR)) is None

@@ -1,123 +1,85 @@
-"""Lesemodell für „Punkte verteilen“: Themen mit „… allgemein“ und ihren Einrichtungen."""
+"""Lesemodell für „Punkte verteilen“: Themen mit „… allgemein“ und ihren Einrichtungen.
 
-from collections.abc import Iterable, Mapping
+Jede Zeile nennt die Ist-Ausgaben des letzten abgeschlossenen Haushaltsjahres und ihren Anteil an
+allen Ausgaben (ADR-006), damit man die eigenen Punkte neben den Haushalt legen kann.
+"""
+
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from decimal import Decimal
 
 from django.db.models import Prefetch
-from django.utils import timezone
 
-from apps.catalog.models import (
-    Category,
-    Expenditure,
-    ExpenditureKind,
-    Facility,
-    Measure,
-    MeasureStatus,
-)
+from apps.catalog.models import Category, Facility, Measure
+from apps.catalog.spending import actual_spend_by_facility
 from apps.points.services import Target
-
-# Statusfarbe der Design-Tokens (--ss-status-<ton>-bg/-fg) je Maßnahmenstatus.
-STATUS_TONE: dict[str, str] = {
-    MeasureStatus.OPEN: "idea",
-    MeasureStatus.DECIDED: "plan",
-    MeasureStatus.IN_PROGRESS: "done",
-    MeasureStatus.COMPLETED: "done",
-    MeasureStatus.REJECTED: "idea",
-}
-ACTUAL_YEARS = 3
 
 
 def format_eur(amount: Decimal) -> str:
-    if amount >= 1_000_000:
-        millions = f"{amount / 1_000_000:.1f}".replace(".", ",")
-        return f"{millions} Mio. €"
+    """Ganze Euro mit Tausenderpunkt: 1.480.000 €."""
     return f"{int(amount):,} €".replace(",", ".")
 
 
-@dataclass(frozen=True)
-class Spending:
-    """Ist-Ausgaben der letzten Jahre und Plan für das nächste Haushaltsjahr (ADR-006)."""
-
-    actual: Decimal | None
-    actual_label: str
-    planned: Decimal | None
-    planned_label: str
-
-    @classmethod
-    def of(cls, expenditures: Iterable[Expenditure]) -> "Spending":
-        year = timezone.localdate().year
-        items = list(expenditures)
-        actual = [
-            e
-            for e in items
-            if e.kind == ExpenditureKind.ACTUAL and year - ACTUAL_YEARS <= e.fiscal_year < year
-        ]
-        plans = [e for e in items if e.kind == ExpenditureKind.PLAN and e.fiscal_year >= year]
-        plan_year = min((e.fiscal_year for e in plans), default=None)
-        planned = [e for e in plans if e.fiscal_year == plan_year]
-        return cls(
-            actual=sum((e.amount for e in actual), Decimal(0)) if actual else None,
-            actual_label=_years_label(e.fiscal_year for e in actual),
-            planned=sum((e.amount for e in planned), Decimal(0)) if planned else None,
-            planned_label=f"Geplant {plan_year}" if plan_year else "Geplant",
-        )
-
-    @property
-    def actual_text(self) -> str:
-        return format_eur(self.actual) if self.actual is not None else "keine Angaben"
-
-    @property
-    def planned_text(self) -> str:
-        return format_eur(self.planned) if self.planned is not None else "keine Angaben"
+def format_share(value: float) -> str:
+    """Prozent mit einer Nachkommastelle und Dezimalkomma: 37,8."""
+    return f"{value:.1f}".replace(".", ",")
 
 
-def _years_label(years: Iterable[int]) -> str:
-    found = sorted(set(years))
-    if not found:
-        return "Ausgaben"
-    if len(found) == 1:
-        return f"Ausgaben {found[0]}"
-    return f"Ausgaben {found[0]}\u2013{found[-1]}"
-
-
-@dataclass(frozen=True)
-class ListEntry:
-    title: str
-    status: str
-    tone: str
+def sentence_case(text: str) -> str:
+    return text[:1].upper() + text[1:]
 
 
 @dataclass(frozen=True)
 class Row:
+    """Ein Ziel: eine Einrichtung oder das ganze Thema (``facility`` ist dann None)."""
+
     target: Target
     name: str
-    subtitle: str
-    description: str
-    is_general: bool
-    spending: Spending
-    list_title: str
-    entries: list[ListEntry]
+    facility: Facility | None
+    spend: Decimal | None
+    spend_share: float
+    measures: list[Measure]
     points: int
+
+    @property
+    def is_general(self) -> bool:
+        return self.facility is None
+
+    @property
+    def address(self) -> str:
+        return self.facility.address if self.facility else ""
+
+    @property
+    def spend_text(self) -> str:
+        """„1.480.000 € (37,8 %)“; ohne Ist-Ausgaben „keine Angaben“."""
+        if self.spend is None:
+            return "keine Angaben"
+        return f"{format_eur(self.spend)} ({format_share(self.spend_share)} %)"
 
 
 @dataclass(frozen=True)
 class Group:
     category: Category
+    spend_share: int
     rows: list[Row] = field(default_factory=list)
 
     @property
     def points(self) -> int:
         return sum(row.points for row in self.rows)
 
+    @property
+    def places(self) -> list[Row]:
+        return [row for row in self.rows if not row.is_general]
 
-def build_groups(points: Mapping[Target, int]) -> list[Group]:
-    """Ein Thema je Kategorie: zuerst „… allgemein“, dann die Einrichtungen."""
+
+def build_groups(points: Mapping[Target, int], fiscal_year: int | None) -> list[Group]:
+    """Ein Thema je Kategorie: zuerst „… allgemein“, dann die Einrichtungen nach Name."""
+    spend = actual_spend_by_facility(fiscal_year)
+    total = sum(spend.values(), Decimal(0))
     facilities = Prefetch(
         "facilities",
         queryset=Facility.objects.order_by("name").prefetch_related(
-            Prefetch("measures", queryset=Measure.objects.order_by("title")),
-            "expenditures",
+            Prefetch("measures", queryset=Measure.objects.order_by("title"))
         ),
     )
     groups = []
@@ -125,49 +87,80 @@ def build_groups(points: Mapping[Target, int]) -> list[Group]:
         members = list(category.facilities.all())
         if not members:
             continue
-        rows = [_general_row(category, members, points)]
-        rows += [_facility_row(facility, points) for facility in members]
-        groups.append(Group(category=category, rows=rows))
+        rows = [_facility_row(f, spend.get(f.pk), total, points) for f in members]
+        theme_spend = sum((r.spend or Decimal(0) for r in rows), Decimal(0))
+        general = Row(
+            target=Target("c", category.pk),
+            name=f"{category.name} allgemein",
+            facility=None,
+            spend=None,
+            spend_share=0.0,
+            measures=[],
+            points=points.get(Target("c", category.pk), 0),
+        )
+        groups.append(
+            Group(
+                category=category,
+                spend_share=round(_percent(theme_spend, total)),
+                rows=[general, *rows],
+            )
+        )
     return groups
 
 
-def _general_row(category: Category, members: list[Facility], points: Mapping[Target, int]) -> Row:
-    target = Target("c", category.pk)
-    return Row(
-        target=target,
-        name=f"{category.name} allgemein",
-        subtitle="ganzes Thema, ohne festen Ort",
-        description=(
-            f"Die Stadt verteilt diese Punkte auf alle Vorhaben im Thema {category.name}, "
-            "auch auf neue, die noch kommen. Gut, wenn dir das Thema wichtig ist, "
-            "aber kein bestimmter Ort."
-        ),
-        is_general=True,
-        spending=Spending.of(e for facility in members for e in facility.expenditures.all()),
-        list_title="Gehört dazu",
-        entries=[ListEntry(f.name, "Ort", "idea") for f in members]
-        + [ListEntry("Künftige Vorhaben", "offen", "idea")],
-        points=points.get(target, 0),
-    )
-
-
-def _facility_row(facility: Facility, points: Mapping[Target, int]) -> Row:
+def _facility_row(
+    facility: Facility, spend: Decimal | None, total: Decimal, points: Mapping[Target, int]
+) -> Row:
     target = Target("f", facility.pk)
     return Row(
         target=target,
         name=facility.name,
-        subtitle=facility.address,
-        description=facility.description,
-        is_general=False,
-        spending=Spending.of(facility.expenditures.all()),
-        list_title="Mögliche Maßnahmen",
-        entries=[
-            ListEntry(m.title, sentence_case(m.get_status_display()), STATUS_TONE[m.status])
-            for m in facility.measures.all()
-        ],
+        facility=facility,
+        spend=spend,
+        spend_share=_percent(spend or Decimal(0), total),
+        measures=list(facility.measures.all()),
         points=points.get(target, 0),
     )
 
 
-def sentence_case(text: str) -> str:
-    return text[:1].upper() + text[1:]
+def _percent(part: Decimal, total: Decimal) -> float:
+    return float(part / total * 100) if total else 0.0
+
+
+@dataclass(frozen=True)
+class Cell:
+    """Eines der 100 Quadrate; ``key`` None heißt frei."""
+
+    key: str | None
+    general: bool = False
+
+
+def ledger_cells(groups: list[Group], budget: int) -> list[Cell]:
+    """Je Thema erst die Einrichtungen, dann „… allgemein“, danach die freien Quadrate."""
+    cells: list[Cell] = []
+    for group in groups:
+        for row in [*group.places, *(r for r in group.rows if r.is_general)]:
+            cells += [Cell(row.target.key, row.is_general)] * row.points
+    cells = cells[:budget]
+    return cells + [Cell(None)] * (budget - len(cells))
+
+
+def lead_group(groups: list[Group]) -> Group | None:
+    """Thema, dem man deutlich mehr Punkte gibt, als es Anteil an den Ausgaben hat."""
+    ranked = [g for g in groups if g.points > g.spend_share]
+    return max(ranked, key=lambda g: (g.points - g.spend_share, g.points), default=None)
+
+
+def map_places(groups: list[Group]) -> list[dict[str, object]]:
+    """Einrichtungen mit Koordinaten für die Karte; nur Werte, kein HTML (json_script)."""
+    return [
+        {
+            "key": row.target.key,
+            "name": row.name,
+            "lat": float(row.facility.latitude or 0),
+            "lng": float(row.facility.longitude or 0),
+        }
+        for group in groups
+        for row in group.places
+        if row.facility is not None and row.facility.has_location
+    ]
