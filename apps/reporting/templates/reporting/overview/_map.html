@@ -2,7 +2,7 @@
   <header class="panel__head">
     <div>
       <h2 id="karte-titel">Einrichtungen auf der Karte</h2>
-      <p class="panel__sub" id="karte-hinweis" data-all="Größe des Quadrats = Anteil an allen Bürgerpunkten" data-mine="Größe des Quadrats = deine Punkte">Größe des Quadrats = Anteil an allen Bürgerpunkten</p>
+      <p class="panel__sub" id="karte-hinweis" data-all="Größe des Kreises = Anteil an allen Bürgerpunkten" data-mine="Größe des Kreises = deine Punkte">Größe des Kreises = Anteil an allen Bürgerpunkten</p>
     </div>
     {% if participant %}
       <div class="seg" role="group" aria-label="Wessen Punkte" data-js-only hidden>
@@ -12,7 +12,7 @@
     {% endif %}
   </header>
 
-  <div class="ov-map__canvas" id="ov-map" role="region" aria-label="Karte von {{ city_name }} mit Einrichtungen als Quadrate. Die Liste darunter enthält dieselben Angaben."
+  <div class="ov-map__canvas" id="ov-map" role="region" aria-label="Karte von {{ city_name }} mit Einrichtungen als Kreise. Die Liste darunter enthält dieselben Angaben."
        {% include "partials/map_tiles.html" %} data-logged-in="{% if participant %}1{% endif %}"
        data-give-url="{% url 'points:distribute' %}" data-redeem-url="{% url 'access:redeem' %}">
     <p class="ov-map__fallback">Die Karte braucht JavaScript. Darunter findest du alle Einrichtungen als Liste.</p>

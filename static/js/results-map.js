@@ -1,4 +1,4 @@
-// Ergebnisse: ein Quadrat je Einrichtung, rot wo Bürger mehr wollen, gold wo die Stadt mehr
+// Ergebnisse: ein Kreis je Einrichtung, rot wo Bürger mehr wollen, gold wo die Stadt mehr
 // ausgibt, die Zahl darunter. Größe = Betrag der Lücke. Werte vom Server (json_script), Texte nur
 // über textContent. Hört auf „res:select“ und „res:theme“, meldet „res:pick“ (results.js).
 (function () {
@@ -31,7 +31,7 @@
     wrap.appendChild(label);
     var height = Math.max(size(place.gap) + 20, HIT);
     var width = Math.max(size(place.gap), HIT);
-    // Mitte des Quadrats liegt auf dem Ort, die Zahl hängt darunter.
+    // Mitte des Kreises liegt auf dem Ort, die Zahl hängt darunter.
     return L.divIcon({
       className: "map-pin gap-pin tone-" + place.tone,
       html: wrap.innerHTML,

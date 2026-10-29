@@ -1,6 +1,6 @@
-// „Punkte verteilen“: Karte der Einrichtungen. Die Größe des Quadrats folgt deinen Punkten, grau
-// heißt noch ohne Punkte. Zeile unter Maus oder Fokus markiert ihr Quadrat; ein Tipp auf ein
-// Quadrat springt zur Zeile („dist:pick“). Werte vom Server (json_script), Texte nur über textContent.
+// „Punkte verteilen“: Karte der Einrichtungen. Die Größe des Kreises folgt deinen Punkten, grau
+// heißt noch ohne Punkte. Zeile unter Maus oder Fokus markiert ihren Kreis; ein Tipp auf einen
+// Kreis springt zur Zeile („dist:pick“). Werte vom Server (json_script), Texte nur über textContent.
 (function () {
   "use strict";
 

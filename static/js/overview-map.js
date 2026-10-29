@@ -1,4 +1,4 @@
-// Übersicht: Einrichtungen als Quadrate auf der Karte, Rangliste darunter und Detail zur Auswahl.
+// Übersicht: Einrichtungen als Kreise auf der Karte, Rangliste darunter und Detail zur Auswahl.
 // Ein geöffnetes Thema in „Wunsch und Haushalt“ blendet die übrigen Einrichtungen ab.
 // Die Werte kommen vom Server (json_script); Texte nur über textContent.
 (function () {

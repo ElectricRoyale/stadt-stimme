@@ -22,7 +22,7 @@
 .res-toolbar .chips[hidden] { display: none; }
 .res-legend { display: flex; flex-wrap: wrap; gap: var(--ss-space-2) var(--ss-space-5); margin: 0; padding: 0; list-style: none; font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); color: var(--ss-text-muted); }
 .res-legend li { display: inline-flex; align-items: center; gap: var(--ss-space-2); }
-.res-legend__key { width: 12px; height: 12px; border-radius: 2px; }
+.res-legend__key { width: 12px; height: 12px; border-radius: 50%; }
 .res-legend__key--citizens { background: var(--ss-red); }
 .res-legend__key--city { background: var(--ss-gold); }
 .res-notice { margin-top: var(--ss-space-4); padding: var(--ss-space-3); border-radius: var(--ss-radius-control); background: var(--ss-notice-bg); color: var(--ss-notice-ink); font-size: var(--ss-fs-small); }
@@ -39,7 +39,7 @@
 
 /* Karte: Quadrate je Einrichtung, Zahl darunter */
 .gap-pin { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
-.gap-pin__square { box-sizing: border-box; width: var(--size); height: var(--size); border: 2px solid #FFFFFF; border-radius: var(--ss-radius-cell); background: var(--tone); box-shadow: 0 1px 4px rgba(26, 26, 26, 0.3); transition: transform 0.15s ease-out; }
+.gap-pin__square { box-sizing: border-box; width: var(--size); height: var(--size); border: 2px solid #FFFFFF; border-radius: 50%; background: var(--tone); box-shadow: 0 1px 4px rgba(26, 26, 26, 0.3); transition: transform 0.15s ease-out; }
 .gap-pin:hover .gap-pin__square { transform: scale(1.06); }
 .gap-pin__label { margin-top: 2px; padding: 0 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.9); color: var(--tone-ink); font-size: var(--ss-fs-meta); line-height: 16px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .gap-pin:focus-visible { outline: none; }
