@@ -2,9 +2,31 @@
 
 from django.db import migrations, models
 
+# Stand von NAME_COLORS in apps/catalog/models.py beim Anlegen dieser Migration.
+_NAME_COLORS = {
+    "bildung": "bildung",
+    "sport": "freizeit",
+    "freizeit": "freizeit",
+    "mobilität": "verkehr",
+    "verkehr": "verkehr",
+    "soziales": "familie",
+    "familie": "familie",
+    "kultur": "kultur",
+    "sicherheit": "sicherheit",
+}
+
+
+def colors_by_name(apps, schema_editor):  # type: ignore[no-untyped-def]
+    """Bisher reihum vergebene Farben: übliche Themen bekommen ihre Farbe aus dem Prototyp."""
+    category = apps.get_model("catalog", "Category")
+    for row in category.objects.all():
+        color = _NAME_COLORS.get(row.name.strip().lower())
+        if color and row.color != color:
+            row.color = color
+            row.save(update_fields=["color"])
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("catalog", "0003_facility_location"),
     ]
@@ -28,4 +50,5 @@ class Migration(migrations.Migration):
                 verbose_name="Farbe",
             ),
         ),
+        migrations.RunPython(colors_by_name, migrations.RunPython.noop),
     ]
