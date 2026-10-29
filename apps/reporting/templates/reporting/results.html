@@ -45,7 +45,7 @@
         <p class="panel__sub">Ein Quadrat je Einrichtung, die Zahl in Prozentpunkten</p>
       </div></div>
       <div class="map-canvas" id="res-map" role="region" aria-label="Karte von {{ city_name }} mit dem Unterschied je Einrichtung. Die Liste enthält dieselben Werte."
-           data-tiles="{{ map_tile_url }}" data-attribution="{{ map_attribution }}">
+           {% include "partials/map_tiles.html" %}>
         <p class="map-canvas__fallback">Die Karte braucht JavaScript. Unten findest du alle Orte als Liste.</p>
       </div>
       <p class="panel__note">Größe des Quadrats = Abstand zwischen Wunsch und Geld. Tippe auf ein Quadrat für Einzelheiten.{% if results.general_points %} {{ results.general_share }} % der Punkte gehen an ganze Themen und haben keinen Ort; sie zählen in der Liste „Nach Thema“.{% endif %}</p>

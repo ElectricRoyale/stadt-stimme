@@ -1,0 +1,9 @@
+{# Suchleiste oben (ADR-018): sucht Einrichtungen und Maßnahmen auf /suche/, auch ohne JavaScript. „/“ setzt den Fokus (shell-search.js). #}
+<form class="shell-search" method="get" action="{% url 'catalog:search' %}" role="search">
+  <label class="shell-search__field">
+    <span class="ss-visually-hidden">Einrichtung oder Maßnahme suchen</span>
+    {% include "partials/icon.html" with name="search" class="shell-search__icon" %}
+    <input type="search" name="q" class="shell-search__input" value="{{ query|default:'' }}" placeholder="Einrichtung oder Maßnahme suchen" autocomplete="off" data-top-search>
+    <kbd class="shell-search__key" aria-hidden="true">/</kbd>
+  </label>
+</form>

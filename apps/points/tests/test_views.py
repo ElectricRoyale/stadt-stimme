@@ -117,3 +117,16 @@ def test_map_data_lists_only_located_facilities(logged_in: Client, catalog: Cata
 
     assert '"name": "Hallenbad"' in content
     assert '"name": "Grundschule"' not in content
+
+
+def test_map_gets_keyless_tiles_and_fallback(logged_in: Client, catalog: Catalog) -> None:
+    content = logged_in.get(URL).content.decode()
+
+    assert 'data-tiles="https://tile.openstreetmap.de/{z}/{x}/{y}.png"' in content
+    assert 'data-tiles-fallback="https://{s}.basemaps.cartocdn.com/' in content
+
+
+def test_given_rows_show_theme_icon(logged_in: Client, catalog: Catalog) -> None:
+    content = logged_in.get(URL).content.decode()
+
+    assert 'class="icon theme-icon"' in content

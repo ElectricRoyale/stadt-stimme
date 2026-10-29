@@ -32,6 +32,24 @@
   background: var(--ss-frame);
 }
 
+/* Suchleiste oben (ADR-018): am Telefon nur ein Symbol, ab 768 px das Feld */
+.shell-search { display: none; flex: 1; min-width: 0; max-width: 548px; margin: 0; }
+.shell-search__field { position: relative; display: block; }
+.shell-search__icon { position: absolute; top: 50%; left: 12px; color: var(--ss-text-muted); transform: translateY(-50%); pointer-events: none; }
+.shell-search__input { box-sizing: border-box; width: 100%; height: 36px; padding: 0 40px 0 36px; border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); background: var(--ss-sheet); color: var(--ss-text); font: inherit; font-size: var(--ss-fs-small); }
+.shell-search__input::placeholder { color: var(--ss-text-faint); }
+.shell-search__input:focus-visible { outline: var(--ss-focus-outline); outline-offset: 0; }
+.shell-search__key { position: absolute; top: 50%; right: 8px; padding: 0 6px; border: 1px solid var(--ss-control); border-radius: 4px; color: var(--ss-text-muted); font: inherit; font-size: var(--ss-fs-meta); line-height: 18px; transform: translateY(-50%); }
+.shell-search__input:focus ~ .shell-search__key { display: none; }
+.shell-phonebar__search { display: inline-flex; align-items: center; justify-content: center; min-width: var(--ss-hit); min-height: var(--ss-hit); margin-left: auto; border-radius: var(--ss-radius); color: var(--ss-text-nav) !important; }
+.shell-phonebar__search:hover { background: var(--ss-active); }
+.shell-topbar { display: none; }
+
+@media (min-width: 768px) {
+  .shell-phonebar .shell-search { display: block; }
+  .shell-phonebar__search { display: none; }
+}
+
 /* Zugang */
 .shell-account { display: flex; align-items: center; gap: var(--ss-space-1); }
 .shell-account__link,
@@ -73,7 +91,7 @@
 .shell-account__code:hover { background: var(--ss-raised); }
 
 /* Blatt */
-.shell-sheet { min-width: 0; padding-bottom: var(--shell-bottom); background: var(--ss-sheet); }
+.shell-sheet { min-width: 0; min-height: calc(100vh - 52px); padding-bottom: var(--shell-bottom); background: var(--ss-sheet); box-sizing: border-box; }
 .shell-sheet > main:focus { outline: none; }
 
 /* Navigation: gemeinsame Liste */
@@ -120,11 +138,16 @@
 .shell-sidebar { display: none; }
 
 @media (min-width: 1024px) {
-  .shell { --shell-bottom: 0px; display: grid; grid-template-columns: var(--ss-sidebar-width) minmax(0, 1fr); }
+  .shell { --shell-bottom: 0px; display: grid; grid-template-columns: var(--ss-sidebar-width) minmax(0, 1fr); grid-template-rows: 52px minmax(0, 1fr); }
   .shell-phonebar,
   .shell-nav--tab { display: none; }
 
+  .shell-topbar { grid-column: 2; grid-row: 1; display: flex; align-items: center; justify-content: center; padding: 0 var(--ss-space-6); }
+  .shell-topbar .shell-search { display: block; }
+
   .shell-sidebar {
+    grid-column: 1;
+    grid-row: 1 / span 2;
     position: sticky;
     top: 0;
     display: flex;
@@ -148,8 +171,10 @@
   .shell-nav--side .shell-nav__badge { color: var(--ss-red-dark); font-size: var(--ss-fs-meta); font-weight: 700; font-variant-numeric: tabular-nums; }
 
   .shell-sheet {
-    min-height: calc(100vh - 16px);
-    margin: 8px 8px 8px 0;
+    grid-column: 2;
+    grid-row: 2;
+    min-height: calc(100vh - 60px);
+    margin: 0 8px 8px 0;
     border: 1px solid var(--ss-edge);
     border-radius: 12px;
   }

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if query %}„{{ query }}“ · {% endif %}Suche · StadtStimme{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/search.css' %}">
+{% endblock %}
+
+{% block main_class %}srch{% endblock %}
+
+{% block content %}
+<header class="srch-head">
+  <h1>Suche</h1>
+  <form class="srch-form" method="get" action="{% url 'catalog:search' %}" role="search">
+    <label class="search">
+      <span class="ss-visually-hidden">Einrichtung oder Maßnahme suchen</span>
+      {% include "partials/icon.html" with name="search" class="search__icon" %}
+      <input type="search" class="search__input" name="q" value="{{ query }}" placeholder="Einrichtung oder Maßnahme suchen" autocomplete="off">
+    </label>
+    <button type="submit" class="btn-outline">Suchen</button>
+  </form>
+  <p class="srch-count" role="status">
+    {% if too_short %}Bitte mindestens zwei Zeichen eingeben.
+    {% elif query %}{% if hits %}{{ hits|length }}{% if capped %}+{% endif %} {% if hits|length == 1 %}Einrichtung{% else %}Einrichtungen{% endif %} zu „{{ query }}“{% else %}Nichts gefunden zu „{{ query }}“. Versuch einen anderen Namen oder eine Straße.{% endif %}
+    {% else %}Suche nach dem Namen einer Einrichtung, einer Straße oder einer Maßnahme.{% endif %}
+  </p>
+</header>
+
+{% if hits %}
+  <ul class="srch-hits">
+    {% for hit in hits %}
+      {% with f=hit.facility %}
+      <li class="panel srch-hit theme-{{ f.category.color }}">
+        <h2 class="srch-hit__name">{% include "partials/theme_icon.html" with category=f.category size=18 %}<span>{{ f.name }}</span></h2>
+        <p class="srch-hit__meta">{{ f.category.name }}{% if f.address %}, {{ f.address }}{% endif %}</p>
+        {% if hit.measures %}
+          <ul class="srch-hit__measures" aria-label="Passende Maßnahmen">
+            {% for measure in hit.measures %}<li><span class="pill pill--{{ measure.status }}">{{ measure.get_status_display|capfirst }}</span>{{ measure.title }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+        <p class="srch-hit__links">
+          <a href="{% url 'reporting:results' %}?ort={{ hit.target_key }}#auswahl">Wunsch und Geld ansehen</a>
+          {% if participant %}<a href="{% url 'points:distribute' %}#ziel-{{ hit.target_key }}">Punkte geben</a>{% endif %}
+        </p>
+      </li>
+      {% endwith %}
+    {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}

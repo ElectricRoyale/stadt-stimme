@@ -20,13 +20,14 @@
     <div class="wk__labels" aria-hidden="true">
       {% for week in participation.weeks %}<span{% if week.is_current %} class="is-current"{% endif %}>KW {{ week.week }}</span>{% endfor %}
     </div>
-    <table class="ss-visually-hidden">
+    {# Tabellen ignorieren die 1-px-Höhe; der Wrapper hält sie klein, sonst wird die Seite länger. #}
+    <div class="ss-visually-hidden"><table>
       <caption>Eingelöste Codes je Kalenderwoche</caption>
       <thead><tr><th scope="col">Woche</th><th scope="col">Codes</th></tr></thead>
       <tbody>
         {% for week in participation.weeks %}<tr><th scope="row">KW {{ week.week }}{% if week.is_current %} (läuft noch){% endif %}</th><td>{{ week.count }}</td></tr>{% endfor %}
       </tbody>
-    </table>
+    </table></div>
     <figcaption class="panel__note">KW {{ participation.current.week }} läuft noch: {{ participation.current.count }} {% if participation.current.count == 1 %}Code{% else %}Codes{% endif %} bis heute.</figcaption>
   </figure>
 </section>

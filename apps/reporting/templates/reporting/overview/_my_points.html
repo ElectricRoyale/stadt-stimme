@@ -14,7 +14,7 @@
       <ul class="mp__list">
         {% for given in mine.themes %}
           <li class="theme-{{ given.category.color }}">
-            <span class="theme-dot" aria-hidden="true"></span>
+            {% include "partials/theme_icon.html" with category=given.category %}
             <span class="mp__theme">{{ given.category.name }}<span class="mp__names">{{ given.names|join:", " }}</span></span>
             <span class="mp__value">{{ given.total }} P.</span>
           </li>

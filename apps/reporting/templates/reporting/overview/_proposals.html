@@ -21,7 +21,7 @@
       {% for item in proposals %}
         <li class="ov-prop theme-{{ item.proposal.category.color }}" id="vorschlag-{{ item.proposal.pk }}">
           <div class="ov-prop__top">
-            <span class="theme-dot ov-prop__dot" aria-hidden="true"></span>
+            <span class="ov-prop__icon">{% include "partials/theme_icon.html" with category=item.proposal.category %}</span>
             <p class="ov-prop__title">{{ item.proposal.title }}</p>
             {% if participant %}{% include "proposals/_support.html" with small=True %}{% endif %}
           </div>

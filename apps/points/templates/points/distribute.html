@@ -44,7 +44,7 @@
       <section class="panel dist-rail__map" aria-labelledby="karte">
         <h2 id="karte" class="dist-card__title">Wo die Einrichtungen sind</h2>
         <div class="map-canvas" id="dist-map" role="region" aria-label="Karte von {{ city_name }} mit den Einrichtungen. Die Liste enthält dieselben Ziele."
-             data-tiles="{{ map_tile_url }}" data-attribution="{{ map_attribution }}">
+             {% include "partials/map_tiles.html" %}>
           <p class="map-canvas__fallback">Die Karte braucht JavaScript. Alle Einrichtungen stehen in der Liste.</p>
         </div>
         <ul class="dist-legend" aria-hidden="true">
@@ -73,7 +73,7 @@
           </header>
           <ul class="dist-rows">
             {% for item in theme.rows %}
-              {% include "points/_target.html" with row=item.row field=item.field %}
+              {% include "points/_target.html" with row=item.row field=item.field category=g.category %}
             {% endfor %}
           </ul>
         </section>

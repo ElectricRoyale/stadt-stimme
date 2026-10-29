@@ -20,15 +20,23 @@ DEMO_DATA_DIR = BASE_DIR / "data" / "demo"
 # Name der Stadt, wie er auf den Seiten und im Brief erscheint.
 CITY_NAME = env_str("STADTSTIMME_CITY_NAME", default="Musterstadt")
 
-# Kartenkacheln für Übersicht und Ergebnisse (ADR-012). Der Browser lädt sie direkt vom
-# Kachelserver. Standard sind die CARTO-Basemaps auf OpenStreetMap-Daten; die OSM-Server
-# selbst sperren Apps wie diese.
+# Kartenkacheln für Übersicht, Verteilen und Ergebnisse (ADR-012). Der Browser lädt sie direkt
+# vom Kachelserver, ohne API-Schlüssel. Standard ist der Kachelserver des FOSSGIS e. V.
+# (OpenStreetMap Deutschland, Server in Deutschland). Liefert er nicht, wechselt die Karte auf
+# die CARTO-Basemaps, danach bleibt nur der Hintergrund mit den Markern.
 MAP_TILE_URL = env_str(
-    "STADTSTIMME_MAP_TILE_URL",
-    default="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+    "STADTSTIMME_MAP_TILE_URL", default="https://tile.openstreetmap.de/{z}/{x}/{y}.png"
 )
 MAP_ATTRIBUTION = env_str(
     "STADTSTIMME_MAP_ATTRIBUTION",
+    default='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende',
+)
+MAP_TILE_FALLBACK_URL = env_str(
+    "STADTSTIMME_MAP_TILE_FALLBACK_URL",
+    default="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+)
+MAP_FALLBACK_ATTRIBUTION = env_str(
+    "STADTSTIMME_MAP_FALLBACK_ATTRIBUTION",
     default=(
         '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende'
         ' © <a href="https://carto.com/attributions">CARTO</a>'
@@ -86,6 +94,7 @@ TEMPLATES = [
                 "apps.access.context_processors.participant",
                 "apps.points.context_processors.points_left",
                 "apps.core.context_processors.city",
+                "apps.core.context_processors.map_tiles",
             ],
         },
     },
