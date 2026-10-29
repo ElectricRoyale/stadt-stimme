@@ -170,7 +170,7 @@
   .dist-rail {
     position: sticky;
     /* Läuft mit, bis der Fuß der Leiste unten ankommt; --rail-height setzt points-distribute.js. */
-    top: min(24px, calc(100vh - var(--rail-height, 100vh) - 24px));
+    top: min(24px, calc(var(--ss-viewport, 100vh) - var(--rail-height, 100vh) - 24px));
     display: grid;
     grid-column: 2;
     grid-row: 1;

@@ -127,7 +127,7 @@
   .res-map { grid-column: 1; grid-row: 1; }
   .res-lists { grid-column: 1; grid-row: 2; }
   /* Läuft mit; ist sie höher als der Bildschirm, rückt sie nach, bis ihr Fuß unten ankommt. */
-  .res-side { position: sticky; top: min(24px, calc(100vh - var(--side-height, 100vh) - 24px)); grid-column: 2; grid-row: 1 / span 2; display: grid; gap: var(--ss-space-6); }
+  .res-side { position: sticky; top: min(24px, calc(var(--ss-viewport, 100vh) - var(--side-height, 100vh) - 24px)); grid-column: 2; grid-row: 1 / span 2; display: grid; gap: var(--ss-space-6); }
 }
 
 @media (prefers-reduced-motion: reduce) {
