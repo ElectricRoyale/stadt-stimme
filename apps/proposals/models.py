@@ -4,7 +4,7 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 
 from apps.access.models import Participant
-from apps.catalog.models import Category, Facility
+from apps.catalog.models import Category, Facility, Measure
 
 TITLE_MIN_LENGTH = 8
 TITLE_MAX_LENGTH = 80
@@ -14,6 +14,7 @@ TEXT_MAX_LENGTH = 600
 class ProposalStatus(models.TextChoices):
     SUBMITTED = "eingereicht", "Eingereicht"
     PUBLISHED = "freigegeben", "Freigegeben"
+    ACCEPTED = "angenommen", "Angenommen"
     REJECTED = "abgelehnt", "Abgelehnt"
 
 
@@ -43,6 +44,22 @@ class Proposal(models.Model):
         "Status", max_length=20, choices=ProposalStatus.choices, default=ProposalStatus.SUBMITTED
     )
     created_at = models.DateTimeField("Eingereicht am", auto_now_add=True)
+    published_at = models.DateTimeField("Freigegeben am", null=True, blank=True)
+    decided_at = models.DateTimeField("Entschieden am", null=True, blank=True)
+    answer = models.TextField(
+        "Antwort der Stadt",
+        max_length=TEXT_MAX_LENGTH,
+        blank=True,
+        help_text="Öffentliche Begründung bei Annahme oder Ablehnung.",
+    )
+    measure = models.ForeignKey(
+        Measure,
+        on_delete=models.SET_NULL,
+        related_name="proposals",
+        verbose_name="Daraus wurde die Maßnahme",
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         verbose_name = "Vorschlag"

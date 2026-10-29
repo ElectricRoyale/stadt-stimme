@@ -11,11 +11,12 @@ from django.db.models import Count, Q
 from django.utils import timezone
 
 from apps.access.models import Participant
-from apps.catalog.models import Category, Facility
+from apps.catalog.models import Category, Facility, Measure, MeasureStatus
 from apps.proposals.models import Proposal, ProposalStatus, Support
 
-SIMILAR_LIMIT = 2
+SIMILAR_LIMIT = 3
 _MIN_WORD_LENGTH = 5
+_STEM_LENGTH = 5  # Hallenbad/Hallenbades, Abend/abends: gleiche ersten fünf Buchstaben
 _WORD = re.compile(r"\w+")
 
 
@@ -58,19 +59,43 @@ def submit_proposal(
 
 
 def keywords(text: str) -> set[str]:
-    return {w for w in _WORD.findall(text.lower()) if len(w) >= _MIN_WORD_LENGTH}
+    """Wortstämme der längeren Wörter: die ersten fünf Buchstaben."""
+    words = _WORD.findall(text.lower())
+    return {w[:_STEM_LENGTH] for w in words if len(w) >= _MIN_WORD_LENGTH}
 
 
-def similar_proposals(text: str, viewer: Participant | None) -> list[SimilarProposal]:
-    """Freigegebene Vorschläge, deren Titel die meisten längeren Wörter des Textes enthalten."""
-    words = keywords(text)
-    if not words:
-        return []
+def _title_matches(words: set[str]) -> Q:
     matches = Q()
     for word in words:
         matches |= Q(title__icontains=word)
+    return matches
+
+
+def similar_measures(text: str) -> list[Measure]:
+    """Geplante oder laufende Maßnahmen mit denselben Wortstämmen im Titel."""
+    words = keywords(text)
+    if not words:
+        return []
+    candidates = Measure.objects.filter(_title_matches(words)).exclude(
+        status__in=[MeasureStatus.REJECTED, MeasureStatus.COMPLETED]
+    )
+    ranked = sorted(
+        candidates.select_related("facility")[:50],
+        key=lambda m: (-len(words & keywords(m.title)), m.title),
+    )
+    return ranked[:SIMILAR_LIMIT]
+
+
+def similar_proposals(text: str, viewer: Participant | None) -> list[SimilarProposal]:
+    """Öffentliche Vorschläge, deren Titel die meisten Wortstämme des Textes enthalten."""
+    words = keywords(text)
+    if not words:
+        return []
     candidates = (
-        Proposal.objects.filter(matches, status=ProposalStatus.PUBLISHED)
+        Proposal.objects.filter(
+            _title_matches(words),
+            status__in=[ProposalStatus.PUBLISHED, ProposalStatus.ACCEPTED],
+        )
         .annotate(support_count=Count("supports"))
         .order_by("-created_at")[:50]
     )
