@@ -1,6 +1,7 @@
 """Vorschläge: Weg aller Vorschläge, Liste und „Vorschlag machen“ auf einer Seite (ADR-016)."""
 
 from datetime import timedelta
+from decimal import Decimal
 from typing import Any
 
 from django.conf import settings
@@ -47,6 +48,7 @@ def index(request: HttpRequest) -> HttpResponse:
                     text=form.cleaned_data["text"],
                     category=form.cleaned_data["category"],
                     facility=form.cleaned_data["facility"],
+                    point=_point(form.cleaned_data),
                 )
             except DailyLimitError as error:
                 form.add_error(None, str(error))
@@ -144,6 +146,7 @@ def _context(
         "stages": list(Stage),
         "sent": sent,
         "facilities": Facility.objects.select_related("category").order_by("name"),
+        "place_bounds": _place_bounds(),
         "categories": form.fields["category"].queryset,  # type: ignore[attr-defined]
         "now": timezone.localtime(),
         "decision_by": timezone.localdate() + timedelta(days=settings.PROPOSAL_REVIEW_DAYS),
@@ -154,6 +157,17 @@ def _context(
         "support_threshold": settings.PROPOSAL_SUPPORT_THRESHOLD,
         "per_day": settings.PROPOSALS_PER_DAY,
     }
+
+
+def _place_bounds() -> list[list[float]]:
+    """Bekannte Orte, damit die Karte für „Ja, neuer Ort“ auf der Stadt startet."""
+    located = Facility.objects.exclude(latitude=None).exclude(longitude=None)
+    return [[float(f.latitude), float(f.longitude)] for f in located]  # type: ignore[arg-type]
+
+
+def _point(data: dict[str, Any]) -> tuple[Decimal, Decimal] | None:
+    lat, lng = data.get("latitude"), data.get("longitude")
+    return (lat, lng) if lat is not None and lng is not None else None
 
 
 def _sent(request: HttpRequest, board: Board) -> Item | None:

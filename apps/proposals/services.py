@@ -4,6 +4,7 @@ import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import timedelta
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import transaction
@@ -41,6 +42,7 @@ def submit_proposal(
     text: str,
     category: Category,
     facility: Facility | None,
+    point: tuple[Decimal, Decimal] | None = None,
 ) -> Proposal:
     with transaction.atomic():
         # Zeile sperren, damit parallele Anfragen das Tageslimit nicht umgehen.
@@ -55,6 +57,8 @@ def submit_proposal(
             text=text.strip(),
             category=category,
             facility=facility,
+            latitude=point[0] if point else None,
+            longitude=point[1] if point else None,
         )
 
 
