@@ -67,6 +67,10 @@
 .target__meta { margin: 0; font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); color: var(--ss-text-muted); }
 .target__meta > span { display: block; }
 .target .stepper { grid-column: 2; grid-row: 2; }
+.target__proposals { grid-column: 1 / -1; display: grid; gap: 4px; margin: 2px 0 0; padding: 0; list-style: none; font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); }
+.target__proposals li { display: flex; align-items: flex-start; gap: 6px; }
+.target__proposals .icon { margin-top: 2px; color: var(--ss-positive-ink); }
+.target__proposals a { color: var(--ss-text); text-underline-offset: 3px; }
 .target__measures { grid-column: 1; grid-row: 2; align-self: center; min-width: 0; }
 .target__measures summary { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; border-radius: 4px; font-size: var(--ss-fs-meta); font-weight: 700; color: var(--ss-text-nav); list-style: none; cursor: pointer; }
 .target__measures summary::-webkit-details-marker { display: none; }
