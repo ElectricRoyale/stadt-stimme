@@ -4,11 +4,11 @@ Digitale Bürgerbeteiligung für Kommunen: Bürgerinnen und Bürger verteilen 10
 Einrichtungen und Themen, um die sich ihre Stadt als Nächstes kümmern soll. Die Ergebnisse werden öffentlich mit den
 Ausgaben der Kommune verglichen.
 
-> **Stand:** Phase 4 (Übersicht und Ergebnisse). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich
+> **Stand:** Phase 4 (Übersicht, Ergebnisse, Vorschläge). Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich
 > im Admin pflegen und per CSV importieren. Bürgerinnen und Bürger melden sich mit dem Code aus dem
 > Brief an und verteilen ihre 100 Punkte unter `/verteilen/`. Die öffentliche Übersicht unter
 > `/uebersicht/` zeigt die Punkte auf einer Karte, `/ergebnisse/` den Unterschied zwischen Wunsch
-> und Ausgaben je Einrichtung.
+> und Ausgaben je Einrichtung. Unter `/vorschlaege/` reichen sie eigene Vorschläge ein.
 
 ## Schnellstart
 
@@ -110,6 +110,19 @@ Leaflet liegt im Repo, die Kartenkacheln lädt der Browser direkt von OpenStreet
 die IP-Adresse an den Kachelserver; das gehört in die Datenschutzerklärung. Ein anderer
 Kachelserver lässt sich über `STADTSTIMME_MAP_TILE_URL` und `STADTSTIMME_MAP_ATTRIBUTION` setzen.
 
+## Vorschläge
+
+Unter `/vorschlaege/` reicht man mit Code einen Vorschlag in drei Schritten ein: Anliegen,
+Einordnen (Thema, optional ein bekannter Ort), Prüfen. Die Verwaltung schaltet Vorschläge im
+Admin unter **Vorschläge** frei oder lehnt sie ab. Erst freigegebene Vorschläge erscheinen beim
+Schreiben als „Gibt es schon ähnlich“ und können unterstützt werden (ADR-014).
+
+| Einstellung | Standard |
+| --- | --- |
+| `STADTSTIMME_PROPOSAL_REVIEW_DAYS` (Prüffrist, wird angezeigt) | 14 |
+| `STADTSTIMME_PROPOSAL_SUPPORT_THRESHOLD` (Schwelle, wird angezeigt) | 50 |
+| `STADTSTIMME_PROPOSALS_PER_DAY` (Limit je Zugang) | 5 |
+
 ## Entwicklung
 
 Python 3.12+ und Docker.
@@ -143,6 +156,7 @@ apps/catalog/    Einrichtungen, Gebäude, Maßnahmen, Ausgaben; CSV-Import und A
 apps/access/     Aktivierungscodes, Code-Login, Sperre nach Fehlversuchen
 apps/points/     Punkte verteilen, Verfall
 apps/reporting/  Öffentliche Übersicht und Ergebnisse: Vergleich, Karte
+apps/proposals/  Vorschläge einreichen, freigeben, unterstützen
 templates/       Basis-Template (mobile-first, deutsch)
 static/          CSS, Schrift und kleine Skripte ohne Build-Schritt
 data/demo/       Fiktive Demo-Daten „Musterstadt“

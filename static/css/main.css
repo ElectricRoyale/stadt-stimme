@@ -124,3 +124,12 @@
 /* Fortschrittsbalken */
 .meter { height: 6px; border-radius: 3px; background: var(--ss-sunken); overflow: hidden; }
 .meter > span { display: block; height: 100%; border-radius: inherit; background: var(--cat, var(--ss-primary)); }
+
+/* Themenfarben (Category.color) */
+.cat-verkehr { --cat: var(--ss-cat-verkehr); --cat-tint: var(--ss-cat-verkehr-tint); }
+.cat-bildung { --cat: var(--ss-cat-bildung); --cat-tint: var(--ss-cat-bildung-tint); }
+.cat-freizeit { --cat: var(--ss-cat-freizeit); --cat-tint: var(--ss-cat-freizeit-tint); }
+.cat-familie { --cat: var(--ss-cat-familie); --cat-tint: var(--ss-cat-familie-tint); }
+.cat-sicherheit { --cat: var(--ss-cat-sicherheit); --cat-tint: var(--ss-cat-sicherheit-tint); }
+
+.dot { display: inline-block; flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--cat); }

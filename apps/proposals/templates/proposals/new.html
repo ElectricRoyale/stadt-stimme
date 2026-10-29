@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Vorschlag machen · StadtStimme{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/proposals.css' %}">
+  <script src="{% static 'js/proposal-steps.js' %}" defer></script>
+{% endblock %}
+
+{% block main_class %}prop{% endblock %}
+
+{% block content %}
+  <header class="prop-intro">
+    <p class="ss-eyebrow">Vorschlag machen</p>
+    <h1>Was soll die Stadt angehen?</h1>
+    <p>Gib deinem Anliegen einen Titel und beschreib es in deinen Worten. Danach ordnest du es ein, damit es bei der richtigen Stelle landet.</p>
+  </header>
+
+  {% if not participant %}
+    <div class="prop-login">
+      <p>Zum Einreichen brauchst du den Code aus deinem Brief.</p>
+      <a class="ss-btn ss-btn--primary" href="{% url 'access:redeem' %}">Code eingeben</a>
+    </div>
+  {% endif %}
+
+  <p class="ss-visually-hidden" id="prop-live" aria-live="polite"></p>
+
+  <div class="prop-layout">
+    <form method="post" class="ss-card prop-form" novalidate data-proposal-form
+          data-similar-url="{% url 'proposals:similar' %}" data-support-url="{% url 'proposals:support' 0 %}"
+          data-logged-in="{% if participant %}1{% endif %}"
+          data-error-step="{% if form.title.errors or form.text.errors %}1{% elif form.errors %}2{% endif %}">
+      {% csrf_token %}
+      <ol class="prop-progress" aria-label="Fortschritt" data-js-only hidden>
+        <li><button type="button" data-goto="1">1 · Anliegen</button></li>
+        <li><button type="button" data-goto="2" disabled>2 · Einordnen</button></li>
+        <li><button type="button" data-goto="3" disabled>3 · Prüfen</button></li>
+      </ol>
+
+      {% if form.non_field_errors %}
+        <div class="prop-alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>
+      {% endif %}
+
+      <fieldset class="prop-step" data-step="1">
+        <legend class="ss-visually-hidden">Schritt 1: Anliegen</legend>
+        <div class="prop-field">
+          <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+          <span class="prop-field__hint" id="{{ form.title.auto_id }}-hinweis">{{ form.title.help_text }}</span>
+          <input type="text" name="{{ form.title.html_name }}" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default_if_none:'' }}"
+                 maxlength="{{ form.title.field.max_length }}" required placeholder="z. B. Zebrastreifen vor der Grundschule"
+                 aria-describedby="{{ form.title.auto_id }}-hinweis {{ form.title.auto_id }}-zaehler{% if form.title.errors %} {{ form.title.auto_id }}-fehler{% endif %}"
+                 {% if form.title.errors %}aria-invalid="true"{% endif %} data-count="{{ form.title.auto_id }}-zaehler">
+          <span class="prop-field__count" id="{{ form.title.auto_id }}-zaehler">Höchstens {{ form.title.field.max_length }} Zeichen</span>
+          {% include "proposals/_field_errors.html" with field=form.title %}
+        </div>
+        <div class="prop-field">
+          <label for="{{ form.text.id_for_label }}">{{ form.text.label }} <span class="prop-field__optional">freiwillig</span></label>
+          <span class="prop-field__hint" id="{{ form.text.auto_id }}-hinweis">{{ form.text.help_text }}</span>
+          <textarea name="{{ form.text.html_name }}" id="{{ form.text.id_for_label }}" rows="4" maxlength="{{ form.text.field.max_length }}"
+                    placeholder="z. B. Morgens queren dort viele Kinder ohne Übergang."
+                    aria-describedby="{{ form.text.auto_id }}-hinweis {{ form.text.auto_id }}-zaehler" data-count="{{ form.text.auto_id }}-zaehler">{{ form.text.value|default_if_none:'' }}</textarea>
+          <span class="prop-field__count" id="{{ form.text.auto_id }}-zaehler">Höchstens {{ form.text.field.max_length }} Zeichen</span>
+          {% include "proposals/_field_errors.html" with field=form.text %}
+        </div>
+        <div class="prop-similar" data-similar hidden>
+          <p><strong>Gibt es schon ähnlich. Lieber unterstützen?</strong> Du kannst trotzdem weitermachen.</p>
+          <ul></ul>
+        </div>
+      </fieldset>
+
+      <fieldset class="prop-step" data-step="2">
+        <legend class="ss-visually-hidden">Schritt 2: Einordnen</legend>
+        <p class="prop-why"><strong>Warum einordnen?</strong> Jedes Thema hat in der Verwaltung eine zuständige Stelle. Mit Thema und Ort landet dein Vorschlag direkt dort. <span data-guess-note></span></p>
+        <fieldset class="prop-group"{% if form.category.errors %} aria-describedby="{{ form.category.auto_id }}-fehler"{% endif %}>
+          <legend>{{ form.category.label }}</legend>
+          <div class="prop-chips">
+            {% for choice in form.category %}
+              <label class="ss-chip prop-chip cat-{{ choice.data.value.instance.color }}">{{ choice.tag }}<span class="prop-mark" aria-hidden="true"></span>{{ choice.choice_label }}</label>
+            {% endfor %}
+          </div>
+          {% include "proposals/_field_errors.html" with field=form.category %}
+        </fieldset>
+        <fieldset class="prop-group">
+          <legend>{{ form.where.label }} <span class="prop-field__optional">freiwillig</span></legend>
+          <div class="prop-where">
+            {% for choice in form.where %}
+              <label class="prop-option">{{ choice.tag }}<strong>{{ choice.choice_label }}</strong>
+                <span>{% if choice.data.value == "none" %}Gilt für die ganze Stadt, z. B. mehr Busse am Abend.{% else %}Schule, Bad, Spielplatz … aus der Liste.{% endif %}</span></label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        <fieldset class="prop-group" data-facilities{% if form.facility.errors %} aria-describedby="{{ form.facility.auto_id }}-fehler"{% endif %}>
+          <legend>{{ form.facility.label }}</legend>
+          <div class="prop-chips">
+            {% for choice in form.facility %}
+              <label class="ss-chip prop-chip cat-{{ choice.data.value.instance.category.color }}">{{ choice.tag }}<span class="dot" aria-hidden="true"></span>{{ choice.choice_label }}</label>
+            {% empty %}
+              <p class="prop-field__hint">Die Stadt hat noch keine Orte eingetragen.</p>
+            {% endfor %}
+          </div>
+          <p class="prop-field__hint">Die Stadt kennt diese Orte, du musst nichts auf einer Karte markieren.</p>
+          {% include "proposals/_field_errors.html" with field=form.facility %}
+        </fieldset>
+      </fieldset>
+
+      <section class="prop-step prop-review" data-step="3" data-js-only hidden aria-labelledby="prop-review-title">
+        <h2 class="ss-visually-hidden" id="prop-review-title">Schritt 3: Prüfen</h2>
+        <dl>
+          {% for key, label, step in review_rows %}
+            <div class="prop-review__row">
+              <div><dt>{{ label }}</dt><dd data-review="{{ key }}"></dd></div>
+              <button type="button" class="ss-btn ss-btn--ghost" data-goto="{{ step }}" aria-label="{{ label }} ändern">Ändern</button>
+            </div>
+          {% endfor %}
+        </dl>
+      </section>
+
+      <p class="prop-alert" role="alert" data-step-error hidden></p>
+
+      <div class="prop-actions">
+        <button type="button" class="ss-btn ss-btn--secondary" data-back data-js-only hidden>Zurück</button>
+        <button type="button" class="ss-btn ss-btn--primary" data-next data-js-only hidden>Weiter</button>
+        <button type="submit" class="ss-btn ss-btn--primary" data-submit{% if not participant %} disabled{% endif %}>Vorschlag absenden</button>
+      </div>
+    </form>
+
+    <aside class="ss-card prop-aside" aria-label="Hinweise">
+      <div data-aside="1"><strong>Gute Vorschläge sind …</strong><ul><li>konkret: was, wo, für wen</li><li>Sache der Stadt, nicht von Land oder Bund</li><li>freundlich formuliert</li></ul></div>
+      <div data-aside="2"><strong>Thema und Ort</strong><ul><li>Das Thema ist Pflicht, der Ort nicht.</li><li>Ein Zebrastreifen an der Schule ist „Verkehr“, der Ort ist die Schule.</li></ul></div>
+      <div data-aside="3"><strong>Was danach passiert</strong><ul><li>Die Verwaltung prüft ihn innerhalb von {{ review_days }} Tagen.</li><li>Ab {{ support_threshold }} Unterstützungen wird er vertieft geprüft.</li></ul></div>
+    </aside>
+  </div>
+  {{ guess_data|json_script:"prop-guess-data" }}
+{% endblock %}
