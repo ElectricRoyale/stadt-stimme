@@ -17,7 +17,7 @@ def test_overview_is_public(client: Client, catalog: Catalog) -> None:
     assert response.status_code == 200
     assert "<h1>Übersicht</h1>" in content
     assert "Wunsch und Haushalt" in content
-    assert "Neu in Musterstadt" in content
+    assert "Neu in Mannheim" in content
     assert 'href="/zugang/">Code eingeben' in content
     assert 'data-scope="meine"' not in content
     assert 'id="ov-map-data"' in content

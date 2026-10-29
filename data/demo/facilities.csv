@@ -1,9 +1,9 @@
 external_id,name,category,address,description,latitude,longitude
-E-001,Hallenbad Am Stadtpark,Sport,Parkstraße 4,Städtisches Hallenbad mit 25-m-Becken und Lehrschwimmbecken.,50.871204,9.701932
-E-002,Kita Sonnenblume,Bildung,Lindenweg 12,Kindertagesstätte mit 75 Plätzen für Kinder von 1 bis 6 Jahren.,50.873912,9.711480
-E-003,Grundschule Nord,Bildung,Schulstraße 1,Zweizügige Grundschule mit Ganztagsbetreuung.,50.876650,9.705210
-E-004,Stadtbibliothek,Kultur,Marktplatz 2,Öffentliche Bibliothek mit Lesecafé und Medienausleihe.,50.868580,9.707020
-E-005,Bahnhof Musterstadt,Mobilität,Bahnhofsplatz 1,Regionalbahnhof mit Busumsteigepunkt und Fahrradabstellanlage.,50.864420,9.714960
-E-006,Jugendzentrum Kiste,Soziales,Gartenstraße 8,Offener Treff für Jugendliche von 12 bis 21 Jahren.,50.866310,9.699850
-E-007,Sportplatz Ost,Sport,Am Sportfeld 3,Rasenplatz mit Laufbahn für Schul- und Vereinssport.,50.869870,9.721630
-E-008,Seniorentreff Lindenhof,Soziales,Lindenhof 5,Begegnungsstätte mit Mittagstisch und Kursangebot.,50.862750,9.704120
+E-001,Hallenbad Am Stadtpark,Sport,Am Oberen Luisenpark 4,Städtisches Hallenbad mit 25-m-Becken und Lehrschwimmbecken.,49.484000,8.492000
+E-002,Kita Sonnenblume,Bildung,Lange Rötterstraße 12,Kindertagesstätte mit 75 Plätzen für Kinder von 1 bis 6 Jahren.,49.499000,8.479000
+E-003,Grundschule Nord,Bildung,Waldhofstraße 1,Zweizügige Grundschule mit Ganztagsbetreuung.,49.506000,8.471000
+E-004,Stadtbibliothek,Kultur,"N 3, 4",Öffentliche Bibliothek mit Lesecafé und Medienausleihe.,49.489000,8.466200
+E-005,Hauptbahnhof,Mobilität,Willy-Brandt-Platz 1,Fernbahnhof mit Straßenbahn- und Busumsteigepunkt und Fahrradabstellanlage.,49.479400,8.469700
+E-006,Jugendzentrum Kiste,Soziales,Jungbuschstraße 8,Offener Treff für Jugendliche von 12 bis 21 Jahren.,49.493500,8.458500
+E-007,Sportplatz Ost,Sport,Seckenheimer Landstraße 3,Rasenplatz mit Laufbahn für Schul- und Vereinssport.,49.476000,8.505000
+E-008,Seniorentreff Lindenhof,Soziales,Meerfeldstraße 5,Begegnungsstätte mit Mittagstisch und Kursangebot.,49.474500,8.460000

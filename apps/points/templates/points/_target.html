@@ -7,10 +7,10 @@
   </div>
 
   <div class="stepper">
-    <button type="button" class="stepper__btn" data-step="-1" aria-label="{{ step }} Punkte weniger für {{ row.name }}" hidden>{% include "partials/icon.html" with name="minus" stroke="2.4" %}</button>
+    <button type="button" class="stepper__btn" data-step="-1" aria-label="Einen Punkt weniger für {{ row.name }}" hidden>{% include "partials/icon.html" with name="minus" stroke="2.4" %}</button>
     <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" class="stepper__input" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
            value="{{ field.value|default_if_none:0 }}" aria-label="Punkte für {{ row.name }}"{% if field.errors %} aria-invalid="true"{% endif %} data-points>
-    <button type="button" class="stepper__btn stepper__btn--plus" data-step="1" aria-label="{{ step }} Punkte mehr für {{ row.name }}" hidden>{% include "partials/icon.html" with name="plus" stroke="2.4" %}</button>
+    <button type="button" class="stepper__btn stepper__btn--plus" data-step="1" aria-label="Einen Punkt mehr für {{ row.name }}" hidden>{% include "partials/icon.html" with name="plus" stroke="2.4" %}</button>
   </div>
 
   {% if row.measures %}

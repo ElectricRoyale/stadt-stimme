@@ -29,9 +29,6 @@ from apps.points.services import (
     valid_until,
 )
 
-# Plus und Minus gehen in Fünferschritten; genaue Werte über das Zahlenfeld.
-POINTS_STEP = 5
-
 
 @dataclass(frozen=True)
 class RowView:
@@ -80,7 +77,6 @@ def distribute(request: HttpRequest, participant: Participant) -> HttpResponse:
             "target_count": len(targets),
             "fiscal_year": fiscal_year,
             "budget": POINTS_BUDGET,
-            "step": POINTS_STEP,
             "used": used,
             "remaining": POINTS_BUDGET - used,
             "saved_at": last_saved_at(participant),

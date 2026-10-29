@@ -79,7 +79,7 @@
 .target__measures li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--ss-space-2); }
 .target__date { font-size: var(--ss-fs-meta); color: var(--ss-text-muted); }
 
-/* −/+ in Fünferschritten, dazwischen das genaue Feld. 44 px Ziele. */
+/* −/+ um je einen Punkt, dazwischen das genaue Feld. 44 px Ziele. */
 .stepper { display: flex; flex-shrink: 0; align-items: center; gap: 6px; }
 .stepper__btn { display: flex; align-items: center; justify-content: center; width: var(--ss-hit); height: var(--ss-hit); flex-shrink: 0; padding: 0; border: 1px solid var(--ss-red-pale); border-radius: 12px; background: var(--ss-sheet); color: var(--ss-red-dark); cursor: pointer; transition: transform 0.1s, background-color 0.15s; }
 .stepper__btn:hover:not(:disabled) { background: var(--ss-raised); }

@@ -1,4 +1,4 @@
-"""Lädt im Demo-Modus die fiktiven Daten „Musterstadt“, aber nur in einen leeren Katalog.
+"""Lädt im Demo-Modus die fiktiven Testdaten für Mannheim, aber nur in einen leeren Katalog.
 
 So bleiben Änderungen aus der Vorführung bei einem Neustart erhalten.
 """

@@ -1,6 +1,6 @@
 external_id,facility_external_id,name,address,description
-G-001,E-001,Schwimmhalle,Parkstraße 4,Halle mit 25-m-Becken und Lehrschwimmbecken.
-G-002,E-001,Technikgebäude,Parkstraße 4a,Wasseraufbereitung und Heizung des Bades.
-G-003,E-003,Hauptgebäude,Schulstraße 1,Klassenräume und Verwaltung.
-G-004,E-003,Turnhalle,Schulstraße 1a,Einfeldhalle für Schul- und Vereinssport.
-G-005,E-005,Empfangsgebäude,Bahnhofsplatz 1,Fahrkartenverkauf und Wartehalle.
+G-001,E-001,Schwimmhalle,Am Oberen Luisenpark 4,Halle mit 25-m-Becken und Lehrschwimmbecken.
+G-002,E-001,Technikgebäude,Am Oberen Luisenpark 4a,Wasseraufbereitung und Heizung des Bades.
+G-003,E-003,Hauptgebäude,Waldhofstraße 1,Klassenräume und Verwaltung.
+G-004,E-003,Turnhalle,Waldhofstraße 1a,Einfeldhalle für Schul- und Vereinssport.
+G-005,E-005,Empfangsgebäude,Willy-Brandt-Platz 1,Fahrkartenverkauf und Wartehalle.
