@@ -19,6 +19,17 @@ class CategoryColor(models.TextChoices):
     BLUE = "kultur", "Blau"
 
 
+# Lucide-Symbol je Themenfarbe, wie im Prototyp (ADR-018). Name steht immer daneben.
+COLOR_ICONS: dict[str, str] = {
+    CategoryColor.CYAN: "train-front",
+    CategoryColor.VIOLET: "graduation-cap",
+    CategoryColor.GREEN: "volleyball",
+    CategoryColor.PINK: "heart-handshake",
+    CategoryColor.STONE: "shield",
+    CategoryColor.BLUE: "library-big",
+}
+
+
 # Übliche Themennamen bekommen ihre Farbe aus dem Prototyp (ADR-017), andere reihum.
 NAME_COLORS = {
     "bildung": CategoryColor.VIOLET,
@@ -62,6 +73,11 @@ class Category(models.Model):
             fallback = palette[Category.objects.count() % len(palette)]
             self.color = NAME_COLORS.get(self.name.strip().lower(), fallback)
         super().save(*args, **kwargs)
+
+    @property
+    def icon(self) -> str:
+        """Name des Lucide-Symbols für ``partials/icon.html``."""
+        return COLOR_ICONS.get(self.color, "map-pin")
 
 
 class Facility(models.Model):

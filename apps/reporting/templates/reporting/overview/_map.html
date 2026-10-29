@@ -13,7 +13,7 @@
   </header>
 
   <div class="ov-map__canvas" id="ov-map" role="region" aria-label="Karte von {{ city_name }} mit Einrichtungen als Quadrate. Die Liste darunter enthält dieselben Angaben."
-       data-tiles="{{ map_tile_url }}" data-attribution="{{ map_attribution }}" data-logged-in="{% if participant %}1{% endif %}"
+       {% include "partials/map_tiles.html" %} data-logged-in="{% if participant %}1{% endif %}"
        data-give-url="{% url 'points:distribute' %}" data-redeem-url="{% url 'access:redeem' %}">
     <p class="ov-map__fallback">Die Karte braucht JavaScript. Darunter findest du alle Einrichtungen als Liste.</p>
   </div>
@@ -24,7 +24,7 @@
     {% for place in stats.places %}{% if place.facility %}
       <li data-theme="{{ place.category.pk }}" class="theme-{{ place.category.color }}">
         <button type="button" class="ov-rank__item" data-select="{{ place.target.key }}" disabled>
-          <span class="theme-dot" aria-hidden="true"></span><span class="ov-rank__name">{{ place.name }}</span>
+          {% include "partials/theme_icon.html" with category=place.category %}<span class="ov-rank__name">{{ place.name }}</span>
           <span class="ov-rank__value" data-all="{{ place.share }} %" data-mine="{% if place.mine %}{{ place.mine }} P.{% else %}–{% endif %}">{{ place.share }} %</span>
         </button>
       </li>

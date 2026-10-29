@@ -31,13 +31,9 @@
 }
 
 @media (min-width: 1200px) {
-  .ov-grid { grid-template-columns: minmax(0, 1fr) 360px; gap: var(--ss-space-6); align-items: start; }
+  .ov-grid { grid-template-columns: minmax(0, 1fr) var(--ss-side-col); gap: var(--ss-space-6); align-items: start; }
   .ov-col { display: grid; align-content: start; gap: var(--ss-space-6); min-width: 0; }
   .ov-slot { order: 0; }
-}
-
-@media (min-width: 1536px) {
-  .ov-grid { grid-template-columns: minmax(0, 1fr) 380px; }
 }
 
 /* Wunsch und Haushalt: Balken in der Themenfarbe = Bürgerpunkte, goldene Marke = Ausgaben */
@@ -165,7 +161,7 @@
 .ov-prop { padding: 10px 0; }
 .ov-prop + .ov-prop { border-top: 1px solid var(--ss-rule); }
 .ov-prop__top { display: flex; align-items: flex-start; gap: var(--ss-space-2); margin-bottom: var(--ss-space-2); }
-.ov-prop__dot { margin-top: 7px; }
+.ov-prop__icon { display: flex; margin-top: 3px; }
 .ov-prop__bar { height: 6px; margin-left: 18px; overflow: hidden; border-radius: 3px; background: var(--ss-empty); }
 .ov-prop__bar > span { display: block; height: 100%; border-radius: inherit; background: var(--ss-red); transition: width 0.5s var(--ss-ease-out); }
 .ov-prop__bar.is-reached > span { background: var(--ss-text); }

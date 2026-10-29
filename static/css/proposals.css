@@ -133,13 +133,13 @@
 @media (min-width: 1024px) {
   .prop { padding: 24px 32px 40px; }
   .prop-head__cta { display: none; }
-  .prop-grid { grid-template-columns: minmax(0, 1fr) 400px; align-items: start; gap: var(--ss-space-6); }
+  .prop-grid { grid-template-columns: minmax(0, 1fr) max(400px, var(--ss-side-col)); align-items: start; gap: var(--ss-space-6); }
   .prop-main, .prop-side, .prop-aside { display: grid; align-content: start; gap: var(--ss-space-6); min-width: 0; }
   .prop-way, .prop-mine, .prop-compose, .prop-list, .prop-rules { order: 0; }
 }
 
 @media (min-width: 1536px) {
-  .prop-grid { grid-template-columns: 340px minmax(0, 1fr) 440px; }
+  .prop-grid { grid-template-columns: clamp(320px, 14vw + 120px, 460px) minmax(0, 1fr) max(400px, var(--ss-side-col)); }
   .prop-side { display: contents; }
   .prop-main { grid-column: 2; grid-row: 1; }
   .prop-aside { grid-column: 1; grid-row: 1; }

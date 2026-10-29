@@ -71,11 +71,15 @@
 
   /* Layout */
   --ss-sidebar-width: 240px;
-  --ss-content-max: 1760px;
+  /* Volle Breite (ADR-018). Die rechte Spalte wächst mit dem Bildschirm: 360 px bis 1280 px Breite,
+     rund 500 px bei 1920 px, höchstens 640 px. */
+  --ss-content-max: none;
+  --ss-side-col: clamp(360px, 24vw + 40px, 640px);
   --ss-tabbar-height: 56px;
 }
 
 /* Themenfarbe für ein Element und seine Kinder: background: var(--theme) */
+.theme-icon { flex-shrink: 0; color: var(--theme, currentColor); }
 .theme-verkehr { --theme: var(--ss-theme-verkehr); }
 .theme-bildung { --theme: var(--ss-theme-bildung); }
 .theme-freizeit { --theme: var(--ss-theme-freizeit); }

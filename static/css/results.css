@@ -48,7 +48,7 @@
 .gap-pin.is-dim { opacity: 0.25; }
 
 /* Auswahl */
-.res-detail__dot { margin-right: 6px; vertical-align: 1px; }
+.res-detail .panel__sub .theme-icon { margin-right: 6px; vertical-align: -2px; }
 .res-figure { display: flex; align-items: baseline; gap: var(--ss-space-2); margin: 0; }
 .res-figure__value { color: var(--tone-ink); font-size: 44px; line-height: 1; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .res-figure span { font-size: var(--ss-fs-small); color: var(--ss-text-muted); }
@@ -123,7 +123,7 @@
 
 @media (min-width: 1024px) {
   .res { padding: 24px 32px 40px; }
-  .res-grid { grid-template-columns: minmax(0, 1fr) 400px; gap: var(--ss-space-6); align-items: start; }
+  .res-grid { grid-template-columns: minmax(0, 1fr) max(400px, var(--ss-side-col)); gap: var(--ss-space-6); align-items: start; }
   .res-map { grid-column: 1; grid-row: 1; }
   .res-lists { grid-column: 1; grid-row: 2; }
   /* Läuft mit; ist sie höher als der Bildschirm, rückt sie nach, bis ihr Fuß unten ankommt. */

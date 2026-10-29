@@ -1,0 +1,20 @@
+/* Seite „Suche“ (ADR-018): Einrichtungen mit passenden Maßnahmen und Wegen weiter. */
+.srch { padding: 20px 16px 32px; color: var(--ss-text); }
+.srch-head h1 { margin: 0; font-size: var(--ss-fs-title); line-height: 32px; font-weight: 800; letter-spacing: -0.01em; }
+.srch-form { display: flex; gap: var(--ss-space-2); max-width: 640px; margin-top: var(--ss-space-4); }
+.srch-form .search { flex: 1; }
+.srch-form .btn-outline { min-height: var(--ss-hit); }
+.srch-count { margin: var(--ss-space-3) 0 0; font-size: var(--ss-fs-small); color: var(--ss-text-muted); }
+.srch-hits { display: grid; gap: var(--ss-space-3); margin: var(--ss-space-6) 0 0; padding: 0; list-style: none; }
+.srch-hit { padding: var(--ss-space-4); }
+.srch-hit__name { display: flex; align-items: center; gap: var(--ss-space-2); margin: 0; font-size: var(--ss-fs-body); line-height: var(--ss-lh-body); font-weight: 700; }
+.srch-hit__meta { margin: 2px 0 0 26px; font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); color: var(--ss-text-muted); }
+.srch-hit__measures { display: grid; gap: 6px; margin: var(--ss-space-3) 0 0 26px; padding: 0; list-style: none; font-size: var(--ss-fs-small); }
+.srch-hit__measures li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ss-space-2); }
+.srch-hit__links { display: flex; flex-wrap: wrap; gap: var(--ss-space-1) var(--ss-space-4); margin: var(--ss-space-3) 0 0 26px; font-size: var(--ss-fs-small); font-weight: 700; }
+.srch-hit__links a { display: inline-flex; align-items: center; min-height: var(--ss-hit); color: var(--ss-red-dark); }
+
+@media (min-width: 1024px) {
+  .srch { padding: 32px 40px 48px; }
+  .srch-hits { grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
+}

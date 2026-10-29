@@ -51,7 +51,6 @@ def overview(request: HttpRequest) -> HttpResponse:
             "support_threshold": settings.PROPOSAL_SUPPORT_THRESHOLD,
             "review_days": settings.PROPOSAL_REVIEW_DAYS,
             "map_data": map_payload(stats, results),
-            **_map_settings(),
             "budget": POINTS_BUDGET,
             "remaining": mine.free,
         },
@@ -72,7 +71,6 @@ def results(request: HttpRequest) -> HttpResponse:
             "now": timezone.localtime(),
             "since": participation_since(),
             "budget": POINTS_BUDGET,
-            **_map_settings(),
         },
     )
 
@@ -95,7 +93,3 @@ def _overview_for(request: HttpRequest) -> Overview:
 
 def _valid_until(participant: Participant | None) -> date | None:
     return valid_until(participant) if participant else None
-
-
-def _map_settings() -> dict[str, str]:
-    return {"map_tile_url": settings.MAP_TILE_URL, "map_attribution": settings.MAP_ATTRIBUTION}
