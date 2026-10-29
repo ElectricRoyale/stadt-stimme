@@ -13,6 +13,14 @@
     <button type="button" class="stepper__btn stepper__btn--plus" data-step="1" aria-label="Einen Punkt mehr für {{ row.name }}" hidden>{% include "partials/icon.html" with name="plus" stroke="2.4" %}</button>
   </div>
 
+  {% if row.proposals %}
+    <ul class="target__proposals" aria-label="Angenommene Vorschläge{% if row.is_general %} zum ganzen Thema{% else %} für {{ row.name }}{% endif %}">
+      {% for proposal in row.proposals %}
+        <li>{% include "partials/icon.html" with name="lightbulb" size=14 stroke="1.75" %}<span><strong>Angenommener Vorschlag {{ proposal.number }}:</strong> <a href="{% url 'proposals:index' %}#vorschlag-{{ proposal.pk }}">{{ proposal.title }}</a>{% if proposal.has_point %} (neuer Ort){% endif %}</span></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   {% if row.measures %}
     <details class="target__measures">
       <summary aria-label="{{ row.measures|length }} {% if row.measures|length == 1 %}Maßnahme{% else %}Maßnahmen{% endif %} von {{ row.name }}: wofür die Stadt Geld braucht">

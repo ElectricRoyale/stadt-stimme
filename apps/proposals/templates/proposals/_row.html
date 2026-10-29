@@ -13,7 +13,8 @@
         <span>{{ p.number }}, {% if p.published_at %}öffentlich seit {{ p.published_at|date:"j. F" }}{% else %}eingereicht am {{ p.created_at|date:"j. F" }}{% endif %}</span>
       </p>
     </div>
-    {% if participant and item.can_support %}<div class="prop-row__action">{% include "proposals/_support.html" %}</div>{% endif %}
+    {% if participant and item.can_support %}<div class="prop-row__action">{% include "proposals/_support.html" %}</div>
+    {% elif item.stage.value == "angenommen" %}<div class="prop-row__action"><a class="btn-outline" href="{% url 'points:distribute' %}#ziel-{% if p.facility_id %}f-{{ p.facility_id }}{% else %}c-{{ p.category_id }}{% endif %}">Punkte geben<span class="ss-visually-hidden"> für „{% if p.facility %}{{ p.facility.name }}{% else %}{{ p.category.name }} allgemein{% endif %}“</span></a></div>{% endif %}
     <div class="prop-row__state">
       {% include "proposals/_track.html" %}
       <p class="prop-row__sentence" data-sentence>{{ item.sentence }}</p>
