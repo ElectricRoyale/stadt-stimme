@@ -6,6 +6,7 @@ from django.db.models.functions import Coalesce
 from django.forms import ModelForm
 from django.http import HttpRequest
 from django.utils import timezone
+from django.utils.html import format_html
 
 from apps.proposals.models import Proposal, ProposalStatus
 
@@ -25,6 +26,7 @@ class ProposalAdmin(admin.ModelAdmin):
         "text",
         "category",
         "facility",
+        "map_link",
         "created_at",
         "status",
         "published_at",
@@ -38,6 +40,7 @@ class ProposalAdmin(admin.ModelAdmin):
         "text",
         "category",
         "facility",
+        "map_link",
         "created_at",
         "published_at",
         "decided_at",
@@ -56,6 +59,22 @@ class ProposalAdmin(admin.ModelAdmin):
     @admin.display(description="Unterstützungen", ordering="support_count")
     def supports(self, obj: Proposal) -> int:
         return int(getattr(obj, "support_count", 0))
+
+    @admin.display(description="Neuer Ort")
+    def map_link(self, obj: Proposal) -> str:
+        if not obj.has_point:
+            return "kein neuer Ort"
+        lat, lng = obj.latitude, obj.longitude
+        return format_html(
+            '<a href="https://www.openstreetmap.org/?mlat={}&amp;mlon={}#map=18/{}/{}" '
+            'target="_blank" rel="noopener">{}, {} auf der Karte</a>',
+            lat,
+            lng,
+            lat,
+            lng,
+            lat,
+            lng,
+        )
 
     def has_add_permission(self, request: HttpRequest) -> bool:
         return False

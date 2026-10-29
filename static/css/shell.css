@@ -138,7 +138,21 @@
 .shell-sidebar { display: none; }
 
 @media (min-width: 1024px) {
-  .shell { --shell-bottom: 0px; display: grid; grid-template-columns: var(--ss-sidebar-width) minmax(0, 1fr); grid-template-rows: 52px minmax(0, 1fr); }
+  /* Fester Rahmen wie im Prototyp: nur das weiße Blatt scrollt, an allen Ecken gerundet.
+     --ss-viewport ist die sichtbare Höhe für mitlaufende Spalten (position: sticky). */
+  .shell {
+    --shell-bottom: 0px;
+    --ss-viewport: calc(100dvh - 60px);
+    display: grid;
+    grid-template-columns: var(--ss-sidebar-width) minmax(0, 1fr);
+    grid-template-rows: 52px minmax(0, 1fr);
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    /* clip statt hidden: Anker und scrollIntoView dürfen den Rahmen nicht verschieben. */
+    overflow: hidden;
+    overflow: clip;
+  }
   .shell-phonebar,
   .shell-nav--tab { display: none; }
 
@@ -148,12 +162,10 @@
   .shell-sidebar {
     grid-column: 1;
     grid-row: 1 / span 2;
-    position: sticky;
-    top: 0;
     display: flex;
     flex-direction: column;
     gap: var(--ss-space-5);
-    height: 100vh;
+    min-height: 0;
     padding: var(--ss-space-4) var(--ss-space-3);
     overflow-y: auto;
   }
@@ -173,11 +185,20 @@
   .shell-sheet {
     grid-column: 2;
     grid-row: 2;
-    min-height: calc(100vh - 60px);
+    position: relative; /* hält absolut gesetzte Kinder (versteckte Texte) im Blatt */
+    min-height: 0;
     margin: 0 8px 8px 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     border: 1px solid var(--ss-edge);
     border-radius: 12px;
   }
+}
+
+/* Drucken: der ganze Inhalt, nicht nur der sichtbare Ausschnitt des Blatts */
+@media print {
+  .shell { display: block; height: auto; overflow: visible; }
+  .shell-sheet { overflow: visible; }
 }
 
 @media (prefers-reduced-motion: reduce) {

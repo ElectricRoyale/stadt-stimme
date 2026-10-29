@@ -2,6 +2,7 @@
 
 from django.core.validators import MinLengthValidator
 from django.db import models
+from django.db.models import Q
 
 from apps.access.models import Participant
 from apps.catalog.models import Category, Facility, Measure
@@ -40,6 +41,13 @@ class Proposal(models.Model):
         null=True,
         blank=True,
     )
+    # Neuer Ort, auf der Karte gesetzt (ADR-022). Nie zusammen mit einer Einrichtung.
+    latitude = models.DecimalField(
+        "Breitengrad", max_digits=9, decimal_places=6, null=True, blank=True
+    )
+    longitude = models.DecimalField(
+        "Längengrad", max_digits=9, decimal_places=6, null=True, blank=True
+    )
     status = models.CharField(
         "Status", max_length=20, choices=ProposalStatus.choices, default=ProposalStatus.SUBMITTED
     )
@@ -65,6 +73,17 @@ class Proposal(models.Model):
         verbose_name = "Vorschlag"
         verbose_name_plural = "Vorschläge"
         ordering = ["-created_at"]
+        constraints = [
+            models.CheckConstraint(
+                name="proposal_point_complete",
+                condition=Q(latitude__isnull=True, longitude__isnull=True)
+                | Q(latitude__isnull=False, longitude__isnull=False),
+            ),
+            models.CheckConstraint(
+                name="proposal_one_kind_of_place",
+                condition=Q(facility__isnull=True) | Q(latitude__isnull=True),
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.number} {self.title}"
@@ -74,8 +93,14 @@ class Proposal(models.Model):
         return f"V-{self.pk}"
 
     @property
+    def has_point(self) -> bool:
+        return self.latitude is not None and self.longitude is not None
+
+    @property
     def where(self) -> str:
-        return self.facility.name if self.facility else "Kein bestimmter Ort"
+        if self.facility:
+            return self.facility.name
+        return "Neuer Ort auf der Karte" if self.has_point else "Kein bestimmter Ort"
 
 
 class Support(models.Model):

@@ -4,12 +4,16 @@
 {% block title %}Vorschläge · StadtStimme{% endblock %}
 
 {% block head %}
+  <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
   <link rel="stylesheet" href="{% static 'css/components.css' %}">
   <link rel="stylesheet" href="{% static 'css/proposals.css' %}">
   <link rel="stylesheet" href="{% static 'css/proposals-form.css' %}">
   <script src="{% static 'js/proposals-list.js' %}" defer></script>
   <script src="{% static 'js/support-toggle.js' %}" defer></script>
   <script src="{% static 'js/proposals-compose.js' %}" defer></script>
+  <script src="{% static 'vendor/leaflet/leaflet.js' %}" defer></script>
+  <script src="{% static 'js/map-base.js' %}" defer></script>
+  <script src="{% static 'js/proposals-place.js' %}" defer></script>
 {% endblock %}
 
 {% block main_class %}prop{% endblock %}

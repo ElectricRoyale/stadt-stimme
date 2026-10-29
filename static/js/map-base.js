@@ -50,7 +50,7 @@
     return map;
   }
 
-  // options.fixedHit: Trefferfläche bleibt 44 px, das Quadrat darf darüber hinaus wachsen. So kann
+  // options.fixedHit: Trefferfläche bleibt 44 px, der Kreis darf darüber hinaus wachsen. So kann
   // eine Seite die Größe später am Element ändern, ohne den Marker neu zu bauen.
   function icon(options) {
     var span = document.createElement("span");

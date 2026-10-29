@@ -10,16 +10,42 @@
     <p class="prop-field__error" id="v-thema-fehler" data-error-for="category"{% if not form.category.errors %} hidden{% endif %}>{{ form.category.errors.0 }}</p>
   </fieldset>
 
-  <div class="prop-field">
-    <label for="v-ort" class="prop-field__label">{{ form.facility.label }} <span class="prop-field__optional">(freiwillig)</span></label>
+  {# Ort: allgemein, bekannte Einrichtung oder neuer Punkt auf der Karte (ADR-022). „Neuer Ort“ braucht JavaScript. #}
+  <fieldset class="prop-field" data-where{% if form.where.errors %} aria-describedby="v-wo-fehler"{% endif %}>
+    <legend class="prop-field__legend">{{ form.where.label }} <span class="prop-field__optional">(freiwillig)</span></legend>
+    <div class="prop-where">
+      {% for choice in form.where %}
+        <label class="prop-option"{% if choice.data.value == "neu" %} data-js-only hidden{% endif %}>{{ choice.tag }}
+          <span class="prop-option__label">{{ choice.choice_label }}</span>
+          <span class="prop-option__hint">{% if choice.data.value == "allgemein" %}Gilt für die ganze Stadt, z. B. mehr Busse am Abend.{% elif choice.data.value == "bekannt" %}Schule, Bad, Bücherei … aus der Liste.{% else %}Ein Platz oder eine Kreuzung: tippe auf die Karte.{% endif %}</span>
+        </label>
+      {% endfor %}
+    </div>
+    <p class="prop-field__error" id="v-wo-fehler" data-error-for="where"{% if not form.where.errors %} hidden{% endif %}>{{ form.where.errors.0 }}</p>
+  </fieldset>
+
+  <div class="prop-field" data-where-panel="bekannt">
+    <label for="v-ort" class="prop-field__label">{{ form.facility.label }}</label>
     <select id="v-ort" name="{{ form.facility.html_name }}" class="prop-input" data-facility
             {% if form.facility.errors %}aria-invalid="true" aria-describedby="v-ort-fehler"{% else %}aria-describedby="v-ort-hilfe"{% endif %}>
-      <option value="">Kein bestimmter Ort</option>
+      <option value="">Bitte wählen</option>
       {% for facility in facilities %}
         <option value="{{ facility.pk }}" data-category="{{ facility.category_id }}"{% if form.facility.value|stringformat:"s" == facility.pk|stringformat:"s" %} selected{% endif %}>{{ facility.name }}{% if facility.address %}, {{ facility.address }}{% endif %}</option>
       {% endfor %}
     </select>
-    {% if form.facility.errors %}<p class="prop-field__error" id="v-ort-fehler">{{ form.facility.errors.0 }}</p>{% endif %}
-    <p class="prop-field__hint" id="v-ort-hilfe" data-facility-hint>Fehlt der Ort in der Liste? Nenne ihn im Text, die Stadt ordnet ihn bei der Freigabe zu.</p>
+    <p class="prop-field__error" id="v-ort-fehler" data-error-for="facility"{% if not form.facility.errors %} hidden{% endif %}>{{ form.facility.errors.0 }}</p>
+    <p class="prop-field__hint" id="v-ort-hilfe" data-facility-hint>Fehlt der Ort in der Liste? Wähle „Ja, neuer Ort“ und tippe auf die Karte.</p>
+  </div>
+
+  <div class="prop-field prop-pick" data-where-panel="neu" data-js-only hidden>
+    <p class="prop-field__label" id="v-karte-titel">Wo genau?</p>
+    <div class="map-canvas prop-pick__map" role="application" aria-labelledby="v-karte-titel" aria-describedby="v-karte-hilfe" data-pick-map
+         {% include "partials/map_tiles.html" %}></div>
+    <div class="prop-pick__bar">
+      <p class="prop-field__hint" id="v-karte-hilfe" aria-live="polite" data-pick-status>Tippe auf die Karte. Mit der Tastatur: Karte verschieben, dann „Kartenmitte setzen“.</p>
+      <button type="button" class="btn-outline" data-pick-center>{% include "partials/icon.html" with name="map-pin" size=16 %}Kartenmitte setzen</button>
+    </div>
+    {{ form.latitude }}{{ form.longitude }}
+    {{ place_bounds|json_script:"v-karte-orte" }}
   </div>
 </fieldset>

@@ -37,6 +37,24 @@
 .prop-theme:has(input:focus-visible) { outline: var(--ss-focus-outline); outline-offset: 2px; }
 .prop-themes.is-invalid .prop-theme { border-color: var(--ss-red); }
 
+/* Ort: drei Möglichkeiten als Karten, darunter Liste oder Karte (ADR-022) */
+.prop-where { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--ss-space-2); margin-top: var(--ss-space-2); }
+.prop-option { position: relative; display: grid; gap: 2px; min-height: 48px; padding: 10px var(--ss-space-3); border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); cursor: pointer; }
+.prop-option[hidden] { display: none; }
+.prop-option:hover { background: var(--ss-raised); }
+.prop-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.prop-option__label { font-size: var(--ss-fs-small); font-weight: 700; }
+.prop-field .prop-option { font-weight: 400; }
+.prop-option__hint { font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); color: var(--ss-text-muted); }
+.prop-option:has(input:checked) { border-color: var(--ss-text); background: var(--ss-active); }
+.prop-option:has(input:focus-visible) { outline: var(--ss-focus-outline); outline-offset: 2px; }
+[data-where-panel][hidden] { display: none; }
+.prop-pick__map { margin-top: 6px; cursor: crosshair; }
+.prop-pick__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ss-space-2); margin-top: var(--ss-space-2); }
+.prop-pick__bar .prop-field__hint { flex: 1 1 200px; margin: 0; }
+.prop-pick__bar .btn-outline { min-height: var(--ss-hit); }
+.prop-pick__pin > span { background: var(--ss-red); }
+
 .prop-similar { padding: var(--ss-space-3); border: 1px solid var(--ss-notice-ink); border-radius: var(--ss-radius-control); background: color-mix(in srgb, var(--ss-notice-bg) 60%, transparent); }
 .prop-similar[hidden] { display: none; }
 .prop-similar h4 { margin: 0; font-size: var(--ss-fs-small); font-weight: 700; }
@@ -76,7 +94,9 @@
 
 @media (min-width: 640px) {
   .prop-themes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .prop-where { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (min-width: 1024px) and (max-width: 1535px) {
   .prop-themes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .prop-where { grid-template-columns: minmax(0, 1fr); }
 }

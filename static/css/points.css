@@ -133,7 +133,7 @@
 /* Karte */
 .dist-legend { display: flex; flex-wrap: wrap; gap: 4px var(--ss-space-4); margin: var(--ss-space-2) 0 0; padding: 0; list-style: none; font-size: var(--ss-fs-meta); color: var(--ss-text-muted); }
 .dist-legend li { display: flex; align-items: center; gap: 6px; }
-.dist-legend__key { width: 12px; height: 12px; border-radius: var(--ss-radius-cell); background: conic-gradient(var(--ss-theme-verkehr) 0 25%, var(--ss-theme-freizeit) 0 50%, var(--ss-theme-familie) 0 75%, var(--ss-theme-bildung) 0); }
+.dist-legend__key { width: 12px; height: 12px; border-radius: 50%; background: conic-gradient(var(--ss-theme-verkehr) 0 25%, var(--ss-theme-freizeit) 0 50%, var(--ss-theme-familie) 0 75%, var(--ss-theme-bildung) 0); }
 .dist-legend__key--empty { width: 10px; height: 10px; background: var(--ss-bar-neutral); }
 .dist .sq-pin > span { background: var(--theme, var(--ss-red)); }
 .dist .sq-pin.is-empty > span { background: var(--ss-bar-neutral); }
@@ -170,7 +170,7 @@
   .dist-rail {
     position: sticky;
     /* Läuft mit, bis der Fuß der Leiste unten ankommt; --rail-height setzt points-distribute.js. */
-    top: min(24px, calc(100vh - var(--rail-height, 100vh) - 24px));
+    top: min(24px, calc(var(--ss-viewport, 100vh) - var(--rail-height, 100vh) - 24px));
     display: grid;
     grid-column: 2;
     grid-row: 1;
