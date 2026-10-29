@@ -112,6 +112,10 @@ Bürgerpunkte minus Anteil der Ist-Ausgaben (ADR-013).
 Leaflet liegt im Repo, die Kartenkacheln lädt der Browser direkt von OpenStreetMap. Dabei geht
 die IP-Adresse an den Kachelserver; das gehört in die Datenschutzerklärung. Ein anderer
 Kachelserver lässt sich über `STADTSTIMME_MAP_TILE_URL` und `STADTSTIMME_MAP_ATTRIBUTION` setzen.
+Die Kartenanfragen senden den Ursprung der Seite als Referer (ohne Pfad), wie es die
+[Nutzungsrichtlinie von OpenStreetMap](https://operations.osmfoundation.org/policies/tiles/)
+verlangt. Für den Regelbetrieb mit vielen Aufrufen ist ein eigener oder kommerzieller
+Kachelserver vorgesehen; die OSM-Server sind dafür nicht gedacht.
 
 ## Vorschläge
 

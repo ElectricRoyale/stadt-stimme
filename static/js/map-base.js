@@ -6,7 +6,14 @@
   function create(node, points) {
     node.textContent = "";
     var map = L.map(node, { scrollWheelZoom: false, zoomControl: true });
-    L.tileLayer(node.dataset.tiles, { maxZoom: 19, attribution: node.dataset.attribution }).addTo(map);
+    // Die Seite selbst sendet keinen Referer nach außen (SECURE_REFERRER_POLICY = same-origin).
+    // Kachelserver wie OpenStreetMap verlangen ihn aber, sonst kommt "Access blocked".
+    // Für Kacheln geht daher nur der Ursprung (ohne Pfad) mit.
+    L.tileLayer(node.dataset.tiles, {
+      maxZoom: 19,
+      attribution: node.dataset.attribution,
+      referrerPolicy: "strict-origin-when-cross-origin",
+    }).addTo(map);
     if (points.length) map.fitBounds(points, { padding: [40, 40], maxZoom: 16 });
     else map.setView([51.16, 10.45], 6);
     return map;
