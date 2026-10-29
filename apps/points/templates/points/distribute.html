@@ -17,7 +17,7 @@
 {% block main_class %}dist{% endblock %}
 
 {% block content %}
-<form method="post" class="dist__form" novalidate data-distribute data-budget="{{ budget }}" data-step="{{ step }}">
+<form method="post" class="dist__form" novalidate data-distribute data-budget="{{ budget }}">
   {% csrf_token %}
   <header class="dist-head">
     <h1>Punkte verteilen</h1>

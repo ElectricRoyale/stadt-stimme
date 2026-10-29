@@ -20,7 +20,7 @@ docker compose up
 ```
 
 Beim ersten Start wird das Image gebaut; das dauert einige Minuten. Im Demo-Modus werden
-die fiktiven Daten „Musterstadt“ automatisch in den leeren Katalog geladen. Danach:
+die fiktiven Testdaten für Mannheim automatisch in den leeren Katalog geladen. Danach:
 
 | Was | Adresse | Zugang |
 | --- | --- | --- |
@@ -167,7 +167,7 @@ apps/reporting/  Öffentliche Übersicht und Ergebnisse: Vergleich, Karte
 apps/proposals/  Vorschläge einreichen, freigeben, unterstützen
 templates/       Basis-Template (mobile-first, deutsch)
 static/          CSS, Schrift und kleine Skripte ohne Build-Schritt
-data/demo/       Fiktive Demo-Daten „Musterstadt“
+data/demo/       Fiktive Testdaten in Mannheim
 docker/          Entrypoint: Migrationen, Demo-Admin, Start
 docs/            Entscheidungen (ADRs)
 ```

@@ -18,7 +18,7 @@ DEMO_MODE = env_bool("STADTSTIMME_DEMO_MODE", default=False)
 DEMO_DATA_DIR = BASE_DIR / "data" / "demo"
 
 # Name der Stadt, wie er auf den Seiten und im Brief erscheint.
-CITY_NAME = env_str("STADTSTIMME_CITY_NAME", default="Musterstadt")
+CITY_NAME = env_str("STADTSTIMME_CITY_NAME", default="Mannheim")
 
 # Kartenkacheln für Übersicht, Verteilen und Ergebnisse (ADR-012). Der Browser lädt sie direkt
 # vom Kachelserver, ohne API-Schlüssel. Standard ist der Kachelserver des FOSSGIS e. V.

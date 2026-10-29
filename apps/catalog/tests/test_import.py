@@ -151,7 +151,7 @@ def test_coordinates_are_imported() -> None:
 
     facility = Facility.objects.get(external_id="E-001")
     assert facility.has_location
-    assert str(facility.latitude) == "50.871204"
+    assert str(facility.latitude) == "49.484000"
 
 
 def test_coordinates_are_optional(demo_copy: Path) -> None:
@@ -166,7 +166,7 @@ def test_coordinates_are_optional(demo_copy: Path) -> None:
 
 
 def test_latitude_without_longitude_is_reported(replace_in: Replace) -> None:
-    directory = replace_in("facilities.csv", ",50.871204,9.701932", ",50.871204,")
+    directory = replace_in("facilities.csv", ",49.484000,8.492000", ",49.484000,")
 
     report = import_catalog(directory)
 

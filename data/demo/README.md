@@ -1,8 +1,8 @@
-# Demo-Daten: Musterstadt
+# Demo-Daten: Teststadt Mannheim
 
-Alle Daten sind **fiktiv**. Sie dienen der Entwicklung, den Tests und der Vorführung. Die Koordinaten
-liegen beispielhaft in einer echten Kleinstadt, damit die Karte etwas zeigt; sie gehören zu keiner
-realen Einrichtung.
+Alle Einrichtungen, Maßnahmen und Beträge sind **fiktiv**. Sie dienen der Entwicklung, den Tests
+und der Vorführung. Adressen und Koordinaten liegen beispielhaft in Mannheim, damit die Karte die
+Stadt zeigt; sie beschreiben keine realen Einrichtungen und keinen echten Haushalt.
 
 | Datei | Inhalt |
 | --- | --- |

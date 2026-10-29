@@ -1,10 +1,10 @@
 facility_external_id,measure_external_id,fiscal_year,amount_eur,kind,source,as_of
-E-001,,2025,612000.00,Ist,Fiktiver Haushalt Musterstadt,2026-03-31
-E-002,,2025,1480000.00,Ist,Fiktiver Haushalt Musterstadt,2026-03-31
-E-003,,2025,935000.00,Ist,Fiktiver Haushalt Musterstadt,2026-03-31
-E-003,M-005,2026,48000.00,Plan,Fiktiver Haushalt Musterstadt,2026-01-15
-E-004,,2025,410000.00,Ist,Fiktiver Haushalt Musterstadt,2026-03-31
-E-005,,2025,95000.00,Ist,Fiktiver Haushalt Musterstadt,2026-03-31
-E-006,,2025,182000.00,Ist,Fiktiver Haushalt Musterstadt,2026-03-31
-E-007,,2025,74000.00,Ist,Fiktiver Haushalt Musterstadt,2026-03-31
-E-008,,2025,128000.00,Ist,Fiktiver Haushalt Musterstadt,2026-03-31
+E-001,,2025,612000.00,Ist,Fiktive Testdaten Mannheim,2026-03-31
+E-002,,2025,1480000.00,Ist,Fiktive Testdaten Mannheim,2026-03-31
+E-003,,2025,935000.00,Ist,Fiktive Testdaten Mannheim,2026-03-31
+E-003,M-005,2026,48000.00,Plan,Fiktive Testdaten Mannheim,2026-01-15
+E-004,,2025,410000.00,Ist,Fiktive Testdaten Mannheim,2026-03-31
+E-005,,2025,95000.00,Ist,Fiktive Testdaten Mannheim,2026-03-31
+E-006,,2025,182000.00,Ist,Fiktive Testdaten Mannheim,2026-03-31
+E-007,,2025,74000.00,Ist,Fiktive Testdaten Mannheim,2026-03-31
+E-008,,2025,128000.00,Ist,Fiktive Testdaten Mannheim,2026-03-31

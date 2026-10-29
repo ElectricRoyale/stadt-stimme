@@ -1,4 +1,4 @@
-// „Punkte verteilen“: −/+ in Fünferschritten, Restpunkte, die 100 Quadrate, der Vergleich mit dem
+// „Punkte verteilen“: −/+ um je einen Punkt, Restpunkte, die 100 Quadrate, der Vergleich mit dem
 // Haushalt und der Speicherstand, alles live. Rein zusätzlich: Ohne JavaScript bleiben Zahlenfelder
 // und Speichern voll nutzbar; der Server prüft die 100-Punkte-Grenze (ADR-011).
 // Ereignisse am Formular für Karte und Filter: „dist:change“ (Punkte je Ziel), „dist:focus“
@@ -10,7 +10,6 @@
   if (!form) return;
 
   var budget = Number(form.dataset.budget);
-  var step = Number(form.dataset.step) || 1;
   var inputs = Array.prototype.slice.call(form.querySelectorAll("input[data-points]"));
   var rows = Array.prototype.slice.call(form.querySelectorAll("[data-target]"));
   var initial = {};
@@ -166,7 +165,7 @@
     row.querySelectorAll("[data-step]").forEach(function (button) {
       button.hidden = false;
       button.addEventListener("click", function () {
-        clamp(input, valueOf(input) + Number(button.dataset.step) * step);
+        clamp(input, valueOf(input) + Number(button.dataset.step));
         render();
       });
     });
