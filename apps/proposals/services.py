@@ -124,3 +124,26 @@ def _supported_by(viewer: Participant | None, proposals: Sequence[Proposal]) -> 
         return set()
     rows = Support.objects.filter(participant=viewer, proposal__in=proposals)
     return set(rows.values_list("proposal_id", flat=True))
+
+
+def place_from_proposal(proposal: Proposal) -> Facility | None:
+    """Ein angenommener Vorschlag mit neuem Ort wird eine eigene Einrichtung (ADR-024).
+
+    So steht der Ort in „Punkte verteilen“ als eigene Zeile, auf den Karten und in den
+    Ergebnissen. Der Punkt wandert an die Einrichtung; der Vorschlag zeigt danach auf sie.
+    """
+    if proposal.facility_id is not None or not proposal.has_point:
+        return None
+    with transaction.atomic():
+        facility = Facility.objects.create(
+            external_id=f"VORSCHLAG-{proposal.pk}",
+            name=proposal.title,
+            category=proposal.category,
+            description=proposal.text or f"Neuer Ort aus Vorschlag {proposal.number}.",
+            latitude=proposal.latitude,
+            longitude=proposal.longitude,
+        )
+        proposal.facility = facility
+        proposal.latitude = proposal.longitude = None
+        proposal.save(update_fields=["facility", "latitude", "longitude"])
+    return facility

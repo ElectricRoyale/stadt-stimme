@@ -3,12 +3,16 @@
 from decimal import Decimal
 
 import pytest
+from django.contrib import admin
 from django.db import IntegrityError
-from django.test import Client
+from django.test import Client, RequestFactory
 
 from apps.access.models import Participant
-from apps.proposals.models import Proposal
+from apps.proposals.admin import ProposalAdmin
+from apps.proposals.models import Proposal, ProposalStatus
+from apps.proposals.services import place_from_proposal
 from apps.proposals.tests.conftest import Catalog
+from apps.reporting.tests.helpers import new_person
 
 pytestmark = pytest.mark.django_db
 URL = "/vorschlaege/"
@@ -93,3 +97,63 @@ def test_database_refuses_facility_and_point(participant: Participant, catalog: 
             latitude=Decimal("49.5"),
             longitude=Decimal("8.5"),
         )
+
+
+def _new_place(catalog: Catalog) -> Proposal:
+    return Proposal.objects.create(
+        participant=new_person(),
+        title="Zebrastreifen an der Kreuzung",
+        category=catalog.sport,
+        status=ProposalStatus.PUBLISHED,
+        latitude=Decimal("49.487459"),
+        longitude=Decimal("8.466039"),
+    )
+
+
+def test_accepting_new_place_creates_own_facility(catalog: Catalog) -> None:
+    proposal = _new_place(catalog)
+    request = RequestFactory().post("/admin/proposals/proposal/")
+    model_admin = admin.site._registry[Proposal]
+    assert isinstance(model_admin, ProposalAdmin)
+
+    model_admin.accept(request, Proposal.objects.filter(pk=proposal.pk))
+
+    proposal.refresh_from_db()
+    facility = proposal.facility
+    assert facility is not None
+    assert (facility.name, facility.category, facility.external_id) == (
+        "Zebrastreifen an der Kreuzung",
+        catalog.sport,
+        f"VORSCHLAG-{proposal.pk}",
+    )
+    assert (facility.latitude, facility.longitude) == (Decimal("49.487459"), Decimal("8.466039"))
+    assert proposal.latitude is None
+    assert place_from_proposal(proposal) is None  # nur einmal
+
+
+def test_new_place_is_its_own_row_after_acceptance(logged_in: Client, catalog: Catalog) -> None:
+    proposal = _new_place(catalog)
+    proposal.status = ProposalStatus.ACCEPTED
+    proposal.save()
+    facility = place_from_proposal(proposal)
+    assert facility is not None
+
+    content = logged_in.get("/verteilen/").content.decode()
+
+    assert f'name="f-{facility.pk}"' in content
+    assert f"Angenommener Vorschlag V-{proposal.pk}:" in content
+
+
+def test_known_and_general_places_create_no_facility(catalog: Catalog) -> None:
+    known = Proposal.objects.create(
+        participant=new_person(),
+        title="Abends länger",
+        category=catalog.sport,
+        facility=catalog.bad,
+    )
+    general = Proposal.objects.create(
+        participant=new_person(), title="Mehr Kurse", category=catalog.sport
+    )
+
+    assert place_from_proposal(known) is None
+    assert place_from_proposal(general) is None
