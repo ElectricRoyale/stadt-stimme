@@ -20,13 +20,19 @@ DEMO_DATA_DIR = BASE_DIR / "data" / "demo"
 # Name der Stadt, wie er auf den Seiten und im Brief erscheint.
 CITY_NAME = env_str("STADTSTIMME_CITY_NAME", default="Musterstadt")
 
-# Kartenkacheln für das Dashboard (ADR-012). Der Browser lädt sie direkt vom Kachelserver.
+# Kartenkacheln für Übersicht und Ergebnisse (ADR-012). Der Browser lädt sie direkt vom
+# Kachelserver. Standard sind die CARTO-Basemaps auf OpenStreetMap-Daten; die OSM-Server
+# selbst sperren Apps wie diese.
 MAP_TILE_URL = env_str(
-    "STADTSTIMME_MAP_TILE_URL", default="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    "STADTSTIMME_MAP_TILE_URL",
+    default="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
 )
 MAP_ATTRIBUTION = env_str(
     "STADTSTIMME_MAP_ATTRIBUTION",
-    default='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende',
+    default=(
+        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende'
+        ' © <a href="https://carto.com/attributions">CARTO</a>'
+    ),
 )
 
 # Ohne DEBUG muss ein eigener Schlüssel gesetzt sein, sonst bricht der Start ab.

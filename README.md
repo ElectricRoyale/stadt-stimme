@@ -109,13 +109,13 @@ zeigt Einrichtungen mit Koordinaten (Spalten `latitude`, `longitude` im CSV, opt
 `/ergebnisse/` zeigt je Einrichtung und je Thema die Lücke in Prozentpunkten: Anteil der
 Bürgerpunkte minus Anteil der Ist-Ausgaben (ADR-013).
 
-Leaflet liegt im Repo, die Kartenkacheln lädt der Browser direkt von OpenStreetMap. Dabei geht
-die IP-Adresse an den Kachelserver; das gehört in die Datenschutzerklärung. Ein anderer
-Kachelserver lässt sich über `STADTSTIMME_MAP_TILE_URL` und `STADTSTIMME_MAP_ATTRIBUTION` setzen.
-Die Kartenanfragen senden den Ursprung der Seite als Referer (ohne Pfad), wie es die
-[Nutzungsrichtlinie von OpenStreetMap](https://operations.osmfoundation.org/policies/tiles/)
-verlangt. Für den Regelbetrieb mit vielen Aufrufen ist ein eigener oder kommerzieller
-Kachelserver vorgesehen; die OSM-Server sind dafür nicht gedacht.
+Leaflet liegt im Repo, die Kartenkacheln lädt der Browser direkt von den
+[CARTO-Basemaps](https://carto.com/basemaps) (Stil „Voyager“, Daten von OpenStreetMap). Dabei
+geht die IP-Adresse an CARTO; das gehört in die Datenschutzerklärung. Die Server von
+OpenStreetMap selbst sperren Apps wie diese, deshalb sind sie nicht der Standard. Kostenlos
+erlaubt CARTO das nur eingeschränkt (siehe deren Nutzungsbedingungen); für den Regelbetrieb
+braucht es einen Vertrag oder einen eigenen Kachelserver. Einen anderen
+Kachelserver setzt man über `STADTSTIMME_MAP_TILE_URL` und `STADTSTIMME_MAP_ATTRIBUTION`.
 
 ## Vorschläge
 
