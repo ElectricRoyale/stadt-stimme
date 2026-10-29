@@ -31,7 +31,7 @@
                  {% if form.code.errors %}aria-invalid="true"{% endif %} required data-code-counter="code-zaehler">
           <span id="code-zaehler" class="code-counter" hidden></span>
         </div>
-        <button type="submit" class="ss-btn ss-btn--primary login__submit">Anmelden</button>
+        <button type="submit" class="login__btn login__btn--primary">Anmelden</button>
       </form>
 
       <p class="login__note">Du bleibst auf diesem Gerät angemeldet, bis du dich abmeldest. Auf einem anderen Gerät meldest du dich einfach mit demselben Code an.</p>
@@ -39,7 +39,7 @@
       {% include "access/_code_hilfe.html" %}
 
       <div class="login__guest">
-        <a href="{% url 'reporting:overview' %}" class="ss-btn ss-btn--secondary">Ohne Code umsehen</a>
+        <a href="{% url 'reporting:overview' %}" class="login__btn login__btn--secondary">Ohne Code umsehen</a>
         <span>Die Ergebnisse sind öffentlich. Zum Verteilen der Punkte brauchst du deinen Code.</span>
       </div>
 {% endblock %}

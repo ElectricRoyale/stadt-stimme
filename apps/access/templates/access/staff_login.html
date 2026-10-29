@@ -26,13 +26,13 @@
             <input type="password" name="password" id="id_password" class="login__input"
                    autocomplete="current-password" required {% if error %}aria-invalid="true"{% endif %}>
           </div>
-          <button type="submit" class="ss-btn ss-btn--primary login__submit">Anmelden</button>
+          <button type="submit" class="login__btn login__btn--primary">Anmelden</button>
         </form>
 
         {% if demo_mode %}<p class="login__note">Demo-Zugang: <strong>demo</strong> / <strong>demo</strong></p>{% endif %}
       {% endif %}
 
       <div class="login__guest">
-        <a href="{% url 'access:redeem' %}" class="ss-btn ss-btn--secondary">Ich bin Bürgerin oder Bürger</a>
+        <a href="{% url 'access:redeem' %}" class="login__btn login__btn--secondary">Ich bin Bürgerin oder Bürger</a>
       </div>
 {% endblock %}
