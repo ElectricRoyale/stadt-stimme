@@ -9,7 +9,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, timedelta
 
-from django.db.models import Count, QuerySet
+from django.db.models import Count, Min, QuerySet
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 
@@ -173,6 +173,12 @@ class Participation:
     @property
     def bars(self) -> list[tuple[WeekCount, float]]:
         return [(w, self.height(w)) for w in self.weeks]
+
+
+def participation_since() -> date | None:
+    """Tag der ersten Einlösung eines Codes, in der Zeitzone der Anwendung."""
+    first = AccessCode.objects.aggregate(first=Min("redeemed_at"))["first"]
+    return timezone.localdate(first) if first else None
 
 
 def participation_by_week(

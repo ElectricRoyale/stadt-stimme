@@ -5,7 +5,7 @@ from datetime import date
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_GET
 
 from apps.access.models import Participant
@@ -16,9 +16,11 @@ from apps.proposals.services import leading_proposals, pending_proposal
 from apps.reporting.dashboard import (
     my_points,
     participation_by_week,
+    participation_since,
     recent_measures,
     wish_budget,
 )
+from apps.reporting.export import results_csv
 from apps.reporting.map_data import map_payload, results_payload
 from apps.reporting.results import build_results
 from apps.reporting.statistics import Overview, build_overview
@@ -63,10 +65,24 @@ def results(request: HttpRequest) -> HttpResponse:
         {
             "results": outcome,
             "selected": outcome.select(request.GET.get("ort")),
-            "map_data": results_payload(outcome, reverse("points:distribute")),
+            "map_data": results_payload(outcome),
+            "now": timezone.localtime(),
+            "since": participation_since(),
+            "budget": POINTS_BUDGET,
             **_map_settings(),
         },
     )
+
+
+@require_GET
+def results_table(request: HttpRequest) -> HttpResponse:
+    """Dieselben Zahlen als CSV; städtische Werte, ohne eigene Punkte."""
+    outcome = build_results(build_overview())
+    response = HttpResponse(
+        results_csv(outcome, settings.CITY_NAME), content_type="text/csv; charset=utf-8"
+    )
+    response["Content-Disposition"] = 'attachment; filename="stadtstimme-ergebnisse.csv"'
+    return response
 
 
 def _overview_for(request: HttpRequest) -> Overview:

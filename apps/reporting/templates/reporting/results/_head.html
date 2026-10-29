@@ -1,0 +1,18 @@
+{# Titel, der eine Befund, der zählt, Herkunft der Zahlen und Wege, sie mitzunehmen. #}
+<header class="res-head">
+  <div class="res-head__text">
+    <h1>Ergebnisse</h1>
+    {% with top=results.lead other=results.city_lead %}
+      {% if top %}
+        <p class="res-head__lead">Bei „{{ top.name }}“ liegen Wunsch und Geld am weitesten auseinander: {{ top.wish }} % der Bürgerpunkte, aber nur {{ top.spend }} % der Ausgaben{% if results.fiscal_year %} {{ results.fiscal_year }}{% endif %}.{% if other %} Umgekehrt ist es bei „{{ other.name }}“ ({{ other.gap_text }}).{% endif %}</p>
+      {% else %}
+        <p class="res-head__lead">Hier steht, wo der Wunsch der Bürgerinnen und Bürger und die Ausgaben der Stadt auseinanderliegen.</p>
+      {% endif %}
+    {% endwith %}
+    <p class="res-head__meta">{% include "partials/icon.html" with name="globe" size=14 class="res-head__icon" %}Öffentlich, ohne Anmeldung. {{ results.participants_text }} Mitmachende{% if since %} seit {{ since|date:"j. F Y" }}{% endif %}, Stand {{ now|date:"d.m.Y, H:i" }} Uhr.</p>
+  </div>
+  <div class="res-head__actions">
+    <a class="btn-outline res-action" href="{% url 'reporting:results_table' %}" download>{% include "partials/icon.html" with name="download" size=16 %}Tabelle laden (CSV)</a>
+    <button type="button" class="btn-outline res-action" data-js-only hidden data-res-print>{% include "partials/icon.html" with name="printer" size=16 %}Drucken</button>
+  </div>
+</header>

@@ -1,0 +1,47 @@
+{# Dieselben Ergebnisse als Listen: je Ort oder nach Thema. Zugleich die zugängliche Fassung der Karte. Ohne JavaScript stehen beide Listen untereinander. #}
+<section class="panel res-lists" id="liste" aria-labelledby="liste-titel" data-lists>
+  <div class="panel__head">
+    <div>
+      <h2 id="liste-titel">Alle Ergebnisse als Liste</h2>
+      <p class="panel__sub">Zahl rechts: Bürgerpunkte minus Ausgaben, in Prozentpunkten</p>
+    </div>
+    <div class="seg" role="group" aria-label="Ansicht" data-js-only hidden>
+      <button type="button" aria-pressed="true" data-res-view="ort">Nach Ort ({{ results.places|length }})</button>
+      <button type="button" aria-pressed="false" data-res-view="thema">Nach Thema ({{ results.themes|length }})</button>
+    </div>
+  </div>
+
+  <div class="res-view" data-view="ort">
+    <h3 class="res-view__title" data-view-title>Nach Ort</h3>
+    <div class="res-view__bar">
+      <p class="panel__sub" aria-live="polite" data-place-count data-total="{{ results.places|length }}">{{ results.places|length }} von {{ results.places|length }} Einrichtungen</p>
+      <div class="seg" role="group" aria-label="Sortieren nach" data-js-only hidden>
+        <button type="button" aria-pressed="true" data-res-sort="gap">Lücke</button>
+        <button type="button" aria-pressed="false" data-res-sort="points">Punkte</button>
+        <button type="button" aria-pressed="false" data-res-sort="name">A bis Z</button>
+      </div>
+    </div>
+    <ul class="gap-list" data-place-list>
+      {% for row in results.places %}
+        <li data-theme="{{ row.category.pk }}" data-gap="{{ row.gap }}" data-points="{{ row.points }}" data-name="{{ row.name }}">{% include "reporting/results/_gap_row.html" %}</li>
+      {% empty %}
+        <li class="panel__empty">Noch keine Einrichtungen angelegt.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="res-view" data-view="thema">
+    <h3 class="res-view__title" data-view-title>Nach Thema</h3>
+    <ul class="res-themes">
+      {% for theme in results.themes %}
+        <li class="res-themes__item" data-theme="{{ theme.category.pk }}">
+          {% include "reporting/results/_gap_row.html" with row=theme strong=True %}
+          <ul class="gap-list res-themes__places">
+            {% for place in results.places %}{% if place.category.pk == theme.category.pk %}<li>{% include "reporting/results/_gap_row.html" with row=place indent=True bare=True %}</li>{% endif %}{% endfor %}
+            <li class="res-themes__general"><span>{{ theme.name }} allgemein, ohne Ort</span><span>{{ theme.general_points }} Punkte</span></li>
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

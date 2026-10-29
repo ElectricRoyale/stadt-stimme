@@ -5,15 +5,22 @@ abgeschlossenen Haushaltsjahres, in Prozentpunkten. Positiv heißt: Bürgern ist
 es im Haushalt abgebildet ist.
 """
 
+import math
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Literal
 
 from apps.catalog.models import Category, Facility
 from apps.catalog.spending import actual_spend_by_facility
+from apps.points.overview import format_eur
 from apps.reporting.statistics import Overview, share
 
 GapTone = Literal["citizens", "city", "even"]
+
+
+def format_int(value: int) -> str:
+    """Ganze Zahl mit Tausenderpunkt: 97.200."""
+    return f"{value:,}".replace(",", ".")
 
 
 def signed(value: int) -> str:
@@ -33,14 +40,35 @@ class GapRow:
     wish: int
     spend: int
     mine: int
+    points: int = 0
+    spend_amount: Decimal = Decimal(0)
+    general_points: int = 0  # nur Themen: Punkte für „… allgemein“
 
     @property
     def is_theme(self) -> bool:
         return self.facility is None
 
     @property
+    def share_scale(self) -> int:
+        """Achse der beiden Anteilsbalken im Detail: nächster Zehner über dem größeren Anteil."""
+        return min(100, (max(self.wish, self.spend) // 10 + 1) * 10)
+
+    @property
+    def points_text(self) -> str:
+        return format_int(self.points)
+
+    @property
+    def spend_text(self) -> str:
+        return format_eur(self.spend_amount)
+
+    @property
     def gap(self) -> int:
         return self.wish - self.spend
+
+    @property
+    def gap_size(self) -> int:
+        """Betrag der Lücke, für Balkenbreite und Kartenquadrat."""
+        return abs(self.gap)
 
     @property
     def gap_text(self) -> str:
@@ -59,9 +87,12 @@ class GapRow:
     @property
     def summary(self) -> str:
         if self.gap > 0:
-            return "Den Bürgern ist das wichtiger, als es im Haushalt abgebildet ist."
+            return "Den Bürgerinnen und Bürgern ist das wichtiger, als es der Haushalt abbildet."
         if self.gap < 0:
-            return "Hier gibt die Stadt mehr Geld aus, als es dem Wunsch der Bürger entspricht."
+            return (
+                "Hierhin fließt ein größerer Teil des Geldes, "
+                "als es dem Anteil der Bürgerpunkte entspricht."
+            )
         return "Wunsch und Haushalt liegen gleichauf."
 
 
@@ -71,14 +102,49 @@ class Results:
     themes: list[GapRow]
     fiscal_year: int | None
     total_points: int
+    spend_total: Decimal = Decimal(0)
+    participants: int = 0
+    average_points: int = 0
 
     @property
     def rows(self) -> list[GapRow]:
         return self.places + self.themes
 
     @property
-    def scale_max(self) -> int:
-        return max((max(r.wish, r.spend) for r in self.rows), default=0) or 1
+    def gap_scale(self) -> int:
+        """Eine Achse für alle Lückenbalken, auf zehn Prozentpunkte aufgerundet."""
+        widest = max((abs(r.gap) for r in self.rows), default=0)
+        return max(10, math.ceil(widest / 10) * 10)
+
+    @property
+    def lead(self) -> GapRow | None:
+        """Ort, an dem Bürgern am meisten mehr wichtig ist, als die Stadt ausgibt."""
+        return next((r for r in self.places if r.gap > 0), None)
+
+    @property
+    def city_lead(self) -> GapRow | None:
+        """Ort, an dem die Stadt am meisten mehr ausgibt, als gewünscht wird."""
+        return next((r for r in reversed(self.places) if r.gap < 0), None)
+
+    @property
+    def general_points(self) -> int:
+        return sum(t.general_points for t in self.themes)
+
+    @property
+    def participants_text(self) -> str:
+        return format_int(self.participants)
+
+    @property
+    def total_points_text(self) -> str:
+        return format_int(self.total_points)
+
+    @property
+    def spend_total_text(self) -> str:
+        return format_eur(self.spend_total)
+
+    @property
+    def general_share(self) -> int:
+        return share(self.general_points, self.total_points)
 
     def select(self, key: str | None) -> GapRow | None:
         """Gewählte Zeile; sonst der Ort mit der größten Lücke."""
@@ -100,6 +166,8 @@ def build_results(overview: Overview) -> Results:
             wish=p.share,
             spend=share(spend.get(p.facility.pk, Decimal(0)), spend_total),
             mine=p.mine,
+            points=p.points,
+            spend_amount=spend.get(p.facility.pk, Decimal(0)),
         )
         for p in overview.places
         if p.facility is not None
@@ -113,6 +181,11 @@ def build_results(overview: Overview) -> Results:
             wish=t.citizen_share,
             spend=t.spend_share,
             mine=t.mine,
+            points=sum(p.points for p in overview.places if p.category == t.category),
+            spend_amount=t.spend,
+            general_points=sum(
+                p.points for p in overview.places if p.is_general and p.category == t.category
+            ),
         )
         for t in overview.themes
     ]
@@ -121,4 +194,7 @@ def build_results(overview: Overview) -> Results:
         themes=sorted(themes, key=lambda r: (-r.gap, r.name)),
         fiscal_year=overview.fiscal_year,
         total_points=overview.total_points,
+        spend_total=spend_total,
+        participants=overview.participants,
+        average_points=overview.average_points,
     )

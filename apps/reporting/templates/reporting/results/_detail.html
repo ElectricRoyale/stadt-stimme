@@ -1,0 +1,53 @@
+{# Eine Auswahl: wie weit Wunsch und Geld auseinanderliegen, woher beide Zahlen kommen, was geplant ist. Alle stehen im HTML, nur die gewählte ist sichtbar; results.js tauscht sie. #}
+<section class="panel res-detail" aria-labelledby="detail-{{ row.key }}" data-detail="{{ row.key }}"{% if row.key != selected.key %} hidden{% endif %}>
+  <div class="panel__head"><div>
+    <h2 id="detail-{{ row.key }}">{{ row.name }}</h2>
+    <p class="panel__sub">{% if row.is_theme %}Ganzes Thema mit allen Einrichtungen und „{{ row.name }} allgemein“{% else %}{% include "partials/icon.html" with name="map-pin" size=14 class="res-detail__icon" %}{{ row.category.name }}{% if row.facility.address %}, {{ row.facility.address }}{% endif %}{% endif %}</p>
+  </div></div>
+
+  <p class="res-figure"><strong class="res-figure__value tone-{{ row.tone }}">{{ row.gap_text }}</strong><span>Prozentpunkte</span></p>
+  <p class="res-detail__summary">{{ row.summary }}</p>
+
+  <div class="res-detail__block res-detail__block--shares">
+    <div class="res-share">
+      <p class="res-share__label"><span>Anteil an allen Bürgerpunkten</span><strong>{{ row.wish }} %</strong></p>
+      <div class="res-share__track"><span class="res-share__bar tone-citizens" style="width: {% widthratio row.wish row.share_scale 100 %}%"></span></div>
+      <p class="res-share__note">{{ row.points_text }} von {{ results.total_points_text }} Punkten</p>
+    </div>
+    <div class="res-share">
+      <p class="res-share__label"><span>Anteil an den Ausgaben{% if results.fiscal_year %} {{ results.fiscal_year }}{% endif %}</span><strong>{{ row.spend }} %</strong></p>
+      <div class="res-share__track"><span class="res-share__bar tone-city" style="width: {% widthratio row.spend row.share_scale 100 %}%"></span></div>
+      <p class="res-share__note">{{ row.spend_text }} von {{ results.spend_total_text }}</p>
+    </div>
+  </div>
+
+  <div class="res-detail__block">
+    {% if row.is_theme %}
+      <h3 class="res-detail__title">Die Einrichtungen im Thema</h3>
+      <ul class="gap-list">
+        {% for place in results.places %}{% if place.category.pk == row.category.pk %}<li>{% include "reporting/results/_gap_row.html" with row=place bare=True %}</li>{% endif %}{% endfor %}
+      </ul>
+      <p class="panel__note">Dazu {{ row.general_points }} Punkte für „{{ row.name }} allgemein“, ohne bestimmten Ort.</p>
+    {% else %}
+      <h3 class="res-detail__title">Wofür die Stadt hier Geld braucht</h3>
+      <ul class="res-measures">
+        {% for measure in row.facility.measures.all %}
+          <li><span class="res-measures__text{% if measure.status == 'verworfen' %} is-muted{% endif %}">{{ measure.title }}<span>Stand {{ measure.updated_at|date:"j. F Y" }}</span></span><span class="pill pill--{{ measure.status }}">{{ measure.get_status_display|capfirst }}</span></li>
+        {% empty %}
+          <li class="panel__empty">Noch keine Maßnahmen eingetragen.</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+
+  {% if participant %}<p class="res-detail__mine">Von dir: <strong>{{ row.mine }} Punkte</strong></p>{% endif %}
+
+  <div class="res-detail__actions">
+    {% if participant %}
+      <a class="btn-ink" href="{% url 'points:distribute' %}#ziel-{{ row.key }}">{% if row.is_theme %}Punkte an „{{ row.name }} allgemein“ geben{% else %}Punkte geben{% endif %}</a>
+    {% else %}
+      <a class="btn-ink" href="{% url 'access:redeem' %}">Mit deinem Code mitmachen</a>
+    {% endif %}
+    <button type="button" class="btn-outline res-action" data-js-only hidden data-copy-link>{% include "partials/icon.html" with name="link" size=16 %}<span data-copy-label>Link teilen</span></button>
+  </div>
+</section>

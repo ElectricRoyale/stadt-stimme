@@ -1,0 +1,10 @@
+{# Eine wählbare Zeile: Name, die Lücke auf der gemeinsamen Achse, die Zahl mit Vorzeichen. Ohne JavaScript ein Link mit ?ort=. #}
+<a class="gap-row{% if indent %} gap-row--indent{% endif %}{% if strong %} gap-row--strong{% endif %}" href="?ort={{ row.key }}#auswahl" data-select="{{ row.key }}"{% if row.key == selected.key %} aria-current="true"{% endif %}
+   aria-label="{{ row.name }}: {{ row.wish }} Prozent der Bürgerpunkte, {{ row.spend }} Prozent der Ausgaben, Lücke {{ row.gap_text }} Prozentpunkte">
+  <span class="gap-row__text">
+    <span class="gap-row__name">{{ row.name }}</span>
+    {% if not bare %}<span class="gap-row__note">{{ row.wish }} % der Punkte, {{ row.spend }} % der Ausgaben</span>{% endif %}
+  </span>
+  <span class="gap-bar gap-bar--{{ row.tone }}" style="--half: {% widthratio row.gap_size results.gap_scale 50 %}%" aria-hidden="true"><span></span></span>
+  <span class="gap-row__figure tone-{{ row.tone }}">{{ row.gap_text }}</span>
+</a>
