@@ -1,15 +1,23 @@
-"""Code einlösen, eigener Bereich, Abmelden. Fachlogik liegt in ``services``."""
+"""Code einlösen, Anmeldung der Verwaltung, eigener Bereich, Abmelden. Fachlogik in ``services``."""
 
 from collections.abc import Callable
 from functools import wraps
 
+from django.conf import settings
+from django.contrib.auth import login as staff_log_in
+from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.access.forms import RedeemForm
 from apps.access.models import Participant
-from apps.access.services import RedeemError, redeem_code
+from apps.access.services import (
+    RedeemError,
+    is_locked_out,
+    record_failed_attempt,
+    redeem_code,
+)
 from apps.access.session import current_participant, log_in, log_out
 
 View = Callable[..., HttpResponse]
@@ -51,6 +59,36 @@ def redeem(request: HttpRequest) -> HttpResponse:
     form.add_error("code", error.value)
     status = 429 if error is RedeemError.LOCKED_OUT else 200
     return render(request, "access/redeem.html", {"form": form}, status=status)
+
+
+STAFF_LOGIN_FAILED = "Benutzername oder Passwort stimmt nicht."
+
+
+@require_http_methods(["GET", "POST"])
+def staff_login(request: HttpRequest) -> HttpResponse:
+    """Anmeldung der Stadtverwaltung für den Admin. Den Admin gibt es bisher nur im Demo-Modus."""
+    enabled = settings.DEMO_MODE
+    if enabled and request.user.is_authenticated and request.user.is_staff:
+        return redirect("admin:index")
+    error, status = None, 200
+    if enabled and request.method == "POST":
+        client = _client_address(request)
+        form = AuthenticationForm(request, data=request.POST)
+        if is_locked_out(client):
+            error, status = RedeemError.LOCKED_OUT.value, 429
+        elif form.is_valid() and form.get_user().is_staff:
+            staff_log_in(request, form.get_user())
+            return redirect("admin:index")
+        else:
+            record_failed_attempt(client)
+            error = STAFF_LOGIN_FAILED
+    context = {
+        "username": request.POST.get("username", ""),
+        "error": error,
+        "enabled": enabled,
+        "demo_mode": settings.DEMO_MODE,
+    }
+    return render(request, "access/staff_login.html", context, status=status)
 
 
 @require_http_methods(["GET"])

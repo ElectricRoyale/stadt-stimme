@@ -120,9 +120,14 @@ def is_locked_out(client: str) -> bool:
 
 
 def _fail(client: str, error: RedeemError) -> RedeemResult:
+    record_failed_attempt(client)
+    return RedeemResult(error=error)
+
+
+def record_failed_attempt(client: str) -> None:
+    """Zählt für die Sperre; gilt für Code und Verwaltungs-Login gemeinsam."""
     FailedAttempt.objects.filter(created_at__lt=timezone.now() - _lockout_window()).delete()
     FailedAttempt.objects.create(client_hash=_client_hash(client))
-    return RedeemResult(error=error)
 
 
 def _lock_client(client: str) -> None:

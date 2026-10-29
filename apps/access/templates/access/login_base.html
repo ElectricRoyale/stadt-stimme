@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Anmelden · StadtStimme{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  {% block login_head %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+<div class="login">
+  <section class="login__brand" aria-label="Über StadtStimme">
+    <div class="login__logo">
+      {% include "partials/logo.html" with size=36 %}
+      <span class="login__name">StadtStimme</span>
+      <span class="login__city">{{ city_name }}</span>
+    </div>
+    <div class="login__pitch">
+      <h2>Deine Stimme für {{ city_name }}.</h2>
+      <ol class="login__benefits">
+        <li><span aria-hidden="true">1</span>Verteile 100 Punkte auf Orte und Themen, die dir wichtig sind.</li>
+        <li><span aria-hidden="true">2</span>Schlag vor, was die Stadt angehen soll.</li>
+        <li><span aria-hidden="true">3</span>Sieh, was die Stadt daraus macht.</li>
+      </ol>
+    </div>
+    <p class="login__privacy">StadtStimme speichert keinen Namen und keine Adresse. Dein Code ist dein Zugang.</p>
+  </section>
+
+  <main id="inhalt" class="login__main">
+    <div class="login__panel">
+      <div class="login__logo login__logo--compact">
+        {% include "partials/logo.html" with size=32 %}
+        <span class="login__name">StadtStimme</span>
+        <span class="login__city">{{ city_name }}</span>
+      </div>
+
+      <nav class="login__roles" aria-label="Anmelden als">
+        <a href="{% url 'access:redeem' %}"{% if request.resolver_match.url_name == 'redeem' %} aria-current="page"{% endif %}>Bürgerin oder Bürger</a>
+        <a href="{% url 'access:staff_login' %}"{% if request.resolver_match.url_name == 'staff_login' %} aria-current="page"{% endif %}>Stadtverwaltung</a>
+      </nav>
+
+{% block panel %}{% endblock %}
+    </div>
+  </main>
+</div>
+{% endblock %}

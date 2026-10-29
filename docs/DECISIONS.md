@@ -25,4 +25,4 @@ Eine überholte Entscheidung wird nicht gelöscht, sondern als ersetzt markiert.
 
 - Gerätebindung nach dem Einlösen (Passkey/Passwort). Bis dahin ist der Code zugleich der Login.
 - Export der Codes für den Briefdruck und Sperren von Codes.
-- Admin-Login-Konzept. Bis dahin ist der Django Admin nur im Demo-Modus und nur lokal erreichbar.
+- Admin-Login-Konzept. Bis dahin ist der Django Admin nur im Demo-Modus und nur lokal erreichbar. Die Anmeldeseite bietet schon die Wahl „Bürgerin oder Bürger“ / „Stadtverwaltung“ (`/zugang/stadt/`, Benutzername und Passwort, gleiche Sperre nach Fehlversuchen wie beim Code); ohne Demo-Modus zeigt sie dort nur einen Hinweis.

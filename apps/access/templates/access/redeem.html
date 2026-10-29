@@ -1,40 +1,11 @@
-{% extends "base.html" %}
+{% extends "access/login_base.html" %}
 {% load static %}
 
 {% block title %}Code eingeben · StadtStimme{% endblock %}
 
-{% block head %}
-  <link rel="stylesheet" href="{% static 'css/login.css' %}">
-  <script src="{% static 'js/code-input.js' %}" defer></script>
-{% endblock %}
+{% block login_head %}<script src="{% static 'js/code-input.js' %}" defer></script>{% endblock %}
 
-{% block body %}
-<div class="login">
-  <section class="login__brand" aria-label="Über StadtStimme">
-    <div class="login__logo">
-      {% include "partials/logo.html" with size=36 %}
-      <span class="login__name">StadtStimme</span>
-      <span class="login__city">{{ city_name }}</span>
-    </div>
-    <div class="login__pitch">
-      <h2>Deine Stimme für {{ city_name }}.</h2>
-      <ol class="login__benefits">
-        <li><span aria-hidden="true">1</span>Verteile 100 Punkte auf Orte und Themen, die dir wichtig sind.</li>
-        <li><span aria-hidden="true">2</span>Schlag vor, was die Stadt angehen soll.</li>
-        <li><span aria-hidden="true">3</span>Sieh, was die Stadt daraus macht.</li>
-      </ol>
-    </div>
-    <p class="login__privacy">StadtStimme speichert keinen Namen und keine Adresse. Dein Code ist dein Zugang.</p>
-  </section>
-
-  <main id="inhalt" class="login__main">
-    <div class="login__panel">
-      <div class="login__logo login__logo--compact">
-        {% include "partials/logo.html" with size=32 %}
-        <span class="login__name">StadtStimme</span>
-        <span class="login__city">{{ city_name }}</span>
-      </div>
-
+{% block panel %}
       <div class="login__intro">
         <h1>Code eingeben</h1>
         <p>Deinen persönlichen Code findest du im Brief deiner Stadt. Du brauchst kein Konto und keine E-Mail-Adresse.</p>
@@ -71,7 +42,4 @@
         <a href="{% url 'reporting:overview' %}" class="ss-btn ss-btn--secondary">Ohne Code umsehen</a>
         <span>Die Ergebnisse sind öffentlich. Zum Verteilen der Punkte brauchst du deinen Code.</span>
       </div>
-    </div>
-  </main>
-</div>
 {% endblock %}
