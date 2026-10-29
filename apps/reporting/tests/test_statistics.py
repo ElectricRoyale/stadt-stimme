@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from apps.points.services import Target, save_distribution
 from apps.reporting.map_data import map_payload
+from apps.reporting.results import build_results
 from apps.reporting.statistics import build_overview, share
 from apps.reporting.tests.conftest import Catalog
 from apps.reporting.tests.helpers import LAST_YEAR, new_person, spend
@@ -63,14 +64,22 @@ def test_own_points_per_theme(catalog: Catalog) -> None:
     assert stats.mine_used == 15
 
 
-def test_map_payload_contains_only_located_places(catalog: Catalog) -> None:
+def test_map_payload_lists_all_facilities_with_spend(catalog: Catalog) -> None:
     catalog.bad.latitude, catalog.bad.longitude = Decimal("50.1"), Decimal("9.1")
     catalog.bad.save()
+    spend(catalog.bad, "100000")
+    stats = build_overview()
 
-    payload = map_payload(build_overview())
+    places = {p["name"]: p for p in map_payload(stats, build_results(stats))["places"]}
 
-    assert [p["name"] for p in payload["places"]] == ["Hallenbad"]
-    sport = next(t for t in payload["themes"] if t["name"] == "Sport")
-    assert sport["lat"] == pytest.approx(50.1)
-    bildung = next(t for t in payload["themes"] if t["name"] == "Bildung")
-    assert bildung["lat"] is None
+    assert places["Hallenbad"]["lat"] == pytest.approx(50.1)
+    assert places["Hallenbad"]["spend"] == 100
+    assert places["Grundschule"]["lat"] is None
+    assert "themes" not in map_payload(stats, build_results(stats))
+
+
+def test_average_points_per_participant(catalog: Catalog) -> None:
+    save_distribution(new_person(), {Target("f", catalog.bad.pk): 60})
+    save_distribution(new_person(), {Target("f", catalog.schule.pk): 21})
+
+    assert build_overview().average_points == 40

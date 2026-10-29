@@ -1,0 +1,36 @@
+<section class="panel ov-map" id="karte" aria-labelledby="karte-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="karte-titel">Einrichtungen auf der Karte</h2>
+      <p class="panel__sub" id="karte-hinweis" data-all="Größe des Quadrats = Anteil an allen Bürgerpunkten" data-mine="Größe des Quadrats = deine Punkte">Größe des Quadrats = Anteil an allen Bürgerpunkten</p>
+    </div>
+    {% if participant %}
+      <div class="seg" role="group" aria-label="Wessen Punkte" data-js-only hidden>
+        <button type="button" data-scope="alle" aria-pressed="true">Alle</button>
+        <button type="button" data-scope="meine" aria-pressed="false">Meine</button>
+      </div>
+    {% endif %}
+  </header>
+
+  <div class="ov-map__canvas" id="ov-map" role="region" aria-label="Karte von {{ city_name }} mit Einrichtungen als Quadrate. Die Liste darunter enthält dieselben Angaben."
+       data-tiles="{{ map_tile_url }}" data-attribution="{{ map_attribution }}" data-logged-in="{% if participant %}1{% endif %}"
+       data-give-url="{% url 'points:distribute' %}" data-redeem-url="{% url 'access:redeem' %}">
+    <p class="ov-map__fallback">Die Karte braucht JavaScript. Darunter findest du alle Einrichtungen als Liste.</p>
+  </div>
+
+  <div class="ov-map__detail" id="ov-map-detail" tabindex="-1" aria-labelledby="ov-map-detail-title" hidden></div>
+
+  <ol class="ov-rank" id="ov-rank" aria-label="Einrichtungen nach Anteil an allen Bürgerpunkten">
+    {% for place in stats.places %}{% if place.facility %}
+      <li data-theme="{{ place.category.pk }}">
+        <button type="button" class="ov-rank__item" data-select="{{ place.target.key }}" disabled>
+          <span class="ov-rank__name">{{ place.name }}</span>
+          <span class="ov-rank__value" data-all="{{ place.share }} %" data-mine="{% if place.mine %}{{ place.mine }} P.{% else %}–{% endif %}">{{ place.share }} %</span>
+        </button>
+      </li>
+    {% endif %}{% empty %}
+      <li class="panel__empty">Noch keine Einrichtungen eingetragen.</li>
+    {% endfor %}
+  </ol>
+  {{ map_data|json_script:"ov-map-data" }}
+</section>

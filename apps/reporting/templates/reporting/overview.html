@@ -5,46 +5,32 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
-  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/overview.css' %}">
   <script src="{% static 'vendor/leaflet/leaflet.js' %}" defer></script>
   <script src="{% static 'js/map-base.js' %}" defer></script>
-  <script src="{% static 'js/dashboard-map.js' %}" defer></script>
+  <script src="{% static 'js/overview-map.js' %}" defer></script>
+  {% if participant %}<script src="{% static 'js/support-button.js' %}" defer></script>{% endif %}
 {% endblock %}
 
-{% block before_main %}
-  {% if participant %}
-    <a href="{% url 'points:distribute' %}" class="ss-card--dark dash-banner">
-      <span class="dash-banner__inner">
-        <span><strong>{{ remaining }}</strong> von {{ budget }} Punkten noch frei</span>
-        <span class="ss-btn ss-btn--on-dark dash-banner__btn">Punkte verteilen</span>
-      </span>
-    </a>
-  {% else %}
-    <a href="{% url 'access:redeem' %}" class="ss-card--dark dash-banner">
-      <span class="dash-banner__inner">
-        <span>Mit dem Code aus deinem Brief verteilst du 100 Punkte.</span>
-        <span class="ss-btn ss-btn--on-dark dash-banner__btn">Code eingeben</span>
-      </span>
-    </a>
-  {% endif %}
-{% endblock %}
-
-{% block main_class %}dash{% endblock %}
+{% block main_class %}ov{% endblock %}
 
 {% block content %}
-  <h1 class="dash__title">{{ city_name }} auf einen Blick</h1>
+  {% include "reporting/overview/_head.html" %}
 
-  <dl class="dash-tiles">
-    <div class="ss-card dash-tile"><dt>Ergebnisse</dt><dd><a href="{% url 'reporting:results' %}">{% if stats.top_theme %}Platz 1: {{ stats.top_theme.category.name }}{% else %}Noch keine Punkte{% endif %}</a></dd></div>
-    <div class="ss-card dash-tile"><dt>Stadthaushalt{% if stats.fiscal_year %} {{ stats.fiscal_year }}{% endif %}</dt><dd><a href="{% url 'reporting:results' %}">{% if stats.biggest_gap %}Größte Lücke: {{ stats.biggest_gap.category.name }}{% else %}Keine Lücke erkennbar{% endif %}</a></dd></div>
-    <div class="ss-card dash-tile"><dt>Mitgemacht</dt><dd>{{ stats.participants }} {% if stats.participants == 1 %}Person{% else %}Personen{% endif %}</dd></div>
-  </dl>
-
-  <div class="dash__grid">
-    {% include "reporting/_map.html" %}
-    <div class="dash__side">
-      <section class="ss-card dash-detail" id="dash-detail" aria-labelledby="dash-detail-title" tabindex="-1" hidden></section>
-      {% include "reporting/_stats.html" %}
+  {# Telefon: eine Spalte in der Reihenfolge der Aufgaben. Ab 1200 px zwei, ab 1536 px drei Spalten (ADR-015). #}
+  <div class="ov-grid">
+    <div class="ov-col ov-col--a">
+      <div class="ov-slot ov-slot--1">{% include "reporting/overview/_wish_budget.html" %}</div>
+      <div class="ov-slot ov-slot--6">{% include "reporting/overview/_participation.html" %}</div>
+    </div>
+    <div class="ov-col ov-col--b">
+      <div class="ov-slot ov-slot--3">{% include "reporting/overview/_map.html" %}</div>
+      <div class="ov-slot ov-slot--4">{% include "reporting/overview/_proposals.html" %}</div>
+    </div>
+    <div class="ov-col ov-col--c">
+      <div class="ov-slot ov-slot--2">{% include "reporting/overview/_my_points.html" %}</div>
+      <div class="ov-slot ov-slot--5">{% include "reporting/overview/_news.html" %}</div>
     </div>
   </div>
 {% endblock %}

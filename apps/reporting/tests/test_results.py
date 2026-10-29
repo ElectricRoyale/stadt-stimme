@@ -67,7 +67,7 @@ def test_results_page_is_public(client: Client, scenario: Catalog) -> None:
     content = client.get(URL).content.decode()
 
     assert "Wo passen Wunsch und Geld zusammen?" in content
-    assert 'aria-current="page">Ergebnisse' in content
+    assert 'href="/ergebnisse/" aria-current="page"' in content
     assert '<h2 id="res-detail-title" data-field="name">Hallenbad</h2>' in content
     assert "Von dir" not in content
 

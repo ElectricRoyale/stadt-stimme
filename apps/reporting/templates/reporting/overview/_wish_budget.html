@@ -1,0 +1,75 @@
+<section class="panel" id="wunsch-haushalt" aria-labelledby="wunsch-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="wunsch-titel">Wunsch und Haushalt</h2>
+      <p class="panel__sub">Anteil an allen Bürgerpunkten neben dem Anteil an den Ausgaben, je Thema</p>
+    </div>
+    <div class="wb-legend" aria-hidden="true">
+      <span><span class="wb-key wb-key--wish"></span>Bürgerpunkte</span>
+      <span><span class="wb-key wb-key--spend"></span>Ausgaben{% if stats.fiscal_year %} {{ stats.fiscal_year }}{% endif %}</span>
+    </div>
+  </header>
+
+  {% if wish.lines %}
+    <div class="wb" style="--axis: {{ wish.axis_max }};">
+      <div class="wb__grid" aria-hidden="true">
+        {% for tick in wish.ticks %}<span style="--at: {{ tick }};"><span>{{ tick }} %</span></span>{% endfor %}
+      </div>
+      <ul class="wb__lines">
+        {% for line in wish.lines %}
+          {% with t=line.theme %}
+          <li class="wb-line{% if line.is_lead %} wb-line--lead{% endif %}">
+            <details name="wunsch-haushalt" data-theme="{{ t.category.pk }}">
+              <summary class="wb-line__row">
+                <span class="wb-line__name">{{ t.category.name }}</span>
+                <span class="wb-line__scale" aria-hidden="true" style="--wish: {{ t.citizen_share }}; --spend: {{ t.spend_share }};">
+                  <span class="wb-bar" style="--v: {{ t.places_share }};"></span><span class="wb-bar wb-bar--general" style="--v: {{ t.general_share }};"></span>
+                  <span class="wb-tick"></span>
+                  <span class="wb-line__values wb-line__values--{{ line.label_position }}">{{ t.citizen_share }} %<span class="wb-line__spend">{{ t.spend_share }} %</span></span>
+                </span>
+                <span class="ss-visually-hidden">: {{ t.citizen_share }} Prozent der Bürgerpunkte, {{ t.spend_share }} Prozent der Ausgaben, Unterschied {{ line.gap_text }} Prozentpunkte. Einrichtungen anzeigen</span>
+                <span class="wb-line__gap" aria-hidden="true">{{ line.gap_text }}</span>
+                {% include "partials/icon.html" with name="chevron-down" class="wb-line__chevron" %}
+              </summary>
+              <div class="wb-line__detail">
+                <table>
+                  <caption class="ss-visually-hidden">Einrichtungen im Thema {{ t.category.name }}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Einrichtung</th>
+                      <th scope="col">Punkte</th>
+                      <th scope="col">Ausgaben</th>
+                      {% if participant %}<th scope="col">Von dir</th>{% endif %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in line.places %}
+                      <tr>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.wish }} %</td>
+                        <td class="is-spend">{{ row.spend }} %</td>
+                        {% if participant %}<td>{% if row.mine %}{{ row.mine }} P.{% else %}–{% endif %}</td>{% endif %}
+                      </tr>
+                    {% endfor %}
+                    {% if line.general %}
+                      <tr>
+                        <td>{{ line.general.name }}<span class="wb-line__hint">Punkte für das ganze Thema</span></td>
+                        <td>{{ line.general.share }} %</td>
+                        <td class="is-muted">–</td>
+                        {% if participant %}<td>{% if line.general.mine %}{{ line.general.mine }} P.{% else %}–{% endif %}</td>{% endif %}
+                      </tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          </li>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    </div>
+    <p class="panel__note">Zahl rechts: Bürgerpunkte minus Ausgaben, in Prozentpunkten.{% if stats.fiscal_year %} Ist-Ausgaben des Haushaltsjahres {{ stats.fiscal_year }}.{% else %} Noch keine Ist-Ausgaben eines abgeschlossenen Haushaltsjahres eingetragen.{% endif %}</p>
+  {% else %}
+    <p class="panel__empty">Noch keine Themen mit Einrichtungen eingetragen.</p>
+  {% endif %}
+</section>

@@ -1,0 +1,16 @@
+{% comment %}Zugang: „Mein Bereich“ und Abmelden, ohne Zugang der Weg zum Code. compact=True für die Kopfzeile am Telefon.{% endcomment %}
+{% if participant %}
+  <div class="shell-account{% if compact %} shell-account--compact{% endif %}">
+    <a class="shell-account__link" href="{% url 'access:account' %}"{% if request.resolver_match.view_name == 'access:account' %} aria-current="page"{% endif %}{% if compact %} aria-label="Mein Bereich"{% endif %}>
+      {% include "partials/icon.html" with name="user" size=18 %}{% if not compact %}<span>Mein Bereich</span>{% endif %}
+    </a>
+    <form method="post" action="{% url 'access:logout' %}" class="inline-form">
+      {% csrf_token %}
+      <button type="submit" class="shell-account__logout" aria-label="Abmelden" title="Abmelden">
+        {% include "partials/icon.html" with name="log-out" size=18 %}
+      </button>
+    </form>
+  </div>
+{% else %}
+  <a class="shell-account__code" href="{% url 'access:redeem' %}">Code eingeben</a>
+{% endif %}

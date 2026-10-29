@@ -1,0 +1,70 @@
+/* Bausteine im Design „Mannheim“ (ADR-015), nur mit tokens-mannheim.css. Für weitere Seiten gedacht. */
+
+/* Panel: Karte auf dem weißen Blatt, 1px Kante, kein Schatten */
+.panel { min-width: 0; padding: 20px; border: 1px solid var(--ss-edge); border-radius: var(--ss-radius); background: var(--ss-sheet); }
+.panel__head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--ss-space-2) var(--ss-space-4); margin-bottom: var(--ss-space-4); }
+.panel__head > div:first-child { min-width: 0; }
+.panel__head h2 { margin: 0; font-size: var(--ss-fs-section); line-height: var(--ss-lh-body); font-weight: 700; letter-spacing: 0; scroll-margin-top: 72px; }
+.panel__sub { margin: 2px 0 0; font-size: var(--ss-fs-small); line-height: var(--ss-lh-small); color: var(--ss-text-muted); }
+.panel__note { margin: var(--ss-space-3) 0 0; font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); color: var(--ss-text-muted); }
+.panel__empty { margin: 0; font-size: var(--ss-fs-small); line-height: var(--ss-lh-small); color: var(--ss-text-muted); }
+.panel__empty--box { padding: 10px var(--ss-space-3); border: 1px dashed var(--ss-control); border-radius: var(--ss-radius-control); }
+.panel__empty a { color: var(--ss-text); font-weight: 700; text-underline-offset: 4px; }
+.panel__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ss-space-3); margin-top: var(--ss-space-4); padding-top: var(--ss-space-3); border-top: 1px solid var(--ss-rule); }
+.panel__foot p { margin: 0; }
+
+@media (min-width: 640px) {
+  .panel { padding: 24px; }
+}
+
+/* Schaltflächen */
+.btn-ink,
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ss-space-2);
+  border-radius: var(--ss-radius);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.btn-ink { min-height: var(--ss-hit); padding: 0 20px; border: 0; background: var(--ss-text); color: #FFFFFF !important; font-size: var(--ss-fs-body); }
+.btn-ink:hover { background: #333333; }
+.btn-ink:active { transform: scale(0.97); }
+.btn-ink__tag { padding: 0 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.15); font-size: var(--ss-fs-meta); font-variant-numeric: tabular-nums; }
+.btn-outline { align-self: flex-start; min-height: 40px; padding: 0 var(--ss-space-3); border: 1px solid var(--ss-control); background: var(--ss-sheet); color: var(--ss-text) !important; font-size: var(--ss-fs-small); }
+.btn-outline:hover { background: var(--ss-raised); }
+
+/* Umschalter mit zwei Werten, z. B. Alle / Meine */
+.seg { display: inline-flex; padding: 2px; border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); }
+.seg[hidden] { display: none; }
+.seg button { min-height: 36px; padding: 0 var(--ss-space-3); border: 0; border-radius: 4px; background: transparent; color: var(--ss-text); font: inherit; font-size: var(--ss-fs-small); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ss-text); color: #FFFFFF; }
+
+/* Ein-/Aus-Schalter, z. B. Unterstützen */
+.btn-toggle { flex-shrink: 0; min-height: 36px; padding: 0 10px; border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); background: var(--ss-sheet); color: var(--ss-text); font: inherit; font-size: var(--ss-fs-meta); font-weight: 700; cursor: pointer; }
+.btn-toggle:hover { background: var(--ss-raised); }
+.btn-toggle[aria-pressed="true"] { border-color: var(--ss-text); background: var(--ss-text); color: #FFFFFF; }
+.btn-toggle[hidden] { display: none; }
+
+/* Status-Pille: Maßnahmenstatus (Model-Werte) und Prüfstand */
+.pill { display: inline-flex; flex-shrink: 0; align-items: center; height: 24px; padding: 0 var(--ss-space-2); border-radius: 4px; background: var(--ss-rule); color: var(--ss-text-nav); font-size: var(--ss-fs-meta); font-weight: 700; }
+.pill[hidden] { display: none; }
+.pill--notice,
+.pill--in_umsetzung { background: var(--ss-notice-bg); color: var(--ss-notice-ink); }
+.pill--positive,
+.pill--beschlossen,
+.pill--abgeschlossen { background: var(--ss-positive-bg); color: var(--ss-positive-ink); }
+.pill--verworfen { color: var(--ss-text-muted); text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* Fortschritt als dünne Linie */
+.meter-line { height: 6px; overflow: hidden; border-radius: 3px; background: var(--ss-empty); }
+.meter-line > span { display: block; height: 100%; border-radius: inherit; background: var(--ss-bar-neutral); transition: width 0.5s var(--ss-ease-out); }
+.meter-line.is-reached > span { background: var(--ss-text); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-ink:active { transform: none; }
+  .meter-line > span { transition: none; }
+}
