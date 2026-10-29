@@ -1,0 +1,33 @@
+{# Der eigene Teil: was eingereicht wurde und wo es steht, was man unterstützt. #}
+<section class="panel prop-mine" aria-labelledby="deins">
+  <h2 id="deins" class="prop-card__title">Deine Vorschläge</h2>
+  {% if participant %}
+    <dl class="prop-facts">
+      <div><dt>eingereicht</dt><dd>{{ board.mine|length }}</dd></div>
+      <div><dt>unterstützt</dt><dd data-supported-count>{{ board.supported|length }}</dd></div>
+      <div><dt>heute noch möglich</dt><dd>{{ board.left_today }}</dd></div>
+    </dl>
+    {% if board.mine %}
+      <ul class="prop-mine__list">
+        {% for item in board.mine %}
+          <li>
+            <p class="prop-mine__tags"><span class="pill stage stage--{{ item.stage.value }}">{{ item.stage.label }}</span><span>{{ item.proposal.number }}</span></p>
+            <p class="prop-mine__title">{{ item.proposal.title }}</p>
+            <p class="prop-mine__sentence">{{ item.sentence }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% if board.supported %}
+      <h3 class="prop-mine__sub">Du unterstützt</h3>
+      <ul class="prop-mine__supported">
+        {% for item in board.supported %}
+          <li><a href="#vorschlag-{{ item.proposal.pk }}">{{ item.proposal.title }}</a><span class="pill stage stage--{{ item.stage.value }}">{% if item.stage.value == "sammelt" %}Sammelt{% else %}{{ item.stage.label }}{% endif %}</span></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% else %}
+    <p class="panel__empty">Mit dem Code aus deinem Brief kannst du Vorschläge machen und andere unterstützen.</p>
+    <a class="btn-outline prop-mine__login" href="{% url 'access:redeem' %}">Code eingeben</a>
+  {% endif %}
+</section>

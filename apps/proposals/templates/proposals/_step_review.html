@@ -1,0 +1,19 @@
+<section class="prop-step prop-review" data-step="3" aria-labelledby="pruefen-titel" data-js-only hidden>
+  <h4 id="pruefen-titel" class="ss-visually-hidden">Schritt 3: Prüfen</h4>
+  <dl class="prop-review__box">
+    <div class="prop-review__item">
+      <div><dt>Anliegen</dt><dd><strong data-review="title"></strong><span class="prop-review__more" data-review="text"></span></dd></div>
+      <button type="button" class="btn-ghost" data-goto="1">Ändern<span class="ss-visually-hidden">: Anliegen</span></button>
+    </div>
+    <div class="prop-review__item">
+      <div><dt>Einordnung</dt><dd><span data-review="category"></span><span class="prop-review__more" data-review="facility"></span></dd></div>
+      <button type="button" class="btn-ghost" data-goto="2">Ändern<span class="ss-visually-hidden">: Einordnung</span></button>
+    </div>
+  </dl>
+  <ul class="prop-notes">
+    <li>{% include "partials/icon.html" with name="eye-off" size=16 stroke="1.75" %}<span>Bis zur Freigabe siehst nur du den Vorschlag. Die Stadt entscheidet bis {{ decision_by|date:"j. F" }}.</span></li>
+    <li>{% include "partials/icon.html" with name="users" size=16 stroke="1.75" %}<span>Danach können andere ihn unterstützen. Ab {{ support_threshold }} Unterstützungen prüft ihn die Verwaltung und antwortet mit Begründung.</span></li>
+    <li>{% include "partials/icon.html" with name="shield-check" size=16 stroke="1.75" %}<span>Er erscheint ohne Namen, nur mit einer Nummer.</span></li>
+    <li>{% include "partials/icon.html" with name="hourglass" size=16 stroke="1.75" %}<span>Du kannst heute noch {{ board.left_today }} {% if board.left_today == 1 %}Vorschlag{% else %}Vorschläge{% endif %} einreichen.</span></li>
+  </ul>
+</section>

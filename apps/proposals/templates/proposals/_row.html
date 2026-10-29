@@ -1,0 +1,29 @@
+{# Ein Vorschlag: was, wo, wie weit, und was die Stadt entschieden hat. #}
+{% with p=item.proposal %}
+<li class="prop-row{% if item.own %} is-own{% endif %}" id="vorschlag-{{ p.pk }}" data-row data-stage="{{ item.stage.value }}" data-theme="{{ p.category_id }}"
+    data-supports="{{ item.supports }}" data-created="{{ p.pk }}" data-search="{{ item.search_text }}"
+    data-own="{% if item.own %}1{% endif %}" data-supported="{% if item.supported %}1{% endif %}"{% if selected_stage and item.stage.value != selected_stage %} hidden{% endif %}>
+  <article class="prop-row__body" aria-labelledby="vorschlag-{{ p.pk }}-titel">
+    <div class="prop-row__main">
+      <p class="prop-row__tags"><span class="pill stage stage--{{ item.stage.value }}" data-stage-pill>{{ item.stage.label }}</span>{% if item.own %}<span class="prop-row__own">Dein Vorschlag</span>{% endif %}</p>
+      <h3 id="vorschlag-{{ p.pk }}-titel">{{ p.title }}</h3>
+      <p class="prop-row__meta">
+        <span>{{ p.category.name }}</span>
+        <span>{% include "partials/icon.html" with name="map-pin" size=14 %}{{ p.where }}</span>
+        <span>{{ p.number }}, {% if p.published_at %}öffentlich seit {{ p.published_at|date:"j. F" }}{% else %}eingereicht am {{ p.created_at|date:"j. F" }}{% endif %}</span>
+      </p>
+    </div>
+    {% if participant and item.can_support %}<div class="prop-row__action">{% include "proposals/_support.html" %}</div>{% endif %}
+    <div class="prop-row__state">
+      {% include "proposals/_track.html" %}
+      <p class="prop-row__sentence" data-sentence>{{ item.sentence }}</p>
+    </div>
+    {% if p.answer and p.decided_at %}
+      <div class="prop-row__answer">
+        {% include "partials/icon.html" with name="corner-down-right" size=16 class="prop-row__answer-icon" %}
+        <p><strong>Antwort der Stadt vom {{ p.decided_at|date:"j. F" }}:</strong> {{ p.answer }}{% if p.measure %} <a href="{% url 'points:distribute' %}#ziel-f-{{ p.measure.facility_id }}">Maßnahme „{{ p.measure.title }}“ mit Punkten unterstützen</a>{% endif %}</p>
+      </div>
+    {% endif %}
+  </article>
+</li>
+{% endwith %}

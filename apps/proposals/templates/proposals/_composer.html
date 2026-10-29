@@ -1,0 +1,44 @@
+{# Anliegen, Einordnen, Prüfen (ADR-014). Ohne JavaScript ein einseitiges Formular; proposals-compose.js macht drei Schritte daraus. #}
+<section class="panel prop-compose" id="vorschlag-neu" aria-labelledby="neu-titel" tabindex="-1">
+  <h2 id="neu-titel" class="prop-card__title">Vorschlag machen</h2>
+  {% if sent %}
+    <div class="prop-sent" role="status">
+      {% include "partials/icon.html" with name="circle-check" size=32 stroke="1.75" %}
+      <h3>Vorschlag {{ sent.proposal.number }} eingereicht</h3>
+      <p>Die Stadt prüft innerhalb von {{ review_days }} Tagen, ob sie ihn freigibt. Du findest ihn in der Liste unter „Meine“.</p>
+      <a class="btn-outline" href="{% url 'proposals:index' %}#vorschlag-neu">Noch einen Vorschlag machen</a>
+    </div>
+  {% elif not participant %}
+    <div class="prop-login">
+      <p>Zum Einreichen brauchst du den Code aus deinem Brief.</p>
+      <a class="btn-ink" href="{% url 'access:redeem' %}">Code eingeben</a>
+    </div>
+  {% else %}
+    <form method="post" action="{% url 'proposals:index' %}#vorschlag-neu" class="prop-form" novalidate data-compose
+          data-similar-url="{% url 'proposals:similar' %}" data-title-min="{{ title_min }}"
+          data-error-step="{% if form.title.errors or form.text.errors %}1{% elif form.errors %}2{% endif %}">
+      {% csrf_token %}
+      <ol class="steps" aria-label="Schritte" data-js-only hidden>
+        <li><button type="button" class="steps__item" data-goto="1"><span class="steps__bar" aria-hidden="true"></span><span class="steps__label"><span data-step-mark>1</span> Anliegen</span></button></li>
+        <li><button type="button" class="steps__item" data-goto="2" disabled><span class="steps__bar" aria-hidden="true"></span><span class="steps__label"><span data-step-mark>2</span> Einordnen</span></button></li>
+        <li><button type="button" class="steps__item" data-goto="3" disabled><span class="steps__bar" aria-hidden="true"></span><span class="steps__label"><span data-step-mark>3</span> Prüfen</span></button></li>
+      </ol>
+      <h3 class="ss-visually-hidden" tabindex="-1" data-step-heading>Schritt 1 von 3: Anliegen</h3>
+
+      {% if form.non_field_errors %}<div class="prop-alert" role="alert">{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+
+      {% include "proposals/_step_concern.html" %}
+      {% include "proposals/_step_classify.html" %}
+      {% include "proposals/_step_review.html" %}
+
+      {% if board.left_today == 0 %}<p class="prop-alert" role="alert">Heute sind keine weiteren Vorschläge möglich. Morgen geht es wieder.</p>{% endif %}
+
+      <div class="prop-form__actions">
+        <button type="button" class="btn-ghost" data-back data-js-only hidden>{% include "partials/icon.html" with name="arrow-left" size=16 %}Zurück</button>
+        <span class="prop-form__spacer"></span>
+        <button type="button" class="btn-ink" data-next data-js-only hidden>Weiter</button>
+        <button type="submit" class="btn-ink" data-submit{% if board.left_today == 0 %} disabled{% endif %}>Vorschlag einreichen</button>
+      </div>
+    </form>
+  {% endif %}
+</section>

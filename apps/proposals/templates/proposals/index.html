@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Vorschläge · StadtStimme{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/proposals.css' %}">
+  <link rel="stylesheet" href="{% static 'css/proposals-form.css' %}">
+  <script src="{% static 'js/proposals-list.js' %}" defer></script>
+  <script src="{% static 'js/proposals-compose.js' %}" defer></script>
+{% endblock %}
+
+{% block main_class %}prop{% endblock %}
+
+{% block content %}
+<div data-proposals data-support-url="{% url 'proposals:support' 0 %}">
+  {% csrf_token %}
+  <header class="prop-head">
+    <div class="prop-head__text">
+      <h1>Vorschläge</h1>
+      <p class="prop-head__lead">Fehlt etwas, worum sich die Stadt kümmern sollte? Schlag es vor. {{ board.counts.sammelt }} {% if board.counts.sammelt == 1 %}Vorschlag sammelt{% else %}Vorschläge sammeln{% endif %} gerade Unterstützung, {{ board.counts.angenommen }} {% if board.counts.angenommen == 1 %}wurde{% else %}wurden{% endif %} angenommen.</p>
+      <p class="prop-head__meta">Stand {{ now|date:"d.m.Y, H:i" }} Uhr.</p>
+    </div>
+    <a class="btn-ink prop-head__cta" href="#vorschlag-neu">Vorschlag machen</a>
+  </header>
+
+  {# Telefon: Weg, Deins, Formular, Liste, Regeln. Ab 1024 px: Weg und Liste links, rechts Formular, Deins, Regeln. Ab 1536 px: Deins und Regeln | Weg und Liste | Formular, das mitläuft. #}
+  <div class="prop-grid">
+    <div class="prop-main">
+      {% include "proposals/_pipeline.html" %}
+      {% include "proposals/_list.html" %}
+    </div>
+    <div class="prop-side">
+      {% include "proposals/_composer.html" %}
+      <div class="prop-aside">
+        {% include "proposals/_mine.html" %}
+        {% include "proposals/_rules.html" %}
+      </div>
+    </div>
+  </div>
+  <p class="ss-visually-hidden" aria-live="polite" data-prop-live></p>
+</div>
+{% endblock %}

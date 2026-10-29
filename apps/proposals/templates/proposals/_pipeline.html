@@ -1,0 +1,16 @@
+{# Der Weg aller Vorschläge auf einen Blick, zugleich Filter für die Liste. Ohne JavaScript Links mit ?schritt=. #}
+<section class="panel prop-way" aria-labelledby="weg">
+  <div class="prop-way__head">
+    <h2 id="weg">Der Weg eines Vorschlags</h2>
+    <p class="panel__sub">Wähle einen Schritt, um die Liste darauf zu beschränken.</p>
+  </div>
+  <div class="prop-way__grid">
+    {% include "proposals/_way_step.html" with stage="eingereicht" label="Eingereicht" count=board.counts.eingereicht %}
+    {% include "proposals/_way_step.html" with stage="sammelt" label="Sammelt Unterstützung" count=board.counts.sammelt %}
+    {% include "proposals/_way_step.html" with stage="pruefung" label="In Prüfung" count=board.counts.pruefung last=True %}
+    <div class="prop-way__fork">
+      {% include "proposals/_way_step.html" with stage="angenommen" label="Angenommen" count=board.counts.angenommen compact=True %}
+      {% include "proposals/_way_step.html" with stage="abgelehnt" label="Abgelehnt" count=board.counts.abgelehnt compact=True %}
+    </div>
+  </div>
+</section>

@@ -5,56 +5,50 @@ from django import forms
 from apps.catalog.models import Category, Facility
 from apps.proposals.models import TEXT_MAX_LENGTH, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH
 
-WHERE_NONE = "none"
-WHERE_PLACE = "place"
-
 
 class ProposalForm(forms.Form):
     title = forms.CharField(
-        label="Titel",
+        label="Was soll die Stadt angehen?",
         min_length=TITLE_MIN_LENGTH,
         max_length=TITLE_MAX_LENGTH,
-        help_text="Was soll die Stadt angehen? In einem kurzen Satz.",
+        help_text=f"Ein Satz reicht. Zwischen {TITLE_MIN_LENGTH} und {TITLE_MAX_LENGTH} Zeichen.",
         error_messages={
-            "required": "Bitte gib einen Titel ein.",
-            "min_length": f"Bitte gib einen Titel mit mindestens {TITLE_MIN_LENGTH} Zeichen ein.",
+            "required": "Schreib in einem Satz, worum es geht.",
+            "min_length": (
+                f"Bitte mindestens {TITLE_MIN_LENGTH} Zeichen"
+                ", damit andere verstehen, worum es geht."
+            ),
         },
     )
     text = forms.CharField(
-        label="Beschreibung",
+        label="Warum ist das wichtig?",
         required=False,
         max_length=TEXT_MAX_LENGTH,
-        widget=forms.Textarea(attrs={"rows": 4}),
-        help_text="Was stört dich, was fehlt, für wen ist es wichtig?",
+        widget=forms.Textarea(attrs={"rows": 3}),
     )
     category = forms.ModelChoiceField(
         label="Zu welchem Thema gehört es?",
         queryset=Category.objects.order_by("name"),
         widget=forms.RadioSelect,
         empty_label=None,
-        error_messages={"required": "Bitte wähle ein Thema."},
-    )
-    where = forms.ChoiceField(
-        label="Geht es um einen bestimmten Ort?",
-        choices=[
-            (WHERE_NONE, "Nein, allgemein"),
-            (WHERE_PLACE, "Ja, ein bekannter Ort"),
-        ],
-        initial=WHERE_NONE,
-        widget=forms.RadioSelect,
+        error_messages={
+            "required": "Wähle ein Thema, damit die richtige Stelle den Vorschlag bekommt."
+        },
     )
     facility = forms.ModelChoiceField(
-        label="Welcher Ort?",
+        label="Betrifft es eine bestimmte Einrichtung?",
         queryset=Facility.objects.select_related("category").order_by("name"),
-        widget=forms.RadioSelect,
         required=False,
-        empty_label=None,
+        empty_label="Kein bestimmter Ort",
     )
 
     def clean(self) -> dict[str, Any]:
         data = super().clean() or {}
-        if data.get("where") != WHERE_PLACE:
-            data["facility"] = None
-        elif data.get("facility") is None:
-            self.add_error("facility", "Bitte wähle einen Ort oder stell „Nein, allgemein“ ein.")
+        facility, category = data.get("facility"), data.get("category")
+        if facility is not None and category is not None and facility.category_id != category.pk:
+            self.add_error(
+                "facility",
+                f"„{facility.name}“ gehört nicht zum Thema „{category.name}“. "
+                "Wähle einen Ort aus dem Thema oder „Kein bestimmter Ort“.",
+            )
         return data

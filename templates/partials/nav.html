@@ -22,7 +22,7 @@ Tableiste (variant="tab", darunter). „N frei“ zeigt die noch freien Punkte e
       </a>
     </li>
     <li>
-      <a href="{% url 'proposals:new' %}"{% if app == 'proposals' %} aria-current="page"{% endif %}>
+      <a href="{% url 'proposals:index' %}"{% if app == 'proposals' %} aria-current="page"{% endif %}>
         {% include "partials/icon.html" with name="lightbulb" size=20 %}<span class="shell-nav__label">Vorschläge</span>
       </a>
     </li>

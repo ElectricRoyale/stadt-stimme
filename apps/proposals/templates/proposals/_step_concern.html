@@ -1,0 +1,30 @@
+<fieldset class="prop-step" data-step="1">
+  <legend class="ss-visually-hidden">Schritt 1: Anliegen</legend>
+  <div class="prop-field">
+    <div class="prop-field__top">
+      <label for="v-titel">{{ form.title.label }}</label>
+      <span class="prop-field__count" aria-hidden="true" data-counter-for="v-titel">{{ form.title.value|default_if_none:""|length }}/{{ title_max }}</span>
+    </div>
+    <input type="text" id="v-titel" name="{{ form.title.html_name }}" value="{{ form.title.value|default_if_none:'' }}" maxlength="{{ title_max }}" autocomplete="off"
+           placeholder="z. B. Sitzbänke mit Schatten im Stadtpark" class="prop-input"
+           aria-describedby="{% if form.title.errors %}v-titel-fehler{% else %}v-titel-hilfe{% endif %}"{% if form.title.errors %} aria-invalid="true"{% endif %} data-title>
+    {% if form.title.errors %}<p class="prop-field__error" id="v-titel-fehler" data-error-for="v-titel">{{ form.title.errors.0 }}</p>{% else %}<p class="prop-field__error" id="v-titel-fehler" data-error-for="v-titel" hidden></p>{% endif %}
+    <p class="prop-field__hint" id="v-titel-hilfe">{{ form.title.help_text }}</p>
+  </div>
+
+  <section class="prop-similar" aria-labelledby="aehnlich" aria-live="polite" data-similar hidden>
+    <h4 id="aehnlich">Gibt es das schon?</h4>
+    <p>Wenn einer davon dein Anliegen trifft, unterstütze ihn. Dann zählt deine Stimme sofort.</p>
+    <ul data-similar-list></ul>
+  </section>
+
+  <div class="prop-field">
+    <div class="prop-field__top">
+      <label for="v-text">{{ form.text.label }} <span class="prop-field__optional">(freiwillig)</span></label>
+      <span class="prop-field__count" aria-hidden="true" data-counter-for="v-text">{{ form.text.value|default_if_none:""|length }}/{{ text_max }}</span>
+    </div>
+    <textarea id="v-text" name="{{ form.text.html_name }}" rows="3" maxlength="{{ text_max }}" class="prop-input prop-input--area"
+              placeholder="Was fällt dir vor Ort auf? Wer hätte etwas davon?">{{ form.text.value|default_if_none:'' }}</textarea>
+    {% include "proposals/_field_errors.html" with field=form.text %}
+  </div>
+</fieldset>
