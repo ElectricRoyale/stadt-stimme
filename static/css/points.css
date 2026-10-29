@@ -1,7 +1,7 @@
 /* Punkte verteilen im Design „Mannheim“ (ADR-015, Prototyp „StadtStimme App“).
    Telefon eine Spalte (Konto, Karte, Liste, Vergleich). Ab 1024 px Liste links, rechts eine Leiste
-   mit Konto, Karte und Vergleich, die mitläuft, bis ihr Fuß unten ankommt. Volles Rot nur auf
-   kleinen Marken (Quadrate, Plus, Balken), helle Rotstufen auf Flächen. */
+   mit Konto, Karte und Vergleich, die mitläuft, bis ihr Fuß unten ankommt. Rot für Plus und
+   Speichern, Themenfarben (ADR-017) für Quadrate, Karte und Balken. */
 .dist { max-width: var(--ss-content-max); margin: 0 auto; padding: 20px 16px 32px; color: var(--ss-text); }
 .dist__form { margin: 0; }
 .dist-note { margin: 6px 0 0; font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); color: var(--ss-text-muted); }
@@ -39,9 +39,9 @@
 .dist-theme { padding: 8px; border: 1px solid var(--ss-edge); border-radius: 12px; background: var(--ss-sheet); }
 .dist-theme[hidden] { display: none; }
 .dist-theme__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px var(--ss-space-4); padding: 4px 8px 8px; }
-.dist-theme__head h2 { margin: 0; font-size: var(--ss-fs-section); line-height: var(--ss-lh-body); font-weight: 700; letter-spacing: 0; }
+.dist-theme__head h2 { display: flex; align-items: center; gap: var(--ss-space-2); margin: 0; font-size: var(--ss-fs-section); line-height: var(--ss-lh-body); font-weight: 700; letter-spacing: 0; }
 .dist-theme__sum { margin: 0; font-size: var(--ss-fs-small); font-variant-numeric: tabular-nums; }
-.dist-theme__sum strong { color: var(--ss-red-dark); }
+.dist-theme__sum strong { color: var(--theme, var(--ss-red-dark)); }
 .dist-theme__spend { margin-left: var(--ss-space-2); color: var(--ss-gold-ink); }
 .dist-rows { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
 
@@ -59,9 +59,9 @@
 }
 .target[hidden] { display: none; }
 .target:hover { background: var(--ss-raised); }
-.target.is-given { border-color: var(--ss-red-pale); background: var(--ss-red-tint); }
-.target.is-focus { border-color: var(--ss-red); }
-.target.is-flash { box-shadow: 0 0 0 2px var(--ss-red); }
+.target.is-given { border-color: var(--theme, var(--ss-red)); background: color-mix(in srgb, var(--theme, var(--ss-red)) 4%, var(--ss-sheet)); }
+.target.is-focus { border-color: var(--theme, var(--ss-red)); }
+.target.is-flash { box-shadow: 0 0 0 2px var(--theme, var(--ss-red)); }
 .target__text { grid-column: 1 / -1; min-width: 0; padding-top: 2px; }
 .target__name { margin: 0; font-size: var(--ss-fs-body); line-height: var(--ss-lh-body); font-weight: 700; }
 .target__meta { margin: 0; font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); color: var(--ss-text-muted); }
@@ -100,16 +100,16 @@
 .ledger { display: grid; grid-template-columns: 150px minmax(0, 1fr); align-items: start; gap: 20px; margin-top: var(--ss-space-4); }
 .ledger__grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }
 .ledger__cell { aspect-ratio: 1; border-radius: var(--ss-radius-cell); background: var(--ss-red-tint); box-shadow: inset 0 0 0 1px var(--ss-red-pale); transition: opacity 0.2s; }
-.ledger__cell.is-given { background-color: var(--ss-red); box-shadow: none; animation: ledger-cell 0.32s var(--ss-ease-out) both; }
+.ledger__cell.is-given { background-color: var(--theme, var(--ss-red)); box-shadow: none; animation: ledger-cell 0.32s var(--ss-ease-out) both; }
 .ledger__cell.is-general { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0 2px, transparent 2px 4px); }
 .ledger__grid.is-focus .ledger__cell.is-given:not(.is-focus) { opacity: 0.3; }
 .ledger__themes { margin: 0; padding: 0; list-style: none; font-size: var(--ss-fs-small); }
 .ledger__themes li { display: flex; align-items: center; justify-content: space-between; gap: var(--ss-space-2); min-height: 28px; border-bottom: 1px solid var(--ss-rule); transition: opacity 0.2s; }
 .ledger__themes li:last-child { border-bottom: 0; }
 .ledger__themes li.is-dim { opacity: 0.45; }
-.ledger__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ledger__name { display: flex; align-items: center; gap: var(--ss-space-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ledger__value { color: var(--ss-text-faint); font-variant-numeric: tabular-nums; }
-.ledger__value.is-given { font-weight: 700; color: var(--ss-red-dark); }
+.ledger__value.is-given { font-weight: 700; color: var(--theme, var(--ss-red-dark)); }
 .ledger__key { display: flex; align-items: center; gap: var(--ss-space-2); margin-top: var(--ss-space-3); }
 .ledger__swatch { width: 10px; height: 10px; border: 1px solid var(--ss-control); border-radius: 1px; background: repeating-linear-gradient(135deg, var(--ss-red) 0 2px, transparent 2px 4px); }
 
@@ -133,22 +133,24 @@
 /* Karte */
 .dist-legend { display: flex; flex-wrap: wrap; gap: 4px var(--ss-space-4); margin: var(--ss-space-2) 0 0; padding: 0; list-style: none; font-size: var(--ss-fs-meta); color: var(--ss-text-muted); }
 .dist-legend li { display: flex; align-items: center; gap: 6px; }
-.dist-legend__key { width: 12px; height: 12px; border-radius: var(--ss-radius-cell); background: var(--ss-red); }
+.dist-legend__key { width: 12px; height: 12px; border-radius: var(--ss-radius-cell); background: conic-gradient(var(--ss-theme-verkehr) 0 25%, var(--ss-theme-freizeit) 0 50%, var(--ss-theme-familie) 0 75%, var(--ss-theme-bildung) 0); }
 .dist-legend__key--empty { width: 10px; height: 10px; background: var(--ss-bar-neutral); }
+.dist .sq-pin > span { background: var(--theme, var(--ss-red)); }
 .dist .sq-pin.is-empty > span { background: var(--ss-bar-neutral); }
 
 /* Vergleich mit dem Haushalt */
 .cmp__lead { margin: 0; font-size: var(--ss-fs-small); line-height: var(--ss-lh-small); text-wrap: pretty; }
 .cmp__legend { display: flex; flex-wrap: wrap; gap: 4px var(--ss-space-4); margin: var(--ss-space-2) 0 0; padding: 0; list-style: none; font-size: var(--ss-fs-meta); color: var(--ss-text-muted); }
 .cmp__legend li { display: flex; align-items: center; gap: 6px; }
-.cmp__key--mine { width: 10px; height: 10px; border-radius: 50%; background: var(--ss-red); }
+.cmp__key--mine { width: 10px; height: 10px; border-radius: 50%; background: conic-gradient(var(--ss-theme-verkehr) 0 25%, var(--ss-theme-freizeit) 0 50%, var(--ss-theme-familie) 0 75%, var(--ss-theme-bildung) 0); }
 .cmp__key--spend { width: 3px; height: 12px; background: var(--ss-gold); }
 .cmp__rows { display: grid; gap: 10px; margin: var(--ss-space-2) 0 0; padding: 0; list-style: none; }
 .cmp__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--ss-space-2); margin: 0; font-size: var(--ss-fs-small); }
 .cmp__values { font-variant-numeric: tabular-nums; }
 .cmp__spend { color: var(--ss-gold-ink); }
-.cmp__track { position: relative; display: block; height: 8px; margin-top: 4px; border-radius: 4px; background: var(--ss-red-tint); }
-.cmp__bar { position: absolute; inset: 0 auto 0 0; max-width: 100%; border-radius: 4px; background: var(--ss-red); transition: width 0.5s var(--ss-ease-out); }
+.cmp__name { display: flex; align-items: center; gap: var(--ss-space-2); }
+.cmp__track { position: relative; display: block; height: 8px; margin-top: 4px; border-radius: 4px; background: var(--ss-empty); }
+.cmp__bar { position: absolute; inset: 0 auto 0 0; max-width: 100%; border-radius: 4px; background: var(--theme, var(--ss-red)); transition: width 0.5s var(--ss-ease-out); }
 .cmp__tick { position: absolute; top: -4px; width: 3px; height: 16px; background: var(--ss-gold); transform: translateX(-50%); }
 
 @media (min-width: 640px) {

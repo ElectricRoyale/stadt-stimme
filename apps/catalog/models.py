@@ -16,6 +16,21 @@ class CategoryColor(models.TextChoices):
     GREEN = "freizeit", "Grün"
     PINK = "familie", "Pink"
     STONE = "sicherheit", "Stein"
+    BLUE = "kultur", "Blau"
+
+
+# Übliche Themennamen bekommen ihre Farbe aus dem Prototyp (ADR-017), andere reihum.
+NAME_COLORS = {
+    "bildung": CategoryColor.VIOLET,
+    "sport": CategoryColor.GREEN,
+    "freizeit": CategoryColor.GREEN,
+    "mobilität": CategoryColor.CYAN,
+    "verkehr": CategoryColor.CYAN,
+    "soziales": CategoryColor.PINK,
+    "familie": CategoryColor.PINK,
+    "kultur": CategoryColor.BLUE,
+    "sicherheit": CategoryColor.STONE,
+}
 
 
 class Category(models.Model):
@@ -30,7 +45,7 @@ class Category(models.Model):
         max_length=12,
         choices=CategoryColor.choices,
         blank=True,
-        help_text="Leer lassen: wird beim Anlegen reihum vergeben.",
+        help_text="Leer lassen: übliche Themen bekommen ihre Farbe, andere reihum.",
     )
 
     class Meta:
@@ -44,7 +59,8 @@ class Category(models.Model):
     def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.color:
             palette = CategoryColor.values
-            self.color = palette[Category.objects.count() % len(palette)]
+            fallback = palette[Category.objects.count() % len(palette)]
+            self.color = NAME_COLORS.get(self.name.strip().lower(), fallback)
         super().save(*args, **kwargs)
 
 

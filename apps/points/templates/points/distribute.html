@@ -48,7 +48,7 @@
           <p class="map-canvas__fallback">Die Karte braucht JavaScript. Alle Einrichtungen stehen in der Liste.</p>
         </div>
         <ul class="dist-legend" aria-hidden="true">
-          <li><span class="dist-legend__key"></span>Größe = deine Punkte</li>
+          <li><span class="dist-legend__key"></span>Farbe = Thema, Größe = deine Punkte</li>
           <li><span class="dist-legend__key dist-legend__key--empty"></span>Noch ohne Punkte</li>
         </ul>
         <p class="dist-note">Tippe auf ein Quadrat, um zur Einrichtung zu springen.<span data-general-note></span></p>
@@ -66,9 +66,9 @@
 
       {% for theme in groups %}
         {% with g=theme.group %}
-        <section class="dist-theme" aria-labelledby="thema-{{ g.category.pk }}" data-theme="{{ g.category.pk }}">
+        <section class="dist-theme theme-{{ g.category.color }}" aria-labelledby="thema-{{ g.category.pk }}" data-theme="{{ g.category.pk }}" data-theme-color="{{ g.category.color }}">
           <header class="dist-theme__head">
-            <h2 id="thema-{{ g.category.pk }}">{{ g.category.name }}</h2>
+            <h2 id="thema-{{ g.category.pk }}"><span class="theme-dot" aria-hidden="true"></span>{{ g.category.name }}</h2>
             <p class="dist-theme__sum"><strong><span data-theme-sum>{{ g.points }}</span> P.</strong>{% if fiscal_year %}<span class="dist-theme__spend">Ausgaben {{ fiscal_year }}: {{ g.spend_share }} %</span>{% endif %}</p>
           </header>
           <ul class="dist-rows">

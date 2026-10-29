@@ -8,9 +8,9 @@
 <ul class="cmp__rows">
   {% for theme in groups %}
     {% with g=theme.group %}
-    <li data-compare-theme="{{ g.category.pk }}" data-name="{{ g.category.name }}" data-spend="{{ g.spend_share }}">
+    <li class="theme-{{ g.category.color }}" data-compare-theme="{{ g.category.pk }}" data-name="{{ g.category.name }}" data-spend="{{ g.spend_share }}">
       <p class="cmp__row">
-        <span>{{ g.category.name }}</span>
+        <span class="cmp__name"><span class="theme-dot" aria-hidden="true"></span>{{ g.category.name }}</span>
         <span class="cmp__values"><strong data-theme-sum>{{ g.points }}</strong>{% if fiscal_year %}<span class="cmp__spend"> / {{ g.spend_share }} %</span>{% endif %}</span>
         <span class="ss-visually-hidden">Punkte von dir{% if fiscal_year %}, {{ g.spend_share }} Prozent der Ausgaben{% endif %}</span>
       </p>

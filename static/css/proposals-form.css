@@ -30,7 +30,7 @@
 .prop-input:focus-visible { outline: var(--ss-focus-outline); outline-offset: 0; box-shadow: none; }
 .prop-input:disabled { background: var(--ss-raised); }
 .prop-themes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ss-space-2); margin-top: var(--ss-space-2); }
-.prop-theme { position: relative; display: flex; align-items: center; min-height: 48px; padding: 0 var(--ss-space-3); border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); font-size: var(--ss-fs-small); font-weight: 400 !important; cursor: pointer; }
+.prop-theme { position: relative; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 var(--ss-space-3); border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); font-size: var(--ss-fs-small); font-weight: 400 !important; cursor: pointer; }
 .prop-theme:hover { background: var(--ss-raised); }
 .prop-theme input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .prop-theme:has(input:checked) { border-color: var(--ss-text); background: var(--ss-active); font-weight: 700 !important; }

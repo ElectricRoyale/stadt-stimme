@@ -8,6 +8,7 @@ from django.db import IntegrityError
 from apps.catalog.models import (
     Building,
     Category,
+    CategoryColor,
     Expenditure,
     ExpenditureKind,
     Facility,
@@ -102,3 +103,12 @@ def test_measure_accepts_building_of_own_facility(pool: Facility) -> None:
     hall = Building.objects.create(external_id="G-1", facility=pool, name="Schwimmhalle")
 
     Measure(external_id="M-1", facility=pool, building=hall, title="Dach").full_clean()
+
+
+@pytest.mark.django_db
+def test_category_color_follows_known_names() -> None:
+    assert Category.objects.create(name="Kultur").color == "kultur"
+    assert Category.objects.create(name="Mobilität").color == "verkehr"
+    assert Category.objects.create(name="Bildung").color == "bildung"
+    assert Category.objects.create(name="Sonstiges").color in CategoryColor.values
+    assert Category.objects.create(name="Sport", color="kultur").color == "kultur"

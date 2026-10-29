@@ -22,7 +22,7 @@
   <div class="res-toolbar">
     <div class="chips" role="group" aria-label="Thema" data-js-only hidden>
       <button type="button" class="chip" aria-pressed="true" data-res-theme="">Alle Themen</button>
-      {% for theme in results.themes %}<button type="button" class="chip" aria-pressed="false" data-res-theme="{{ theme.category.pk }}">{{ theme.name }}</button>{% endfor %}
+      {% for theme in results.themes %}<button type="button" class="chip theme-{{ theme.category.color }}" aria-pressed="false" data-res-theme="{{ theme.category.pk }}"><span class="theme-dot" aria-hidden="true"></span>{{ theme.name }}</button>{% endfor %}
     </div>
     <ul class="res-legend">
       <li><span class="res-legend__key res-legend__key--citizens" aria-hidden="true"></span>Bürger wünschen sich mehr, als die Stadt ausgibt</li>

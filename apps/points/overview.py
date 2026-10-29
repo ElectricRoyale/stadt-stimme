@@ -133,6 +133,7 @@ class Cell:
 
     key: str | None
     general: bool = False
+    color: str = ""
 
 
 def ledger_cells(groups: list[Group], budget: int) -> list[Cell]:
@@ -140,7 +141,7 @@ def ledger_cells(groups: list[Group], budget: int) -> list[Cell]:
     cells: list[Cell] = []
     for group in groups:
         for row in [*group.places, *(r for r in group.rows if r.is_general)]:
-            cells += [Cell(row.target.key, row.is_general)] * row.points
+            cells += [Cell(row.target.key, row.is_general, group.category.color)] * row.points
     cells = cells[:budget]
     return cells + [Cell(None)] * (budget - len(cells))
 
@@ -157,6 +158,7 @@ def map_places(groups: list[Group]) -> list[dict[str, object]]:
         {
             "key": row.target.key,
             "name": row.name,
+            "color": group.category.color,
             "lat": float(row.facility.latitude or 0),
             "lng": float(row.facility.longitude or 0),
         }
