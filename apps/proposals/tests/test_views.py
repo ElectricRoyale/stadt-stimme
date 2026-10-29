@@ -1,7 +1,10 @@
+import re
+
 import pytest
 from django.contrib import admin
 from django.contrib.auth.models import Permission, User
 from django.test import Client, RequestFactory
+from django.utils import timezone
 
 from apps.access.models import Participant
 from apps.proposals.models import Proposal, ProposalStatus
@@ -17,7 +20,6 @@ def _data(catalog: Catalog, **changes: object) -> dict[str, object]:
         "title": "Abendöffnung im Hallenbad",
         "text": "Nach der Arbeit ist es zu.",
         "category": catalog.sport.pk,
-        "where": "place",
         "facility": catalog.bad.pk,
     }
     data.update(changes)
@@ -27,27 +29,39 @@ def _data(catalog: Catalog, **changes: object) -> dict[str, object]:
 def test_page_is_public_but_submitting_needs_code(client: Client, catalog: Catalog) -> None:
     content = client.get(URL).content.decode()
 
-    assert "Was soll die Stadt angehen?" in content
+    assert "Der Weg eines Vorschlags" in content
     assert "Zum Einreichen brauchst du den Code" in content
     assert client.post(URL, _data(catalog))["Location"] == "/zugang/"
     assert not Proposal.objects.exists()
 
 
-def test_submit_redirects_to_thanks(
+def test_submit_shows_sent_state(
     logged_in: Client, participant: Participant, catalog: Catalog
 ) -> None:
     response = logged_in.post(URL, _data(catalog))
 
     proposal = Proposal.objects.get()
-    assert response["Location"] == f"/vorschlaege/{proposal.pk}/danke/"
+    assert response["Location"] == f"/vorschlaege/?eingereicht={proposal.pk}#vorschlag-neu"
     assert (proposal.participant, proposal.facility) == (participant, catalog.bad)
-    thanks = logged_in.get(response["Location"]).content.decode()
-    assert f"Nummer V-{proposal.pk}" in thanks
-    assert "innerhalb von 14 Tagen" in thanks
+    page = logged_in.get(response["Location"]).content.decode()
+    assert f"Vorschlag V-{proposal.pk} eingereicht" in page
+    assert "innerhalb von 14 Tagen" in page
+    assert "Dein Vorschlag" in page
 
 
-def test_general_proposal_drops_facility(logged_in: Client, catalog: Catalog) -> None:
-    logged_in.post(URL, _data(catalog, where="none"))
+def test_sent_state_only_for_own_proposal(logged_in: Client, catalog: Catalog) -> None:
+    foreign = Proposal.objects.create(
+        participant=new_person(), title="Fremder Vorschlag", category=catalog.sport
+    )
+
+    page = logged_in.get(URL, {"eingereicht": foreign.pk}).content.decode()
+
+    assert "eingereicht</h3>" not in page
+    assert "Fremder Vorschlag" not in page
+
+
+def test_general_proposal_without_facility(logged_in: Client, catalog: Catalog) -> None:
+    logged_in.post(URL, _data(catalog, facility=""))
 
     assert Proposal.objects.get().facility is None
 
@@ -56,13 +70,15 @@ def test_general_proposal_drops_facility(logged_in: Client, catalog: Catalog) ->
     ("changes", "message"),
     [
         ({"title": "Zu kurz"}, "mindestens 8 Zeichen"),
-        ({"category": ""}, "Bitte wähle ein Thema."),
-        ({"facility": ""}, "Bitte wähle einen Ort"),
+        ({"category": ""}, "Wähle ein Thema"),
+        ({"category": "BILDUNG"}, "gehört nicht zum Thema"),
     ],
 )
 def test_invalid_input_is_reported(
     logged_in: Client, catalog: Catalog, changes: dict[str, object], message: str
 ) -> None:
+    if changes.get("category") == "BILDUNG":
+        changes = {"category": catalog.bildung.pk}
     response = logged_in.post(URL, _data(catalog, **changes))
 
     assert response.status_code == 422
@@ -70,12 +86,43 @@ def test_invalid_input_is_reported(
     assert not Proposal.objects.exists()
 
 
-def test_thanks_only_for_own_proposal(logged_in: Client, catalog: Catalog) -> None:
-    foreign = Proposal.objects.create(
-        participant=new_person(), title="Fremder Vorschlag", category=catalog.sport
+def test_list_shows_stages_and_answer(client: Client, catalog: Catalog) -> None:
+    now = timezone.now()
+    Proposal.objects.create(
+        participant=new_person(), title="Noch nicht freigegeben", category=catalog.sport
+    )
+    Proposal.objects.create(
+        participant=new_person(),
+        title="Längere Öffnungszeiten",
+        category=catalog.sport,
+        status=ProposalStatus.ACCEPTED,
+        published_at=now,
+        decided_at=now,
+        answer="Kommt ab Januar.",
     )
 
-    assert logged_in.get(f"/vorschlaege/{foreign.pk}/danke/").status_code == 404
+    content = client.get(URL).content.decode()
+
+    assert "Noch nicht freigegeben" not in content
+    assert "Längere Öffnungszeiten" in content
+    assert "Kommt ab Januar." in content
+    assert 'data-stage="angenommen"' in content
+    assert "1 von anderen, erst nach Freigabe öffentlich" in content
+
+
+def test_stage_filter_without_javascript(client: Client, catalog: Catalog) -> None:
+    Proposal.objects.create(
+        participant=new_person(),
+        title="Sammelt noch Stimmen",
+        category=catalog.sport,
+        status=ProposalStatus.PUBLISHED,
+        published_at=timezone.now(),
+    )
+
+    content = client.get(URL, {"schritt": "angenommen"}).content.decode()
+
+    assert "Nur Schritt <strong data-stage-name>Angenommen</strong>" in content
+    assert re.search(r'data-stage="sammelt"[^>]*hidden>', content)
 
 
 def test_similar_and_support(logged_in: Client, catalog: Catalog) -> None:
@@ -90,7 +137,10 @@ def test_similar_and_support(logged_in: Client, catalog: Catalog) -> None:
     response = logged_in.post(f"/vorschlaege/{proposal.pk}/unterstuetzen/")
 
     assert [i["title"] for i in items] == ["Abendöffnung im Hallenbad"]
-    assert response.json() == {"supported": True, "supports": 1}
+    assert items[0]["canSupport"] is True
+    data = response.json()
+    assert (data["supported"], data["supports"], data["stage"]) == (True, 1, "sammelt")
+    assert data["sentence"] == "1 von 50 Unterstützungen, noch 49 bis zur Prüfung."
 
 
 def test_support_needs_code_and_published_proposal(

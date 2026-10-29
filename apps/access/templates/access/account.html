@@ -1,10 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Mein Bereich · StadtStimme{% endblock %}
+
+{% block head %}<link rel="stylesheet" href="{% static 'css/components.css' %}">{% endblock %}
 
 {% block content %}
   <h1>Mein Bereich</h1>
   <p>Du bist angemeldet. Auf diesem Gerät bleibst du angemeldet, bis du dich abmeldest.</p>
-  <p><a class="ss-btn ss-btn--primary" href="{% url 'points:distribute' %}">Punkte verteilen</a></p>
+  <p><a class="btn-ink" href="{% url 'points:distribute' %}">Punkte verteilen</a></p>
   <p class="hint">Auf einem anderen Gerät meldest du dich einfach mit demselben Code an.</p>
 {% endblock %}

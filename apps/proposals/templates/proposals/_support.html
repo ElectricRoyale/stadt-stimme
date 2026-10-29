@@ -1,0 +1,5 @@
+{# Unterstützen als Umschalter (services.toggle_support). Ohne JavaScript nicht nutzbar, daher data-js-only. #}
+<button type="button" class="support{% if small %} support--small{% endif %}" aria-pressed="{% if item.supported %}true{% else %}false{% endif %}" data-support="{{ item.proposal.pk }}"
+        data-title="{{ item.proposal.title }}" aria-label="{% if item.supported %}Unterstützung für „{{ item.proposal.title }}“ zurückziehen{% else %}„{{ item.proposal.title }}“ unterstützen{% endif %}" data-js-only hidden>
+  <span class="support__on">{% include "partials/icon.html" with name="check" size=16 %}Unterstützt</span><span class="support__off">{% include "partials/icon.html" with name="plus" size=16 %}Unterstützen</span>
+</button>

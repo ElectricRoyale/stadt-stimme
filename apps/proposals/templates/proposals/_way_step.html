@@ -1,0 +1,7 @@
+<a class="way-step way-step--{{ stage }}{% if compact %} way-step--compact{% endif %}" href="{% if selected_stage == stage %}?{% else %}?schritt={{ stage }}{% endif %}#alle-vorschlaege"
+   data-way="{{ stage }}"{% if selected_stage == stage %} aria-current="true"{% endif %}>
+  {% if not compact %}<span class="way-step__line" aria-hidden="true"><span class="way-step__dot"></span>{% if not last %}<span class="way-step__rule"></span>{% endif %}</span>{% endif %}
+  <span class="way-step__figure">{% if stage == "angenommen" %}<span class="way-step__icon" aria-hidden="true">{% include "partials/icon.html" with name="check" size=12 stroke="3" %}</span>{% elif stage == "abgelehnt" %}<span class="way-step__icon way-step__icon--no" aria-hidden="true">{% include "partials/icon.html" with name="x" size=12 stroke="3" %}</span>{% endif %}{{ count }}</span>
+  <span class="way-step__label">{{ label }}</span>
+  <span class="way-step__sub">{% if stage == "eingereicht" %}{{ board.submitted_of_others }} von anderen, erst nach Freigabe öffentlich{% elif stage == "sammelt" %}Ab {{ support_threshold }} Unterstützungen geht es in die Prüfung{% elif stage == "pruefung" %}Die Verwaltung antwortet mit Begründung{% elif stage == "angenommen" %}{{ board.accepted_as_measure }} davon als Maßnahme, Punkte können dorthin{% else %}{{ board.refused_early }} davon schon vor der Freigabe{% endif %}</span>
+</a>

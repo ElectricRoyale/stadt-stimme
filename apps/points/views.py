@@ -10,10 +10,27 @@ from django.views.decorators.http import require_http_methods
 
 from apps.access.models import Participant
 from apps.access.views import participant_required
+from apps.catalog.spending import last_closed_fiscal_year
 from apps.points.forms import DistributionForm
 from apps.points.models import POINTS_BUDGET
-from apps.points.overview import Group, Row, build_groups
-from apps.points.services import BudgetExceededError, points_of, save_distribution
+from apps.points.overview import (
+    Group,
+    Row,
+    build_groups,
+    lead_group,
+    ledger_cells,
+    map_places,
+)
+from apps.points.services import (
+    BudgetExceededError,
+    last_saved_at,
+    points_of,
+    save_distribution,
+    valid_until,
+)
+
+# Plus und Minus gehen in Fünferschritten; genaue Werte über das Zahlenfeld.
+POINTS_STEP = 5
 
 
 @dataclass(frozen=True)
@@ -31,7 +48,8 @@ class GroupView:
 @require_http_methods(["GET", "POST"])
 @participant_required
 def distribute(request: HttpRequest, participant: Participant) -> HttpResponse:
-    groups = build_groups(points_of(participant))
+    fiscal_year = last_closed_fiscal_year()
+    groups = build_groups(points_of(participant), fiscal_year)
     targets = [row.target for group in groups for row in group.rows]
 
     if request.method == "POST":
@@ -56,9 +74,17 @@ def distribute(request: HttpRequest, participant: Participant) -> HttpResponse:
             "groups": [
                 GroupView(g, [RowView(r, form[r.target.key]) for r in g.rows]) for g in groups
             ],
+            "cells": ledger_cells(groups, POINTS_BUDGET),
+            "lead": lead_group(groups),
+            "map_places": map_places(groups),
+            "target_count": len(targets),
+            "fiscal_year": fiscal_year,
             "budget": POINTS_BUDGET,
+            "step": POINTS_STEP,
             "used": used,
             "remaining": POINTS_BUDGET - used,
+            "saved_at": last_saved_at(participant),
+            "valid_until": valid_until(participant),
         },
         status=200 if not form.is_bound or form.is_valid() else 422,
     )

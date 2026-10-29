@@ -1,0 +1,19 @@
+{# Für Gemeinderat und Skeptiker: wer mitgemacht hat, was die Zahlen enthalten, was mit ihnen geschieht. #}
+<section class="panel res-facts" id="einordnung" aria-labelledby="einordnung-titel">
+  <div class="panel__head"><div>
+    <h2 id="einordnung-titel">Wie belastbar sind die Zahlen?</h2>
+    <p class="panel__sub">Stand {{ now|date:"d.m.Y, H:i" }} Uhr</p>
+  </div></div>
+  <dl class="res-facts__grid">
+    <div><dt>Mitmachende</dt><dd class="res-facts__value">{{ results.participants_text }}</dd>{% if since %}<dd>seit {{ since|date:"j. F Y" }}</dd>{% endif %}</div>
+    <div><dt>Vergebene Punkte</dt><dd class="res-facts__value">{{ results.total_points_text }}</dd><dd>im Schnitt {{ results.average_points }} von {{ budget }} je Person</dd></div>
+    <div><dt>An ganze Themen</dt><dd class="res-facts__value">{{ results.general_share }} %</dd><dd>der Punkte, ohne bestimmten Ort</dd></div>
+    <div><dt>Ausgaben{% if results.fiscal_year %} {{ results.fiscal_year }}{% endif %}</dt><dd class="res-facts__value">{{ results.spend_total_text }}</dd><dd>für {{ results.places|length }} Einrichtungen</dd></div>
+  </dl>
+  <ul class="res-facts__notes">
+    <li>Jeder Code aus dem Brief der Stadt gibt genau ein Budget von {{ budget }} Punkten. Mehrfach abstimmen geht nicht.</li>
+    <li>Es zählen alle, die mitmachen. Eine repräsentative Umfrage ist das nicht.</li>
+    <li>Die Verwaltung legt die Zahlen zu einem Stichtag dem Gemeinderat vor.</li>
+  </ul>
+  <p class="panel__note">{% if results.fiscal_year %}Ist-Ausgaben {{ results.fiscal_year }} aus dem Katalog der Stadt.{% else %}Noch keine Ist-Ausgaben eines abgeschlossenen Haushaltsjahres.{% endif %} Punkte zählen, solange sie nicht verfallen sind.</p>
+</section>

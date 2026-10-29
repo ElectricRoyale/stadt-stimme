@@ -1,0 +1,12 @@
+{# Vier Stationen: eingereicht, sammelt, in Prüfung, entschieden. Die Strecke dazwischen ist der Stand zur Schwelle. #}
+{% with m=item.marks %}
+<span class="track{% if item.stage == 'sammelt' %} is-live{% endif %}" aria-hidden="true">
+  <span class="track__station is-{{ m.0 }}">{% if m.0 == "no" %}{% include "partials/icon.html" with name="x" size=10 stroke="3" %}{% endif %}</span>
+  <span class="track__link{% if m.1 != 'todo' %} is-done{% endif %}"></span>
+  <span class="track__station is-{{ m.1 }}"></span>
+  <span class="track__bar"><span data-progress style="width: {{ item.progress }}%"></span></span>
+  <span class="track__station is-{{ m.2 }}"></span>
+  <span class="track__link{% if m.3 != 'todo' %} is-done{% endif %}"></span>
+  <span class="track__station is-{{ m.3 }}">{% if m.3 == "yes" %}{% include "partials/icon.html" with name="check" size=10 stroke="3" %}{% elif m.3 == "no" %}{% include "partials/icon.html" with name="x" size=10 stroke="3" %}{% endif %}</span>
+</span>
+{% endwith %}

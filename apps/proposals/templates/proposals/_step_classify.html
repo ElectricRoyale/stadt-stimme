@@ -1,0 +1,25 @@
+<fieldset class="prop-step" data-step="2">
+  <legend class="ss-visually-hidden">Schritt 2: Einordnen</legend>
+  <fieldset class="prop-field"{% if form.category.errors %} aria-describedby="v-thema-fehler"{% endif %}>
+    <legend class="prop-field__legend">{{ form.category.label }}</legend>
+    <div class="prop-themes{% if form.category.errors %} is-invalid{% endif %}">
+      {% for choice in form.category %}
+        <label class="prop-theme">{{ choice.tag }}<span>{{ choice.choice_label }}</span></label>
+      {% endfor %}
+    </div>
+    <p class="prop-field__error" id="v-thema-fehler" data-error-for="category"{% if not form.category.errors %} hidden{% endif %}>{{ form.category.errors.0 }}</p>
+  </fieldset>
+
+  <div class="prop-field">
+    <label for="v-ort" class="prop-field__label">{{ form.facility.label }} <span class="prop-field__optional">(freiwillig)</span></label>
+    <select id="v-ort" name="{{ form.facility.html_name }}" class="prop-input" data-facility
+            {% if form.facility.errors %}aria-invalid="true" aria-describedby="v-ort-fehler"{% else %}aria-describedby="v-ort-hilfe"{% endif %}>
+      <option value="">Kein bestimmter Ort</option>
+      {% for facility in facilities %}
+        <option value="{{ facility.pk }}" data-category="{{ facility.category_id }}"{% if form.facility.value|stringformat:"s" == facility.pk|stringformat:"s" %} selected{% endif %}>{{ facility.name }}{% if facility.address %}, {{ facility.address }}{% endif %}</option>
+      {% endfor %}
+    </select>
+    {% if form.facility.errors %}<p class="prop-field__error" id="v-ort-fehler">{{ form.facility.errors.0 }}</p>{% endif %}
+    <p class="prop-field__hint" id="v-ort-hilfe" data-facility-hint>Fehlt der Ort in der Liste? Nenne ihn im Text, die Stadt ordnet ihn bei der Freigabe zu.</p>
+  </div>
+</fieldset>

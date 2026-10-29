@@ -5,21 +5,30 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
-  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
   <link rel="stylesheet" href="{% static 'css/results.css' %}">
   <script src="{% static 'vendor/leaflet/leaflet.js' %}" defer></script>
   <script src="{% static 'js/map-base.js' %}" defer></script>
+  <script src="{% static 'js/results.js' %}" defer></script>
   <script src="{% static 'js/results-map.js' %}" defer></script>
 {% endblock %}
 
-{% block main_class %}dash{% endblock %}
+{% block main_class %}res{% endblock %}
 
 {% block content %}
-  <header class="res-intro">
-    <p class="ss-eyebrow">Ergebnisse · Wunsch und Haushalt{% if results.fiscal_year %} {{ results.fiscal_year }}{% endif %}</p>
-    <h1>Wo passen Wunsch und Geld zusammen?</h1>
-    <p>Die Zahl am Ort ist der Unterschied in Prozentpunkten: Anteil der Bürgerpunkte minus Anteil der Ist-Ausgaben{% if results.fiscal_year %} {{ results.fiscal_year }}{% endif %}.</p>
-  </header>
+<div data-results>
+  {% include "reporting/results/_head.html" %}
+
+  <div class="res-toolbar">
+    <div class="chips" role="group" aria-label="Thema" data-js-only hidden>
+      <button type="button" class="chip" aria-pressed="true" data-res-theme="">Alle Themen</button>
+      {% for theme in results.themes %}<button type="button" class="chip" aria-pressed="false" data-res-theme="{{ theme.category.pk }}">{{ theme.name }}</button>{% endfor %}
+    </div>
+    <ul class="res-legend">
+      <li><span class="res-legend__key res-legend__key--citizens" aria-hidden="true"></span>Bürger wünschen sich mehr, als die Stadt ausgibt</li>
+      <li><span class="res-legend__key res-legend__key--city" aria-hidden="true"></span>Die Stadt gibt mehr aus, als gewünscht wird</li>
+    </ul>
+  </div>
 
   {% if not results.total_points or not results.fiscal_year %}
     <div class="res-notice" role="note">
@@ -28,34 +37,38 @@
     </div>
   {% endif %}
 
-  <div class="res-legend">
-    <span><span class="ss-tag gap-tag gap-tag--citizens">+5</span>Bürger wünschen sich mehr, als die Stadt ausgibt</span>
-    <span><span class="ss-tag gap-tag gap-tag--city">&minus;5</span>Die Stadt gibt mehr aus, als gewünscht wird</span>
-  </div>
-
-  <div class="dash__grid">
-    <section class="ss-card dash-map" aria-label="Karte">
-      <div class="dash-map__canvas" id="res-map" role="region" aria-label="Karte von {{ city_name }} mit dem Unterschied je Einrichtung"
+  {# Telefon: Karte, Auswahl, Listen, Einordnung. Ab 1024 px: Karte und Listen links, Auswahl und Einordnung rechts, die mitlaufen. #}
+  <div class="res-grid">
+    <section class="panel res-map" id="karte" aria-labelledby="karte-titel">
+      <div class="panel__head"><div>
+        <h2 id="karte-titel">Wo Wunsch und Geld auseinanderliegen</h2>
+        <p class="panel__sub">Ein Quadrat je Einrichtung, die Zahl in Prozentpunkten</p>
+      </div></div>
+      <div class="map-canvas" id="res-map" role="region" aria-label="Karte von {{ city_name }} mit dem Unterschied je Einrichtung. Die Liste enthält dieselben Werte."
            data-tiles="{{ map_tile_url }}" data-attribution="{{ map_attribution }}">
-        <p class="dash-map__fallback">Die Karte braucht JavaScript. Unten findest du alle Orte als Liste.</p>
+        <p class="map-canvas__fallback">Die Karte braucht JavaScript. Unten findest du alle Orte als Liste.</p>
       </div>
+      <p class="panel__note">Größe des Quadrats = Abstand zwischen Wunsch und Geld. Tippe auf ein Quadrat für Einzelheiten.{% if results.general_points %} {{ results.general_share }} % der Punkte gehen an ganze Themen und haben keinen Ort; sie zählen in der Liste „Nach Thema“.{% endif %}</p>
+      {{ map_data|json_script:"res-map-data" }}
     </section>
 
-    <aside class="ss-card res-detail" id="res-detail" aria-labelledby="res-detail-title" tabindex="-1">
-      {% if selected %}
-        {% include "reporting/_gap_detail.html" with row=selected %}
-      {% else %}
-        <h2 id="res-detail-title">Noch keine Einrichtungen</h2>
-        <p class="res-detail__summary">Sobald die Stadt Einrichtungen einträgt, erscheinen sie hier.</p>
-      {% endif %}
+    <aside class="res-side" aria-label="Auswahl und Einordnung" data-side>
+      <div class="res-side__detail" id="auswahl" tabindex="-1">
+        {% for row in results.rows %}
+          {% include "reporting/results/_detail.html" %}
+        {% empty %}
+          <section class="panel" aria-labelledby="leer-titel">
+            <div class="panel__head"><div><h2 id="leer-titel">Noch keine Einrichtungen</h2></div></div>
+            <p class="panel__empty">Sobald die Stadt Einrichtungen einträgt, erscheinen sie hier.</p>
+          </section>
+        {% endfor %}
+      </div>
+      {% include "reporting/results/_reliability.html" %}
     </aside>
+
+    {% include "reporting/results/_lists.html" %}
   </div>
 
-  <div class="dash__grid">
-    {% include "reporting/_gap_list.html" with list_id="res-places" title="Alle Orte nach Lücke" rows=results.places hint="" %}
-    {% include "reporting/_gap_list.html" with list_id="res-themes" title="Ganze Themen" rows=results.themes hint="Alle Punkte eines Themas, auch die für „… allgemein“, gegen alle Ausgaben des Themas." %}
-  </div>
-
-  <p class="ss-visually-hidden" id="res-live" aria-live="polite"></p>
-  {{ map_data|json_script:"res-map-data" }}
+  <p class="ss-visually-hidden" aria-live="polite" data-res-live></p>
+</div>
 {% endblock %}

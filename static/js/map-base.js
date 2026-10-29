@@ -19,13 +19,18 @@
     return map;
   }
 
-  function pin(lat, lng, options) {
+  // options.fixedHit: Trefferfläche bleibt 44 px, das Quadrat darf darüber hinaus wachsen. So kann
+  // eine Seite die Größe später am Element ändern, ohne den Marker neu zu bauen.
+  function icon(options) {
     var span = document.createElement("span");
-    span.textContent = options.text;
+    span.textContent = options.text || "";
     if (options.size) span.style.setProperty("--size", options.size + "px");
-    var hit = Math.max(options.size || 0, 44);
-    var icon = L.divIcon({ className: "map-pin " + options.classes, html: span.outerHTML, iconSize: [hit, hit] });
-    var marker = L.marker([lat, lng], { icon: icon, title: options.label, alt: options.label, keyboard: true, riseOnHover: true });
+    var hit = options.fixedHit ? 44 : Math.max(options.size || 0, 44);
+    return L.divIcon({ className: "map-pin " + options.classes, html: span.outerHTML, iconSize: [hit, hit] });
+  }
+
+  function pin(lat, lng, options) {
+    var marker = L.marker([lat, lng], { icon: icon(options), title: options.label, alt: options.label, keyboard: true, riseOnHover: true });
     marker.on("click", options.onPick);
     marker.on("keypress", function (e) {
       if (e.originalEvent.key === "Enter" || e.originalEvent.key === " ") options.onPick();
@@ -33,5 +38,5 @@
     return marker;
   }
 
-  window.StadtStimmeMap = { create: create, pin: pin };
+  window.StadtStimmeMap = { create: create, pin: pin, icon: icon };
 })();

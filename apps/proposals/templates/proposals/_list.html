@@ -1,0 +1,49 @@
+{# Alle öffentlichen Vorschläge und die eigenen. Suche, Auswahl, Themen und Sortierung nur mit JavaScript (proposals-list.js). #}
+<section class="panel prop-list" id="alle-vorschlaege" aria-labelledby="alle-titel" data-list>
+  <div class="prop-list__head">
+    <h2 id="alle-titel">Alle Vorschläge <span class="prop-list__count" data-list-count>({{ items|length }})</span></h2>
+    <label class="prop-select" data-js-only hidden>
+      <span class="ss-visually-hidden">Sortieren</span>
+      <select data-list-sort>
+        <option value="support">Meiste Unterstützung</option>
+        <option value="new">Neueste zuerst</option>
+        <option value="old">Älteste zuerst</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="prop-filters" data-js-only hidden>
+    <div class="prop-filters__top">
+      <label class="search">
+        <span class="ss-visually-hidden">Vorschläge durchsuchen</span>
+        {% include "partials/icon.html" with name="search" class="search__icon" %}
+        <input type="search" class="search__input" placeholder="Titel, Ort oder Nummer" autocomplete="off" data-list-query>
+      </label>
+      {% if participant %}
+        <div class="seg" role="group" aria-label="Auswahl">
+          <button type="button" aria-pressed="true" data-list-scope="alle">Alle</button>
+          <button type="button" aria-pressed="false" data-list-scope="unterstuetzt">Unterstützt</button>
+          <button type="button" aria-pressed="false" data-list-scope="meine">Meine</button>
+        </div>
+      {% endif %}
+    </div>
+    <div class="chips" role="group" aria-label="Thema">
+      <button type="button" class="chip" aria-pressed="true" data-list-theme="">Alle Themen</button>
+      {% for category in categories %}<button type="button" class="chip" aria-pressed="false" data-list-theme="{{ category.pk }}">{{ category.name }}</button>{% endfor %}
+    </div>
+  </div>
+  <p class="prop-list__stage" data-stage-note{% if not selected_stage %} hidden{% endif %}>
+    Nur Schritt <strong data-stage-name>{% for stage in stages %}{% if stage.value == selected_stage %}{{ stage.label }}{% endif %}{% endfor %}</strong>
+    <a class="prop-list__clear" href="?#alle-vorschlaege" data-stage-clear aria-label="Schritt-Filter entfernen">{% include "partials/icon.html" with name="x" size=16 %}</a>
+  </p>
+
+  <ul class="prop-rows" data-rows>
+    {% for item in board.visible %}
+      {% include "proposals/_row.html" %}
+    {% endfor %}
+  </ul>
+  <div class="prop-empty" data-list-empty{% if items %} hidden{% endif %}>
+    <p><strong>Kein Vorschlag passt zu diesen Filtern.</strong></p>
+    <p>{% if board.visible %}Nimm einen Filter heraus oder mach selbst einen Vorschlag.{% else %}Mach den ersten Vorschlag.{% endif %}</p>
+  </div>
+</section>

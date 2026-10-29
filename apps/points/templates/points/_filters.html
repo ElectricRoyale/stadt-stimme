@@ -1,0 +1,20 @@
+{# Suche, „Nur mit meinen Punkten“ und Themen. Nur mit JavaScript (points-filter.js); sonst steht die ganze Liste da. #}
+<div class="filters" data-filters data-js-only hidden>
+  <div class="filters__top">
+    <label class="search">
+      <span class="ss-visually-hidden">Einrichtung suchen</span>
+      {% include "partials/icon.html" with name="search" class="search__icon" %}
+      <input type="search" class="search__input" placeholder="Einrichtung oder Straße suchen" autocomplete="off" data-filter-query>
+    </label>
+    <label class="switch">
+      <input type="checkbox" role="switch" class="switch__input" data-filter-mine>
+      <span class="switch__track" aria-hidden="true"></span>
+      Nur mit meinen Punkten
+    </label>
+  </div>
+  <div class="chips" role="group" aria-label="Thema">
+    <button type="button" class="chip" aria-pressed="true" data-filter-theme="">Alle Themen</button>
+    {% for theme in groups %}<button type="button" class="chip" aria-pressed="false" data-filter-theme="{{ theme.group.category.pk }}">{{ theme.group.category.name }}</button>{% endfor %}
+  </div>
+  <p class="dist-note" aria-live="polite" data-filter-count data-total="{{ target_count }}">Alle {{ target_count }} Ziele: Einrichtungen und ganze Themen</p>
+</div>

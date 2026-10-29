@@ -1,0 +1,19 @@
+{# 100 Quadrate: jeder vergebene Punkt füllt eines, schraffiert an ein ganzes Thema. points-distribute.js zeichnet sie neu. #}
+<p class="ledger__figure">
+  <strong data-remaining>{{ remaining }}</strong>
+  <span>von {{ budget }} frei, <span data-used>{{ used }}</span> vergeben</span>
+</p>
+<div class="ledger">
+  <div class="ledger__grid" role="img" aria-label="{{ used }} von {{ budget }} Punkten vergeben" data-ledger>
+    {% for cell in cells %}<span class="ledger__cell{% if cell.key %} is-given{% if cell.general %} is-general{% endif %}{% endif %}"{% if cell.key %} data-key="{{ cell.key }}"{% endif %}></span>{% endfor %}
+  </div>
+  <ul class="ledger__themes" aria-label="Deine Punkte je Thema">
+    {% for theme in groups %}
+      <li data-ledger-theme="{{ theme.group.category.pk }}">
+        <span class="ledger__name">{{ theme.group.category.name }}</span>
+        <span class="ledger__value{% if theme.group.points %} is-given{% endif %}" data-theme-sum>{{ theme.group.points }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+<p class="dist-note ledger__key"><span class="ledger__swatch" aria-hidden="true"></span>Schraffiert: an ein ganzes Thema</p>
