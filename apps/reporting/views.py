@@ -12,7 +12,7 @@ from apps.access.models import Participant
 from apps.access.session import current_participant
 from apps.points.models import POINTS_BUDGET
 from apps.points.services import points_of, valid_until
-from apps.proposals.services import leading_proposals, pending_proposal
+from apps.proposals.board import build_board
 from apps.reporting.dashboard import (
     my_points,
     participation_by_week,
@@ -32,7 +32,8 @@ def overview(request: HttpRequest) -> HttpResponse:
     stats = build_overview(points_of(participant) if participant else None)
     results = build_results(stats)
     mine = my_points(stats)
-    own_facilities = {p.facility.pk for p in stats.places if p.facility and p.mine > 0}
+    own_points = {p.facility.pk: p.mine for p in stats.places if p.facility and p.mine > 0}
+    board = build_board(participant)
     return render(
         request,
         "reporting/overview.html",
@@ -42,9 +43,11 @@ def overview(request: HttpRequest) -> HttpResponse:
             "participation": participation_by_week(),
             "mine": mine,
             "valid_until": _valid_until(participant),
-            "news": recent_measures(own_facilities if participant else None),
-            "proposals": leading_proposals(participant),
-            "pending": pending_proposal(participant),
+            "news": recent_measures(own_points if participant else None),
+            "proposals": board.leading(),
+            "own_proposal": board.latest_own,
+            "since": participation_since(),
+            "now": timezone.localtime(),
             "support_threshold": settings.PROPOSAL_SUPPORT_THRESHOLD,
             "review_days": settings.PROPOSAL_REVIEW_DAYS,
             "map_data": map_payload(stats, results),

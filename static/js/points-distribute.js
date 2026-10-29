@@ -75,7 +75,7 @@
       var places = targets.filter(function (t) { return general.indexOf(t) < 0; });
       places.concat(general).forEach(function (target) {
         var n = valueOf(target.querySelector("input[data-points]"));
-        for (var i = 0; i < n; i++) cells.push({ key: target.dataset.target, general: general.indexOf(target) >= 0 });
+        for (var i = 0; i < n; i++) cells.push({ key: target.dataset.target, general: general.indexOf(target) >= 0, color: section.dataset.themeColor });
       });
     });
     var nodes = grid.children;
@@ -85,7 +85,7 @@
       var was = node.dataset.key || "";
       var key = cell ? cell.key : "";
       if (was === key) continue;
-      node.className = "ledger__cell" + (cell ? " is-given" + (cell.general ? " is-general" : "") : "");
+      node.className = "ledger__cell" + (cell ? " is-given theme-" + cell.color + (cell.general ? " is-general" : "") : "");
       if (cell) node.dataset.key = key; else delete node.dataset.key;
     }
     grid.setAttribute("aria-label", used + " von " + budget + " Punkten vergeben, " + (budget - used) + " frei");

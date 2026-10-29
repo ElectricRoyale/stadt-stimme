@@ -5,12 +5,12 @@
 </p>
 <div class="ledger">
   <div class="ledger__grid" role="img" aria-label="{{ used }} von {{ budget }} Punkten vergeben" data-ledger>
-    {% for cell in cells %}<span class="ledger__cell{% if cell.key %} is-given{% if cell.general %} is-general{% endif %}{% endif %}"{% if cell.key %} data-key="{{ cell.key }}"{% endif %}></span>{% endfor %}
+    {% for cell in cells %}<span class="ledger__cell{% if cell.key %} is-given theme-{{ cell.color }}{% if cell.general %} is-general{% endif %}{% endif %}"{% if cell.key %} data-key="{{ cell.key }}"{% endif %}></span>{% endfor %}
   </div>
   <ul class="ledger__themes" aria-label="Deine Punkte je Thema">
     {% for theme in groups %}
-      <li data-ledger-theme="{{ theme.group.category.pk }}">
-        <span class="ledger__name">{{ theme.group.category.name }}</span>
+      <li data-ledger-theme="{{ theme.group.category.pk }}" class="theme-{{ theme.group.category.color }}">
+        <span class="ledger__name"><span class="theme-dot" aria-hidden="true"></span>{{ theme.group.category.name }}</span>
         <span class="ledger__value{% if theme.group.points %} is-given{% endif %}" data-theme-sum>{{ theme.group.points }}</span>
       </li>
     {% endfor %}

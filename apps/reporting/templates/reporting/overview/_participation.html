@@ -2,10 +2,10 @@
   <header class="panel__head">
     <div>
       <h2 id="teilnahme-titel">Teilnahme</h2>
-      <p class="panel__sub">Eingelöste Codes je Kalenderwoche, letzte {{ participation.weeks|length }} Wochen</p>
+      <p class="panel__sub">Eingelöste Codes je Woche, letzte {{ participation.weeks|length }} Wochen</p>
     </div>
   </header>
-  <p class="ov-figure"><strong>{{ stats.participants }}</strong> {% if stats.participants == 1 %}Person hat{% else %}Personen haben{% endif %} gültige Punkte{% if stats.participants %}, im Schnitt {{ stats.average_points }} von {{ budget }} vergeben{% endif %}</p>
+  <p class="ov-figure"><strong>{{ stats.participants }}</strong> Mitmachende{% if stats.participants %}, im Schnitt {{ stats.average_points }} von {{ budget }} Punkten vergeben{% endif %}</p>
   <figure class="wk">
     <div class="wk__chart" aria-hidden="true">
       <span class="wk__line" style="--at: 100;"><span>{{ participation.top }}</span></span>

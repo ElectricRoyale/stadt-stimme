@@ -7,6 +7,7 @@ from apps.access.models import AccessCode
 from apps.catalog.models import Measure
 from apps.points.services import Target, save_distribution
 from apps.reporting.dashboard import (
+    NewsItem,
     my_points,
     nice_top,
     participation_by_week,
@@ -101,6 +102,6 @@ def test_recent_measures_newest_first_and_filtered(catalog: Catalog) -> None:
     new = Measure.objects.create(external_id="M-2", facility=catalog.schule, title="Neu")
     Measure.objects.filter(pk=old.pk).update(updated_at=timezone.now() - timedelta(days=3))
 
-    assert list(recent_measures(None)) == [new, old]
-    assert list(recent_measures([catalog.bad.pk])) == [old]
-    assert list(recent_measures([])) == []
+    assert [i.measure for i in recent_measures(None)] == [new, old]
+    assert recent_measures({catalog.bad.pk: 25}) == [NewsItem(old, 25)]
+    assert recent_measures({}) == []

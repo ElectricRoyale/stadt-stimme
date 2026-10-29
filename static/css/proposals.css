@@ -25,14 +25,6 @@
 .prop-list { order: 4; scroll-margin-top: 16px; }
 .prop-rules { order: 5; }
 
-/* Schritt-Kennzeichen */
-.stage { white-space: nowrap; }
-.stage--eingereicht { background: var(--ss-notice-bg); color: var(--ss-notice-ink); }
-.stage--sammelt { background: var(--ss-red-tint); color: var(--ss-red-dark); }
-.stage--pruefung { background: var(--ss-rule); color: var(--ss-text); }
-.stage--angenommen { background: var(--ss-positive-bg); color: var(--ss-positive-ink); }
-.stage--abgelehnt { background: var(--ss-rule); color: var(--ss-text-muted); }
-
 /* Der Weg */
 .prop-way__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px var(--ss-space-4); }
 .prop-way__head h2 { margin: 0; font-size: var(--ss-fs-section); font-weight: 700; }
@@ -105,16 +97,6 @@
 .track__bar > span { display: block; height: 100%; border-radius: inherit; background: var(--ss-text); transition: width 0.5s var(--ss-ease-out); }
 .track.is-live .track__bar > span { background: var(--ss-red); }
 
-/* Unterstützen */
-.support { display: inline-flex; align-items: center; min-height: var(--ss-hit); padding: 0 14px; border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); background: var(--ss-sheet); color: var(--ss-text); font: inherit; font-size: var(--ss-fs-small); font-weight: 700; cursor: pointer; transition: transform 0.1s; }
-.support:hover { background: var(--ss-raised); }
-.support:active { transform: scale(0.97); }
-.support[hidden] { display: none; }
-.support > span { display: inline-flex; align-items: center; gap: 6px; }
-.support[aria-pressed="true"] { border-color: var(--ss-text); background: var(--ss-text); color: #FFFFFF; }
-.support[aria-pressed="true"] .support__off, .support[aria-pressed="false"] .support__on { display: none; }
-.support--small { min-height: 36px; padding: 0 var(--ss-space-3); font-size: var(--ss-fs-meta); }
-
 /* Deins und Regeln */
 .prop-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ss-space-2); margin: var(--ss-space-3) 0 0; text-align: center; }
 .prop-facts div { display: flex; flex-direction: column-reverse; padding: 10px var(--ss-space-2); border-radius: var(--ss-radius-control); background: var(--ss-raised); }
@@ -165,5 +147,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .track__bar > span, .support { transition: none; }
+  .track__bar > span { transition: none; }
 }

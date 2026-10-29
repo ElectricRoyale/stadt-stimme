@@ -29,7 +29,7 @@
     </div>
     <div class="chips" role="group" aria-label="Thema">
       <button type="button" class="chip" aria-pressed="true" data-list-theme="">Alle Themen</button>
-      {% for category in categories %}<button type="button" class="chip" aria-pressed="false" data-list-theme="{{ category.pk }}">{{ category.name }}</button>{% endfor %}
+      {% for category in categories %}<button type="button" class="chip theme-{{ category.color }}" aria-pressed="false" data-list-theme="{{ category.pk }}"><span class="theme-dot" aria-hidden="true"></span>{{ category.name }}</button>{% endfor %}
     </div>
   </div>
   <p class="prop-list__stage" data-stage-note{% if not selected_stage %} hidden{% endif %}>

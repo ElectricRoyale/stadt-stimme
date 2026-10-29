@@ -1,6 +1,5 @@
-// Vorschläge: Liste filtern (Schritt, Suche, Alle/Unterstützt/Meine, Thema), sortieren und
-// unterstützen. Rein zusätzlich: Ohne JavaScript filtern die Schritte per ?schritt=.
-// Unterstützen geht an den Server; Zähler und Satz kommen von dort. Texte nur über textContent.
+// Vorschläge: Liste filtern (Schritt, Suche, Alle/Unterstützt/Meine, Thema) und sortieren.
+// Rein zusätzlich: Ohne JavaScript filtern die Schritte per ?schritt=. Unterstützen: support-toggle.js.
 (function () {
   "use strict";
 
@@ -10,7 +9,6 @@
 
   var rows = Array.prototype.slice.call(list.querySelectorAll("[data-row]"));
   var holder = list.querySelector("[data-rows]");
-  var live = root.querySelector("[data-prop-live]");
   var count = list.querySelector("[data-list-count]");
   var empty = list.querySelector("[data-list-empty]");
   var stageNote = list.querySelector("[data-stage-note]");
@@ -81,54 +79,6 @@
   });
   query.addEventListener("input", function () { state.query = query.value; apply(); });
   sort.addEventListener("change", resort);
-
-  // Unterstützen (auch in „Gibt es das schon?“, proposals-compose.js meldet sich hier an)
-  var csrf = (document.querySelector("[name=csrfmiddlewaretoken]") || {}).value || readCookie("csrftoken");
-  function readCookie(name) {
-    var match = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
-    return match ? decodeURIComponent(match[1]) : "";
-  }
-
-  function render(button, on) {
-    var title = button.dataset.title;
-    button.setAttribute("aria-pressed", String(on));
-    button.setAttribute("aria-label", on ? "Unterstützung für „" + title + "“ zurückziehen" : "„" + title + "“ unterstützen");
-  }
-
-  function toggle(button) {
-    var id = button.dataset.support;
-    button.disabled = true;
-    fetch(root.dataset.supportUrl.replace("/0/", "/" + id + "/"), {
-      method: "POST", headers: { "X-CSRFToken": csrf }, credentials: "same-origin",
-    }).then(function (response) {
-      return response.json().then(function (data) { return { ok: response.ok, data: data }; });
-    }).then(function (result) {
-      button.disabled = false;
-      if (!result.ok) { live.textContent = result.data.error || "Das hat nicht geklappt."; return; }
-      var data = result.data;
-      root.querySelectorAll("[data-support='" + id + "']").forEach(function (b) { render(b, data.supported); });
-      var row = document.getElementById("vorschlag-" + id);
-      if (row) {
-        row.dataset.supports = data.supports;
-        row.dataset.supported = data.supported ? "1" : "";
-        row.dataset.stage = data.stage;
-        row.querySelector("[data-sentence]").textContent = data.sentence;
-        row.querySelector("[data-progress]").style.width = data.progress + "%";
-        var pill = row.querySelector("[data-stage-pill]");
-        pill.textContent = data.stageLabel;
-        pill.className = "pill stage stage--" + data.stage;
-      }
-      live.textContent = data.supported ? "Unterstützt. " + data.sentence : "Unterstützung zurückgezogen. " + data.sentence;
-    }).catch(function () {
-      button.disabled = false;
-      live.textContent = "Keine Verbindung. Bitte versuche es noch einmal.";
-    });
-  }
-
-  root.addEventListener("click", function (event) {
-    var button = event.target.closest("[data-support]");
-    if (button) toggle(button);
-  });
 
   apply();
 })();

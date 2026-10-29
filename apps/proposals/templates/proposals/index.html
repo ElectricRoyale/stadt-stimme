@@ -8,13 +8,14 @@
   <link rel="stylesheet" href="{% static 'css/proposals.css' %}">
   <link rel="stylesheet" href="{% static 'css/proposals-form.css' %}">
   <script src="{% static 'js/proposals-list.js' %}" defer></script>
+  <script src="{% static 'js/support-toggle.js' %}" defer></script>
   <script src="{% static 'js/proposals-compose.js' %}" defer></script>
 {% endblock %}
 
 {% block main_class %}prop{% endblock %}
 
 {% block content %}
-<div data-proposals data-support-url="{% url 'proposals:support' 0 %}">
+<div data-proposals data-support-root data-support-url="{% url 'proposals:support' 0 %}">
   {% csrf_token %}
   <header class="prop-head">
     <div class="prop-head__text">
@@ -39,6 +40,6 @@
       </div>
     </div>
   </div>
-  <p class="ss-visually-hidden" aria-live="polite" data-prop-live></p>
+  <p class="ss-visually-hidden" aria-live="polite" data-support-live></p>
 </div>
 {% endblock %}

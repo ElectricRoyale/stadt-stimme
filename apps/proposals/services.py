@@ -3,7 +3,7 @@
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import transaction
@@ -120,70 +120,3 @@ def _supported_by(viewer: Participant | None, proposals: Sequence[Proposal]) -> 
         return set()
     rows = Support.objects.filter(participant=viewer, proposal__in=proposals)
     return set(rows.values_list("proposal_id", flat=True))
-
-
-@dataclass(frozen=True)
-class ProposalCard:
-    """Freigegebener Vorschlag mit Stand zur Schwelle (ADR-014)."""
-
-    proposal: Proposal
-    supports: int
-    supported: bool
-    own: bool
-
-    @property
-    def progress(self) -> int:
-        """Fortschritt zur Schwelle in Prozent, höchstens 100."""
-        threshold = settings.PROPOSAL_SUPPORT_THRESHOLD
-        return min(100, round(self.supports / threshold * 100)) if threshold else 100
-
-    @property
-    def reached(self) -> bool:
-        return self.supports >= settings.PROPOSAL_SUPPORT_THRESHOLD
-
-
-@dataclass(frozen=True)
-class PendingProposal:
-    """Eigener Vorschlag, den die Verwaltung noch prüft."""
-
-    proposal: Proposal
-    decision_by: date
-
-    @property
-    def days_left(self) -> int:
-        return max(0, (self.decision_by - timezone.localdate()).days)
-
-
-def leading_proposals(viewer: Participant | None, limit: int = 3) -> list[ProposalCard]:
-    """Freigegebene Vorschläge mit den meisten Unterstützungen zuerst."""
-    proposals = list(
-        Proposal.objects.filter(status=ProposalStatus.PUBLISHED)
-        .select_related("category")
-        .annotate(support_count=Count("supports"))
-        .order_by("-support_count", "-created_at")[:limit]
-    )
-    mine = _supported_by(viewer, proposals)
-    return [
-        ProposalCard(
-            proposal=p,
-            supports=p.support_count,
-            supported=p.pk in mine,
-            own=viewer is not None and p.participant_id == viewer.pk,
-        )
-        for p in proposals
-    ]
-
-
-def pending_proposal(viewer: Participant | None) -> PendingProposal | None:
-    """Neuester eigener Vorschlag in Prüfung, mit Prüffrist."""
-    if viewer is None:
-        return None
-    proposal = (
-        Proposal.objects.filter(participant=viewer, status=ProposalStatus.SUBMITTED)
-        .order_by("-created_at")
-        .first()
-    )
-    if proposal is None:
-        return None
-    submitted = timezone.localdate(proposal.created_at)
-    return PendingProposal(proposal, submitted + timedelta(days=settings.PROPOSAL_REVIEW_DAYS))

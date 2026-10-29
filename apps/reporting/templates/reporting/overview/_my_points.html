@@ -9,11 +9,12 @@
   {% if participant %}
     <div class="mp">
       <div class="mp__grid" role="img" aria-label="{{ mine.used }} von {{ budget }} Punkten vergeben, {{ mine.free }} frei">
-        {% for cell in mine.cells %}<span class="mp__cell{% if cell.category_pk %} is-given{% if cell.general %} is-general{% endif %}{% endif %}"></span>{% endfor %}
+        {% for cell in mine.cells %}<span class="mp__cell{% if cell.category_pk %} is-given theme-{{ cell.color }}{% if cell.general %} is-general{% endif %}{% endif %}"></span>{% endfor %}
       </div>
       <ul class="mp__list">
         {% for given in mine.themes %}
-          <li>
+          <li class="theme-{{ given.category.color }}">
+            <span class="theme-dot" aria-hidden="true"></span>
             <span class="mp__theme">{{ given.category.name }}<span class="mp__names">{{ given.names|join:", " }}</span></span>
             <span class="mp__value">{{ given.total }} P.</span>
           </li>

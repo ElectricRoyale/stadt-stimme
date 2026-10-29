@@ -2,7 +2,7 @@
 <section class="panel res-detail" aria-labelledby="detail-{{ row.key }}" data-detail="{{ row.key }}"{% if row.key != selected.key %} hidden{% endif %}>
   <div class="panel__head"><div>
     <h2 id="detail-{{ row.key }}">{{ row.name }}</h2>
-    <p class="panel__sub">{% if row.is_theme %}Ganzes Thema mit allen Einrichtungen und „{{ row.name }} allgemein“{% else %}{% include "partials/icon.html" with name="map-pin" size=14 class="res-detail__icon" %}{{ row.category.name }}{% if row.facility.address %}, {{ row.facility.address }}{% endif %}{% endif %}</p>
+    <p class="panel__sub theme-{{ row.category.color }}"><span class="theme-dot res-detail__dot" aria-hidden="true"></span>{% if row.is_theme %}Ganzes Thema mit allen Einrichtungen und „{{ row.name }} allgemein“{% else %}{{ row.category.name }}{% if row.facility.address %}, {{ row.facility.address }}{% endif %}{% endif %}</p>
   </div></div>
 
   <p class="res-figure"><strong class="res-figure__value tone-{{ row.tone }}">{{ row.gap_text }}</strong><span>Prozentpunkte</span></p>

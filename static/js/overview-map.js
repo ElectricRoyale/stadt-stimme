@@ -43,7 +43,7 @@
     layer.clearLayers();
     located.forEach(function (p) {
       var size = mine() ? (p.mine > 0 ? 14 + p.mine * 0.9 : 12) : 14 + p.share * 1.5;
-      var classes = "sq-pin"
+      var classes = "sq-pin theme-" + (p.color || "sicherheit")
         + (mine() && p.mine === 0 ? " is-empty" : "")
         + (state.theme !== null && state.theme !== p.theme ? " is-dim" : "")
         + (state.selected === p.key ? " is-selected" : "");

@@ -107,3 +107,23 @@
   .btn-ink:active { transform: none; }
   .meter-line > span { transition: none; }
 }
+
+/* Schritte eines Vorschlags (ADR-016) */
+.stage { white-space: nowrap; }
+.stage--eingereicht { background: var(--ss-notice-bg); color: var(--ss-notice-ink); }
+.stage--sammelt { background: var(--ss-red-tint); color: var(--ss-red-dark); }
+.stage--pruefung { background: var(--ss-rule); color: var(--ss-text); }
+.stage--angenommen { background: var(--ss-positive-bg); color: var(--ss-positive-ink); }
+.stage--abgelehnt { background: var(--ss-rule); color: var(--ss-text-muted); }
+
+/* Unterstützen als Umschalter */
+.support { display: inline-flex; align-items: center; min-height: var(--ss-hit); padding: 0 14px; border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); background: var(--ss-sheet); color: var(--ss-text); font: inherit; font-size: var(--ss-fs-small); font-weight: 700; cursor: pointer; transition: transform 0.1s; }
+.support:hover { background: var(--ss-raised); }
+.support:active { transform: scale(0.97); }
+.support[hidden] { display: none; }
+.support > span { display: inline-flex; align-items: center; gap: 6px; }
+.support[aria-pressed="true"] { border-color: var(--ss-text); background: var(--ss-text); color: #FFFFFF; }
+.support[aria-pressed="true"] .support__off, .support[aria-pressed="false"] .support__on { display: none; }
+.support--small { min-height: 36px; padding: 0 var(--ss-space-3); font-size: var(--ss-fs-meta); }
+@media (prefers-reduced-motion: reduce) { .support { transition: none; } }
+.chip[aria-pressed="true"] .theme-dot { box-shadow: 0 0 0 1.5px #FFFFFF; }

@@ -28,6 +28,7 @@ def _place(place: PlaceStat, facility: Facility, spend: int) -> dict[str, Any]:
         "address": facility.address,
         "theme": place.category.pk,
         "themeName": place.category.name,
+        "color": place.category.color,
         "lat": float(facility.latitude or 0) if located else None,
         "lng": float(facility.longitude or 0) if located else None,
         "share": place.share,

@@ -19,7 +19,7 @@
 
   places.forEach(function (p) {
     var marker = window.StadtStimmeMap.pin(p.lat, p.lng, {
-      size: 12, fixedHit: true, label: p.name, classes: "sq-pin",
+      size: 12, fixedHit: true, label: p.name, classes: "sq-pin theme-" + (p.color || "sicherheit"),
       onPick: function () { form.dispatchEvent(new CustomEvent("dist:pick", { detail: { key: p.key } })); },
     });
     marker.bindTooltip(p.name, { direction: "top", offset: [0, -14] });

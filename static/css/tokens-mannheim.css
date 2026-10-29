@@ -1,7 +1,7 @@
 /* StadtStimme Design-Tokens „Mannheim“ (ADR-015). Quelle: Prototyp „StadtStimme App“ (index.css).
    Ergänzt tokens.css v1.2: neue Seiten nutzen nur diese Tokens, noch nicht umgebaute Seiten
-   weiter die v1.2-Tokens. Rot gehört den Daten (Bürgerpunkte), Gold den Ausgaben; Themen
-   tragen keine eigene Farbe. Schrift selbst gehostet (SIL OFL 1.1), keine Anfragen an Google. */
+   weiter die v1.2-Tokens. Rot gehört den Bürgerpunkten, Gold den Ausgaben. Themen
+   tragen seit der neuesten Fassung eine eigene Farbe (ADR-017), gesetzt über .theme-<farbe>. Schrift selbst gehostet (SIL OFL 1.1), keine Anfragen an Google. */
 @font-face {
   font-family: "Atkinson Hyperlegible Next";
   src: url("../fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-wght-normal.woff2") format("woff2");
@@ -61,8 +61,25 @@
   --ss-focus-outline: 3px solid var(--ss-text);
   --ss-ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
 
+  /* Themen (ADR-017): Wert von Category.color */
+  --ss-theme-verkehr: #0E7490;
+  --ss-theme-bildung: #6D28D9;
+  --ss-theme-freizeit: #15803D;
+  --ss-theme-familie: #C2185B;
+  --ss-theme-kultur: #1D4ED8;
+  --ss-theme-sicherheit: #57534E;
+
   /* Layout */
   --ss-sidebar-width: 240px;
   --ss-content-max: 1760px;
   --ss-tabbar-height: 56px;
 }
+
+/* Themenfarbe für ein Element und seine Kinder: background: var(--theme) */
+.theme-verkehr { --theme: var(--ss-theme-verkehr); }
+.theme-bildung { --theme: var(--ss-theme-bildung); }
+.theme-freizeit { --theme: var(--ss-theme-freizeit); }
+.theme-familie { --theme: var(--ss-theme-familie); }
+.theme-kultur { --theme: var(--ss-theme-kultur); }
+.theme-sicherheit { --theme: var(--ss-theme-sicherheit); }
+.theme-dot { display: inline-block; flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--theme, var(--ss-bar-neutral)); }

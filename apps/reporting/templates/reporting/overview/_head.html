@@ -10,7 +10,7 @@
         <p class="ov-head__insight">Noch keine Punkte vergeben. Sobald die ersten Personen mitmachen, siehst du hier den Vergleich mit den Ausgaben der Stadt.</p>
       {% endif %}
     {% endwith %}
-    <p class="ov-head__meta">{{ stats.participants }} {% if stats.participants == 1 %}Person macht{% else %}Personen machen{% endif %} in {{ city_name }} mit.</p>
+    <p class="ov-head__meta">{{ stats.participants }} Mitmachende{% if since %} seit {{ since|date:"j. F Y" }}{% endif %}. Stand {{ now|date:"d.m.Y, H:i" }} Uhr.</p>
   </div>
   {% if participant %}
     <a class="btn-ink" href="{% url 'points:distribute' %}">Punkte verteilen{% if remaining %}<span class="btn-ink__tag">{{ remaining }} frei</span>{% endif %}</a>

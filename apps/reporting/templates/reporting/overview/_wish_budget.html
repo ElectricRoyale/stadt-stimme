@@ -5,7 +5,7 @@
       <p class="panel__sub">Anteil an allen Bürgerpunkten neben dem Anteil an den Ausgaben, je Thema</p>
     </div>
     <div class="wb-legend" aria-hidden="true">
-      <span><span class="wb-key wb-key--wish"></span>Bürgerpunkte</span>
+      <span><span class="wb-key wb-key--wish"></span>Bürgerpunkte je Thema</span>
       <span><span class="wb-key wb-key--spend"></span>Ausgaben{% if stats.fiscal_year %} {{ stats.fiscal_year }}{% endif %}</span>
     </div>
   </header>
@@ -18,10 +18,10 @@
       <ul class="wb__lines">
         {% for line in wish.lines %}
           {% with t=line.theme %}
-          <li class="wb-line{% if line.is_lead %} wb-line--lead{% endif %}">
+          <li class="wb-line theme-{{ t.category.color }}{% if line.is_lead %} wb-line--lead{% endif %}">
             <details name="wunsch-haushalt" data-theme="{{ t.category.pk }}">
               <summary class="wb-line__row">
-                <span class="wb-line__name">{{ t.category.name }}</span>
+                <span class="wb-line__name"><span class="theme-dot" aria-hidden="true"></span>{{ t.category.name }}</span>
                 <span class="wb-line__scale" aria-hidden="true" style="--wish: {{ t.citizen_share }}; --spend: {{ t.spend_share }};">
                   <span class="wb-bar" style="--v: {{ t.places_share }};"></span><span class="wb-bar wb-bar--general" style="--v: {{ t.general_share }};"></span>
                   <span class="wb-tick"></span>
