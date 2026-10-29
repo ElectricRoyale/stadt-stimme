@@ -1,4 +1,5 @@
-/* Dashboard (Skizze „Dashboard 2 · Kartenebenen“). Mobil einspaltig, ab 1024px Karte und Statistik nebeneinander. */
+/* Grundlage der Ergebnisseite (Skizze „Dashboard 2“). Die Übersicht nutzt seit ADR-015 overview.css;
+   Regeln nur für die alte Übersicht fallen weg, sobald die Ergebnisseite umgebaut ist. */
 .dash-banner { display: block; color: var(--ss-on-dark) !important; text-decoration: none; }
 .dash-banner:hover .dash-banner__btn { background: var(--ss-primary-soft); }
 .dash-banner__inner {

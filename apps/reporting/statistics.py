@@ -78,10 +78,9 @@ class Overview:
         return max(ranked, key=lambda t: t.gap, default=None)
 
     @property
-    def scale_max(self) -> int:
-        """Gemeinsamer Maßstab der Balken: Bürger, Stadt und eigene Punkte bleiben vergleichbar."""
-        values = [max(t.citizen_share, t.spend_share, t.mine) for t in self.themes]
-        return max(values, default=0) or 1
+    def average_points(self) -> int:
+        """Vergebene Punkte je mitmachender Person, gerundet."""
+        return round(self.total_points / self.participants) if self.participants else 0
 
 
 def build_overview(mine: Mapping[Target, int] | None = None) -> Overview:

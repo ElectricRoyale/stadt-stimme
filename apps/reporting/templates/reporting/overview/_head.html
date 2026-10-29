@@ -1,0 +1,20 @@
+<div class="ov-head">
+  <div class="ov-head__text">
+    <h1>Übersicht</h1>
+    {% with gap=stats.biggest_gap %}
+      {% if gap %}
+        <p class="ov-head__insight">{{ gap.category.name }} bekommt {{ gap.citizen_share }} % der Bürgerpunkte, aber nur {{ gap.spend_share }} % der Ausgaben {{ stats.fiscal_year }}.</p>
+      {% elif stats.total_points %}
+        <p class="ov-head__insight">Bürgerwunsch und Ausgaben liegen in {{ city_name }} nah beieinander.</p>
+      {% else %}
+        <p class="ov-head__insight">Noch keine Punkte vergeben. Sobald die ersten Personen mitmachen, siehst du hier den Vergleich mit den Ausgaben der Stadt.</p>
+      {% endif %}
+    {% endwith %}
+    <p class="ov-head__meta">{{ stats.participants }} {% if stats.participants == 1 %}Person macht{% else %}Personen machen{% endif %} in {{ city_name }} mit.</p>
+  </div>
+  {% if participant %}
+    <a class="btn-ink" href="{% url 'points:distribute' %}">Punkte verteilen{% if remaining %}<span class="btn-ink__tag">{{ remaining }} frei</span>{% endif %}</a>
+  {% else %}
+    <a class="btn-ink" href="{% url 'access:redeem' %}">Code eingeben</a>
+  {% endif %}
+</div>

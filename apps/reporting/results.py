@@ -17,6 +17,12 @@ from apps.reporting.statistics import Overview, share
 GapTone = Literal["citizens", "city", "even"]
 
 
+def signed(value: int) -> str:
+    """Lücke mit Vorzeichen: +19, \u221229 (echtes Minus), \u00b10."""
+    sign = "+" if value > 0 else "\u2212" if value < 0 else "\u00b1"
+    return f"{sign}{abs(value)}"
+
+
 @dataclass(frozen=True)
 class GapRow:
     """Eine Einrichtung oder ein ganzes Thema (``facility`` ist dann None)."""
@@ -39,8 +45,7 @@ class GapRow:
 
     @property
     def gap_text(self) -> str:
-        sign = "+" if self.gap > 0 else "\u2212" if self.gap < 0 else "\u00b1"
-        return f"{sign}{abs(self.gap)}"
+        return signed(self.gap)
 
     @property
     def tone(self) -> GapTone:

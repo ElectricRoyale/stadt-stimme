@@ -1,0 +1,68 @@
+/* StadtStimme Design-Tokens „Mannheim“ (ADR-015). Quelle: Prototyp „StadtStimme App“ (index.css).
+   Ergänzt tokens.css v1.2: neue Seiten nutzen nur diese Tokens, noch nicht umgebaute Seiten
+   weiter die v1.2-Tokens. Rot gehört den Daten (Bürgerpunkte), Gold den Ausgaben; Themen
+   tragen keine eigene Farbe. Schrift selbst gehostet (SIL OFL 1.1), keine Anfragen an Google. */
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("../fonts/atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-wght-normal.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Flächen: hellgrauer Rahmen mit Navigation, weißes Blatt mit dem Inhalt */
+  --ss-frame: #F5F3F2;
+  --ss-sheet: #FFFFFF;
+  --ss-raised: #FAF9F8;
+  --ss-active: #EDE9E8;
+  --ss-edge: #EAE7E6;
+  --ss-rule: #F1EFEE;
+  --ss-control: #D3CFCD;
+
+  /* Text */
+  --ss-text: #1A1A1A;
+  --ss-text-muted: #5F5B5A;
+  --ss-text-faint: #6B6766;
+  --ss-text-nav: #3D3A39;
+
+  /* Daten und Marke */
+  --ss-red: #C80000;
+  --ss-red-dark: #A30000;
+  --ss-red-pale: #F2CACA;
+  --ss-red-tint: #FBEAEA;
+  --ss-gold: #A67C00;
+  --ss-gold-ink: #8A6A00;
+  --ss-empty: #E4E1DF;
+  --ss-bar-neutral: #8C8786;
+
+  /* Status */
+  --ss-positive-bg: #DCFAE5;
+  --ss-positive-ink: #04250E;
+  --ss-notice-bg: #FFFBEB;
+  --ss-notice-ink: #92400E;
+
+  /* Schrift: Größen mit Zeilenhöhe */
+  --ss-font: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --ss-fs-meta: 13px;
+  --ss-lh-meta: 18px;
+  --ss-fs-small: 14px;
+  --ss-lh-small: 20px;
+  --ss-fs-body: 16px;
+  --ss-lh-body: 24px;
+  --ss-fs-section: 18px;
+  --ss-fs-title: 26px;
+  --ss-fs-figure: 28px;
+
+  /* Form */
+  --ss-radius: 8px;
+  --ss-radius-control: 6px;
+  --ss-radius-cell: 2px;
+  --ss-focus-outline: 3px solid var(--ss-text);
+  --ss-ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Layout */
+  --ss-sidebar-width: 240px;
+  --ss-content-max: 1760px;
+  --ss-tabbar-height: 56px;
+}

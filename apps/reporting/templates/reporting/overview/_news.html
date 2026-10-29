@@ -1,0 +1,23 @@
+<section class="panel" id="neuigkeiten" aria-labelledby="neuigkeiten-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="neuigkeiten-titel">{% if participant %}Neu bei deinen Einrichtungen{% else %}Neu in {{ city_name }}{% endif %}</h2>
+      <p class="panel__sub">Maßnahmen, für die die Stadt Geld braucht</p>
+    </div>
+  </header>
+  {% if news %}
+    <ul class="ov-news">
+      {% for measure in news %}
+        <li>
+          <p class="ov-meta ov-news__kicker"><span class="pill pill--{{ measure.status }}">{{ measure.get_status_display|capfirst }}</span>{{ measure.updated_at|date:"j. F" }}</p>
+          <p class="ov-news__title">{{ measure.title }}</p>
+          <p class="ov-meta">{{ measure.facility.name }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% elif participant %}
+    <p class="panel__empty panel__empty--box">Sobald du Punkte an eine Einrichtung gibst, siehst du hier ihre Maßnahmen. <a href="{% url 'points:distribute' %}">Punkte verteilen</a></p>
+  {% else %}
+    <p class="panel__empty">Noch keine Maßnahmen eingetragen.</p>
+  {% endif %}
+</section>

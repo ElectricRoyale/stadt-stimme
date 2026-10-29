@@ -104,7 +104,7 @@
 /* Speichern: mobil als feste Leiste unten */
 .distribute__footer {
   position: sticky;
-  bottom: 0;
+  bottom: var(--shell-bottom, 0px); /* über der Tableiste (shell.css) */
   z-index: 2;
   display: flex;
   flex-direction: column;

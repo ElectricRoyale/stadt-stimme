@@ -84,6 +84,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "apps.access.context_processors.participant",
+                "apps.points.context_processors.points_left",
                 "apps.core.context_processors.city",
             ],
         },

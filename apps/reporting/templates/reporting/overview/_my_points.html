@@ -1,0 +1,41 @@
+<section class="panel" id="deine-punkte" aria-labelledby="deine-punkte-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="deine-punkte-titel">Deine {{ budget }} Punkte</h2>
+      <p class="panel__sub">{% if participant %}{{ mine.used }} vergeben, {{ mine.free }} frei{% else %}Mit dem Code aus deinem Brief{% endif %}</p>
+    </div>
+  </header>
+
+  {% if participant %}
+    <div class="mp">
+      <div class="mp__grid" role="img" aria-label="{{ mine.used }} von {{ budget }} Punkten vergeben, {{ mine.free }} frei">
+        {% for cell in mine.cells %}<span class="mp__cell{% if cell.category_pk %} is-given{% if cell.general %} is-general{% endif %}{% endif %}"></span>{% endfor %}
+      </div>
+      <ul class="mp__list">
+        {% for given in mine.themes %}
+          <li>
+            <span class="mp__theme">{{ given.category.name }}<span class="mp__names">{{ given.names|join:", " }}</span></span>
+            <span class="mp__value">{{ given.total }} P.</span>
+          </li>
+        {% endfor %}
+        <li class="mp__free">
+          <span class="mp__swatch" aria-hidden="true"></span>
+          <span class="mp__theme">Noch frei</span>
+          <strong class="mp__value">{{ mine.free }} P.</strong>
+        </li>
+      </ul>
+    </div>
+    <div class="panel__foot">
+      {% if valid_until and mine.used %}<p class="ov-meta">Gültig bis {{ valid_until|date:"j. F Y" }}. Jeder Besuch verlängert die Frist.</p>{% endif %}
+      <a class="btn-outline" href="{% url 'points:distribute' %}">{% if mine.used %}Verteilung ändern{% else %}Punkte verteilen{% endif %}</a>
+    </div>
+  {% else %}
+    <div class="mp">
+      <div class="mp__grid" aria-hidden="true">{% for cell in mine.cells %}<span class="mp__cell"></span>{% endfor %}</div>
+      <p class="mp__pitch">Du verteilst 100 Punkte auf die Einrichtungen und Themen, um die sich {{ city_name }} als Nächstes kümmern soll. Den Code findest du im Brief der Stadt.</p>
+    </div>
+    <div class="panel__foot">
+      <a class="btn-ink" href="{% url 'access:redeem' %}">Code eingeben</a>
+    </div>
+  {% endif %}
+</section>

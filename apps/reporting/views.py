@@ -1,14 +1,25 @@
 """Öffentliche Seiten: Übersicht und Ergebnisse, mit den eigenen Punkten nur nach Anmeldung."""
 
+from datetime import date, timedelta
+
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_GET
 
+from apps.access.models import Participant
 from apps.access.session import current_participant
 from apps.points.models import POINTS_BUDGET
 from apps.points.services import points_of
+from apps.proposals.services import leading_proposals, pending_proposal
+from apps.reporting.dashboard import (
+    my_points,
+    participation_by_week,
+    recent_measures,
+    wish_budget,
+)
 from apps.reporting.map_data import map_payload, results_payload
 from apps.reporting.results import build_results
 from apps.reporting.statistics import Overview, build_overview
@@ -16,16 +27,29 @@ from apps.reporting.statistics import Overview, build_overview
 
 @require_GET
 def overview(request: HttpRequest) -> HttpResponse:
-    stats = _overview_for(request)
+    participant = current_participant(request)
+    stats = build_overview(points_of(participant) if participant else None)
+    results = build_results(stats)
+    mine = my_points(stats)
+    own_facilities = {p.facility.pk for p in stats.places if p.facility and p.mine > 0}
     return render(
         request,
         "reporting/overview.html",
         {
             "stats": stats,
-            "map_data": map_payload(stats),
+            "wish": wish_budget(stats, results),
+            "participation": participation_by_week(),
+            "mine": mine,
+            "valid_until": _valid_until(participant),
+            "news": recent_measures(own_facilities if participant else None),
+            "proposals": leading_proposals(participant),
+            "pending": pending_proposal(participant),
+            "support_threshold": settings.PROPOSAL_SUPPORT_THRESHOLD,
+            "review_days": settings.PROPOSAL_REVIEW_DAYS,
+            "map_data": map_payload(stats, results),
             **_map_settings(),
             "budget": POINTS_BUDGET,
-            "remaining": POINTS_BUDGET - stats.mine_used,
+            "remaining": mine.free,
         },
     )
 
@@ -49,6 +73,15 @@ def results(request: HttpRequest) -> HttpResponse:
 def _overview_for(request: HttpRequest) -> Overview:
     participant = current_participant(request)
     return build_overview(points_of(participant) if participant else None)
+
+
+def _valid_until(participant: Participant | None) -> date | None:
+    """Punkte verfallen nach der letzten aktiven Nutzung (ADR-003)."""
+    if participant is None:
+        return None
+    return timezone.localdate(participant.last_active_at) + timedelta(
+        days=settings.POINTS_EXPIRY_DAYS
+    )
 
 
 def _map_settings() -> dict[str, str]:
