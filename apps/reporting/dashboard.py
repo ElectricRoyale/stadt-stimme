@@ -5,11 +5,11 @@ Baut nur auf vorhandenen Daten auf: Kennzahlen aus ``statistics``, Lücken je Ei
 """
 
 import math
-from collections.abc import Iterable
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date, timedelta
 
-from django.db.models import Count, Min, QuerySet
+from django.db.models import Count, Min
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 
@@ -89,10 +89,11 @@ def _round_up(value: int, step: int) -> int:
 
 @dataclass(frozen=True)
 class PointCell:
-    """Eines der 100 Quadrate: Thema (None = frei) und ob es an das ganze Thema ging."""
+    """Eines der 100 Quadrate: Thema (None = frei), seine Farbe und ob es ans ganze Thema ging."""
 
     category_pk: int | None
     general: bool = False
+    color: str = ""
 
 
 @dataclass(frozen=True)
@@ -124,7 +125,8 @@ def my_points(overview: Overview) -> MyPoints:
         places = [p for p in own if not p.is_general]
         general = [p for p in own if p.is_general]
         for place in places + general:
-            cells += [PointCell(theme.category.pk, place.is_general)] * place.mine
+            cell = PointCell(theme.category.pk, place.is_general, theme.category.color)
+            cells += [cell] * place.mine
         themes.append(
             GivenTheme(
                 category=theme.category,
@@ -211,9 +213,16 @@ def nice_top(value: int) -> int:
     return int(math.ceil(value / magnitude) * magnitude)
 
 
-def recent_measures(facility_ids: Iterable[int] | None) -> QuerySet[Measure]:
-    """Zuletzt geänderte Maßnahmen; mit ``facility_ids`` nur an diesen Einrichtungen."""
-    measures = Measure.objects.select_related("facility")
-    if facility_ids is not None:
-        measures = measures.filter(facility_id__in=list(facility_ids))
-    return measures.order_by("-updated_at", "title")[:FEED_ROWS]
+@dataclass(frozen=True)
+class NewsItem:
+    measure: Measure
+    mine: int  # eigene Punkte an der Einrichtung der Maßnahme
+
+
+def recent_measures(mine: Mapping[int, int] | None) -> list[NewsItem]:
+    """Zuletzt geänderte Maßnahmen; mit ``mine`` (Einrichtung → eigene Punkte) nur dort."""
+    measures = Measure.objects.select_related("facility", "facility__category")
+    if mine is not None:
+        measures = measures.filter(facility_id__in=list(mine))
+    latest = measures.order_by("-updated_at", "title")[:FEED_ROWS]
+    return [NewsItem(m, (mine or {}).get(m.facility_id, 0)) for m in latest]

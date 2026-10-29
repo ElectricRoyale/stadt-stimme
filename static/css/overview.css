@@ -1,5 +1,6 @@
-/* Übersicht im Design „Mannheim“ (ADR-015, Prototyp „StadtStimme App“). Mobil eine Spalte in der
-   Reihenfolge der Aufgaben, ab 1200 px zwei Spalten, ab 1536 px drei Spalten bis 1760 px Breite. */
+/* Übersicht im Design „Mannheim“ (ADR-015, ADR-017, Prototyp „StadtStimme App“). Mobil eine
+   Spalte in der Reihenfolge der Aufgaben, ab 1200 px zwei Spalten: links Wunsch und Haushalt,
+   Karte, Teilnahme; rechts deine Punkte, Vorschläge, Neuigkeiten. Themen in ihrer Farbe. */
 .ov { max-width: var(--ss-content-max); margin: 0 auto; padding: 20px 16px 32px; color: var(--ss-text); }
 .ov-meta { margin: 0; font-size: var(--ss-fs-meta); line-height: var(--ss-lh-meta); color: var(--ss-text-muted); }
 
@@ -30,25 +31,20 @@
 }
 
 @media (min-width: 1200px) {
-  .ov-grid { grid-template-columns: minmax(0, 1fr) 360px; grid-template-rows: auto 1fr; gap: var(--ss-space-6) var(--ss-space-8); align-items: start; }
+  .ov-grid { grid-template-columns: minmax(0, 1fr) 360px; gap: var(--ss-space-6); align-items: start; }
   .ov-col { display: grid; align-content: start; gap: var(--ss-space-6); min-width: 0; }
   .ov-slot { order: 0; }
-  .ov-col--a { grid-column: 1; grid-row: 1; }
-  .ov-col--b { grid-column: 1; grid-row: 2; }
-  .ov-col--c { grid-column: 2; grid-row: 1 / span 2; }
 }
 
 @media (min-width: 1536px) {
-  .ov-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 380px; grid-template-rows: none; }
-  .ov-col--b { grid-column: 2; grid-row: 1; }
-  .ov-col--c { grid-column: 3; grid-row: 1; }
+  .ov-grid { grid-template-columns: minmax(0, 1fr) 380px; }
 }
 
-/* Wunsch und Haushalt: roter Balken = Bürgerpunkte, goldene Marke = Ausgaben */
+/* Wunsch und Haushalt: Balken in der Themenfarbe = Bürgerpunkte, goldene Marke = Ausgaben */
 .wb-legend { display: flex; gap: var(--ss-space-4); font-size: var(--ss-fs-meta); color: var(--ss-text-muted); }
 .wb-legend > span { display: flex; align-items: center; gap: 6px; }
 .wb-key { display: inline-block; }
-.wb-key--wish { width: 12px; height: 12px; border-radius: var(--ss-radius-cell); background: var(--ss-red); }
+.wb-key--wish { width: 10px; height: 10px; border-radius: 50%; background: conic-gradient(var(--ss-theme-verkehr) 0 25%, var(--ss-theme-freizeit) 0 50%, var(--ss-theme-familie) 0 75%, var(--ss-theme-bildung) 0); }
 .wb-key--spend { width: 3px; height: 14px; background: var(--ss-gold); }
 
 .wb { --wb-name: 116px; --wb-gap: 16px; --wb-tail: 48px; position: relative; container-type: inline-size; }
@@ -70,15 +66,15 @@
 }
 .wb-line__row:hover { background: var(--ss-raised); }
 .wb-line__row:focus-visible { outline: var(--ss-focus-outline); outline-offset: 2px; }
-.wb-line__name { font-size: var(--ss-fs-body); font-weight: 700; }
+.wb-line__name { display: flex; align-items: center; gap: var(--ss-space-2); font-size: var(--ss-fs-body); font-weight: 700; }
 .wb-line__gap { grid-column: 2; grid-row: 1; text-align: right; font-size: var(--ss-fs-body); color: var(--ss-text-muted); font-variant-numeric: tabular-nums; }
-.wb-line--lead .wb-line__gap { font-weight: 800; color: var(--ss-red); }
+.wb-line--lead .wb-line__gap { font-weight: 800; color: var(--theme, var(--ss-red)); }
 .wb-line__chevron { grid-column: 3; grid-row: 1; color: var(--ss-text-muted); transition: transform 0.2s ease-out; }
 .wb-line details[open] .wb-line__chevron { transform: rotate(180deg); }
 .wb-line__scale { position: relative; grid-column: 1 / -1; grid-row: 2; display: flex; align-items: center; height: 32px; min-width: 0; }
 
-.wb-bar { flex-shrink: 0; height: 20px; width: calc(var(--v) / var(--axis) * 100%); background: var(--ss-red); transform-origin: left center; animation: wb-grow 0.72s var(--ss-ease-out) both; }
-.wb-bar--general { background: repeating-linear-gradient(135deg, var(--ss-red) 0 3px, var(--ss-red-pale) 3px 6px); border-radius: 0 var(--ss-radius-cell) var(--ss-radius-cell) 0; }
+.wb-bar { flex-shrink: 0; height: 20px; width: calc(var(--v) / var(--axis) * 100%); background: var(--theme, var(--ss-red)); transform-origin: left center; animation: wb-grow 0.72s var(--ss-ease-out) both; }
+.wb-bar--general { background: repeating-linear-gradient(135deg, var(--theme, var(--ss-red)) 0 3px, color-mix(in srgb, var(--theme, var(--ss-red)) 35%, #FFFFFF) 3px 6px); border-radius: 0 var(--ss-radius-cell) var(--ss-radius-cell) 0; }
 .wb-tick { position: absolute; top: 0; left: calc(var(--spend) / var(--axis) * 100%); width: 3px; height: 32px; background: var(--ss-gold); transform: translateX(-50%); }
 .wb-line__values { position: absolute; left: calc(max(var(--wish), var(--spend)) / var(--axis) * 100% + 8px); display: flex; align-items: center; gap: 6px; height: 20px; white-space: nowrap; font-size: var(--ss-fs-small); font-weight: 700; font-variant-numeric: tabular-nums; }
 .wb-line__values--between { left: calc(var(--wish) / var(--axis) * 100% + 8px); }
@@ -134,6 +130,8 @@
 .ov-map__canvas { position: relative; z-index: 0; aspect-ratio: 3 / 2; overflow: hidden; border: 1px solid var(--ss-rule); border-radius: var(--ss-radius-control); background: #F1EFE9; }
 .ov-map__fallback { margin: 0; padding: var(--ss-space-4); font-size: var(--ss-fs-small); color: var(--ss-text-muted); }
 .ov-map .leaflet-container { font-family: var(--ss-font); }
+.ov-map .sq-pin > span { background: var(--theme, var(--ss-red)); }
+.ov-map .sq-pin.is-empty > span { background: var(--ss-empty); }
 
 .ov-rank { margin: var(--ss-space-5) 0 0; padding: 0; list-style: none; columns: 2 220px; column-gap: var(--ss-space-8); }
 .ov-rank > li { break-inside: avoid; border-top: 1px solid var(--ss-rule); transition: opacity 0.2s; }
@@ -167,15 +165,20 @@
 .ov-prop { padding: 10px 0; }
 .ov-prop + .ov-prop { border-top: 1px solid var(--ss-rule); }
 .ov-prop__top { display: flex; align-items: flex-start; gap: var(--ss-space-2); margin-bottom: var(--ss-space-2); }
+.ov-prop__dot { margin-top: 7px; }
+.ov-prop__bar { height: 6px; margin-left: 18px; overflow: hidden; border-radius: 3px; background: var(--ss-empty); }
+.ov-prop__bar > span { display: block; height: 100%; border-radius: inherit; background: var(--ss-red); transition: width 0.5s var(--ss-ease-out); }
+.ov-prop__bar.is-reached > span { background: var(--ss-text); }
+.ov-props__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ss-space-2) var(--ss-space-4); }
+.ov-link { color: var(--ss-text) !important; font-size: var(--ss-fs-small); font-weight: 700; text-decoration-color: var(--ss-control); text-underline-offset: 4px; }
 .ov-prop__title { flex: 1; min-width: 0; margin: 0; font-size: var(--ss-fs-body); line-height: var(--ss-lh-body); }
-.ov-prop__count { display: flex; align-items: center; justify-content: space-between; gap: var(--ss-space-2); margin-top: 4px; font-variant-numeric: tabular-nums; }
-.ov-prop__count .pill { height: 20px; }
+.ov-prop__count { margin: 6px 0 0 18px; font-variant-numeric: tabular-nums; }
 
-/* Deine 100 Punkte: 10×10 Quadrate, gefüllt = Einrichtung, schraffiert = ganzes Thema, grau = frei */
+/* Deine 100 Punkte: 10×10 Quadrate in der Themenfarbe, schraffiert = ganzes Thema, grau = frei */
 .mp { display: flex; flex-wrap: wrap; gap: var(--ss-space-5); }
 .mp__grid { display: grid; flex-shrink: 0; grid-template-columns: repeat(10, 12px); gap: 3px; align-self: flex-start; }
 .mp__cell { width: 12px; height: 12px; border-radius: 1px; background: var(--ss-empty); animation: ov-cell 0.32s var(--ss-ease-out) both; }
-.mp__cell.is-given { background: var(--ss-red); }
+.mp__cell.is-given { background: var(--theme, var(--ss-red)); }
 .mp__cell.is-general { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0 2px, transparent 2px 4px); }
 .mp__list { flex: 1 1 160px; min-width: 0; margin: 0; padding: 0; list-style: none; font-size: var(--ss-fs-small); }
 .mp__list > li { display: flex; align-items: center; gap: var(--ss-space-2); min-height: var(--ss-hit); padding: 0 4px; }

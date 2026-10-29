@@ -22,9 +22,9 @@
 
   <ol class="ov-rank" id="ov-rank" aria-label="Einrichtungen nach Anteil an allen Bürgerpunkten">
     {% for place in stats.places %}{% if place.facility %}
-      <li data-theme="{{ place.category.pk }}">
+      <li data-theme="{{ place.category.pk }}" class="theme-{{ place.category.color }}">
         <button type="button" class="ov-rank__item" data-select="{{ place.target.key }}" disabled>
-          <span class="ov-rank__name">{{ place.name }}</span>
+          <span class="theme-dot" aria-hidden="true"></span><span class="ov-rank__name">{{ place.name }}</span>
           <span class="ov-rank__value" data-all="{{ place.share }} %" data-mine="{% if place.mine %}{{ place.mine }} P.{% else %}–{% endif %}">{{ place.share }} %</span>
         </button>
       </li>

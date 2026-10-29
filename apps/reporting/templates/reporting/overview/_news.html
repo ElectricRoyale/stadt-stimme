@@ -7,13 +7,13 @@
   </header>
   {% if news %}
     <ul class="ov-news">
-      {% for measure in news %}
+      {% for item in news %}{% with measure=item.measure %}
         <li>
           <p class="ov-meta ov-news__kicker"><span class="pill pill--{{ measure.status }}">{{ measure.get_status_display|capfirst }}</span>{{ measure.updated_at|date:"j. F" }}</p>
           <p class="ov-news__title">{{ measure.title }}</p>
-          <p class="ov-meta">{{ measure.facility.name }}</p>
+          <p class="ov-meta">{{ measure.facility.name }}{% if item.mine %}, {{ item.mine }} Punkte von dir{% endif %}</p>
         </li>
-      {% endfor %}
+      {% endwith %}{% endfor %}
     </ul>
   {% elif participant %}
     <p class="panel__empty panel__empty--box">Sobald du Punkte an eine Einrichtung gibst, siehst du hier ihre Maßnahmen. <a href="{% url 'points:distribute' %}">Punkte verteilen</a></p>

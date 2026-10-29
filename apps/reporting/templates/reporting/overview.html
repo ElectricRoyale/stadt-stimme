@@ -10,7 +10,7 @@
   <script src="{% static 'vendor/leaflet/leaflet.js' %}" defer></script>
   <script src="{% static 'js/map-base.js' %}" defer></script>
   <script src="{% static 'js/overview-map.js' %}" defer></script>
-  {% if participant %}<script src="{% static 'js/support-button.js' %}" defer></script>{% endif %}
+  {% if participant %}<script src="{% static 'js/support-toggle.js' %}" defer></script>{% endif %}
 {% endblock %}
 
 {% block main_class %}ov{% endblock %}
@@ -18,19 +18,17 @@
 {% block content %}
   {% include "reporting/overview/_head.html" %}
 
-  {# Telefon: eine Spalte in der Reihenfolge der Aufgaben. Ab 1200 px zwei, ab 1536 px drei Spalten (ADR-015). #}
+  {# Telefon: Wunsch, deine Punkte, Karte, Teilnahme, Vorschläge, Neuigkeiten. Ab 1200 px links Wunsch, Karte, Teilnahme; rechts deine Punkte, Vorschläge, Neuigkeiten. #}
   <div class="ov-grid">
-    <div class="ov-col ov-col--a">
+    <div class="ov-col ov-col--main">
       <div class="ov-slot ov-slot--1">{% include "reporting/overview/_wish_budget.html" %}</div>
-      <div class="ov-slot ov-slot--6">{% include "reporting/overview/_participation.html" %}</div>
-    </div>
-    <div class="ov-col ov-col--b">
       <div class="ov-slot ov-slot--3">{% include "reporting/overview/_map.html" %}</div>
-      <div class="ov-slot ov-slot--4">{% include "reporting/overview/_proposals.html" %}</div>
+      <div class="ov-slot ov-slot--4">{% include "reporting/overview/_participation.html" %}</div>
     </div>
-    <div class="ov-col ov-col--c">
+    <div class="ov-col ov-col--side">
       <div class="ov-slot ov-slot--2">{% include "reporting/overview/_my_points.html" %}</div>
-      <div class="ov-slot ov-slot--5">{% include "reporting/overview/_news.html" %}</div>
+      <div class="ov-slot ov-slot--5">{% include "reporting/overview/_proposals.html" %}</div>
+      <div class="ov-slot ov-slot--6">{% include "reporting/overview/_news.html" %}</div>
     </div>
   </div>
 {% endblock %}

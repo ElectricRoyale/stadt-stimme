@@ -1,4 +1,5 @@
-<section class="panel" id="vorschlaege" aria-labelledby="vorschlaege-titel"{% if participant %} data-support-threshold="{{ support_threshold }}"{% endif %}>
+{# Vorschläge auf der Übersicht: der eigene, noch offene Vorschlag und die drei mit den meisten Unterstützungen (ADR-016). #}
+<section class="panel" id="vorschlaege" aria-labelledby="vorschlaege-titel"{% if participant %} data-support-root data-support-url="{% url 'proposals:support' 0 %}"{% endif %}>
   <header class="panel__head">
     <div>
       <h2 id="vorschlaege-titel">Vorschläge</h2>
@@ -6,35 +7,36 @@
     </div>
   </header>
 
-  {% if pending %}
+  {% if own_proposal %}
     <div class="ov-own">
-      <p class="ov-own__kicker"><span class="pill pill--notice">In Prüfung</span>Dein Vorschlag</p>
-      <p class="ov-own__title">{{ pending.proposal.title }}</p>
-      <p class="ov-meta">Eingereicht am {{ pending.proposal.created_at|date:"j. F" }}. Entscheidung bis {{ pending.decision_by|date:"j. F Y" }}, noch {{ pending.days_left }} von {{ review_days }} Tagen.</p>
+      <p class="ov-own__kicker"><span class="pill stage stage--{{ own_proposal.stage.value }}">{{ own_proposal.stage.label }}</span>Dein Vorschlag</p>
+      <p class="ov-own__title">{{ own_proposal.proposal.title }}</p>
+      <p class="ov-meta">{{ own_proposal.sentence }}</p>
     </div>
   {% endif %}
 
   {% if proposals %}
     {% if participant %}{% csrf_token %}{% endif %}
     <ul class="ov-props">
-      {% for card in proposals %}
-        <li class="ov-prop" data-support-item>
+      {% for item in proposals %}
+        <li class="ov-prop theme-{{ item.proposal.category.color }}" id="vorschlag-{{ item.proposal.pk }}">
           <div class="ov-prop__top">
-            <p class="ov-prop__title">{{ card.proposal.title }}</p>
-            {% if participant and not card.own %}
-              <button type="button" class="btn-toggle" aria-pressed="{% if card.supported %}true{% else %}false{% endif %}"
-                      data-support-url="{% url 'proposals:support' card.proposal.pk %}" data-js-only hidden>{% if card.supported %}Unterstützt{% else %}Unterstützen{% endif %}</button>
-            {% endif %}
+            <span class="theme-dot ov-prop__dot" aria-hidden="true"></span>
+            <p class="ov-prop__title">{{ item.proposal.title }}</p>
+            {% if participant %}{% include "proposals/_support.html" with small=True %}{% endif %}
           </div>
-          <div class="meter-line{% if card.reached %} is-reached{% endif %}" aria-hidden="true"><span style="width: {{ card.progress }}%;"></span></div>
-          <p class="ov-meta ov-prop__count"><span><span data-support-count>{{ card.supports }}</span> von {{ support_threshold }} Unterstützungen</span><span class="pill pill--positive" data-support-reached{% if not card.reached %} hidden{% endif %}>Schwelle erreicht</span></p>
+          <div class="ov-prop__bar{% if item.stage.value == 'pruefung' %} is-reached{% endif %}" aria-hidden="true"><span data-progress style="width: {{ item.progress }}%;"></span></div>
+          <p class="ov-meta ov-prop__count" data-sentence>{{ item.sentence }}</p>
         </li>
       {% endfor %}
     </ul>
-    <p class="ss-visually-hidden ov-meta" aria-live="polite" data-support-status></p>
-  {% elif not pending %}
+    <p class="ss-visually-hidden" aria-live="polite" data-support-live></p>
+  {% elif not own_proposal %}
     <p class="panel__empty">Noch keine freigegebenen Vorschläge. Mach den ersten.</p>
   {% endif %}
 
-  <a class="btn-outline" href="{% url 'proposals:index' %}">Vorschlag machen</a>
+  <div class="ov-props__actions">
+    <a class="btn-outline" href="{% url 'proposals:index' %}">Alle Vorschläge</a>
+    <a class="ov-link" href="{% url 'proposals:index' %}#vorschlag-neu">Vorschlag machen</a>
+  </div>
 </section>

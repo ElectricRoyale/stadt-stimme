@@ -171,6 +171,17 @@ class Board:
     def refused_early(self) -> int:
         return sum(1 for i in self.items if i.refused_early)
 
+    def leading(self, limit: int = 3) -> list[Item]:
+        """Fremde Vorschläge, die man noch unterstützen kann, die meisten Unterstützungen zuerst."""
+        open_items = [i for i in self.items if i.can_support and i.visible]
+        return sorted(open_items, key=lambda i: (-i.supports, -i.proposal.pk))[:limit]
+
+    @property
+    def latest_own(self) -> Item | None:
+        """Neuester eigener Vorschlag, solange er noch nicht entschieden ist."""
+        undecided = (Stage.SUBMITTED, Stage.COLLECTING, Stage.REVIEW)
+        return next((i for i in self.mine if i.stage in undecided), None)
+
     @property
     def mine(self) -> list[Item]:
         return [i for i in self.items if i.own]

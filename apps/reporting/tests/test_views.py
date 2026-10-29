@@ -34,8 +34,9 @@ def test_overview_shows_own_points_when_logged_in(
 
     assert '<span class="btn-ink__tag">65 frei</span>' in content
     assert "35 vergeben, 65 frei" in content
-    assert content.count('class="mp__cell is-given"') == 30
-    assert content.count('class="mp__cell is-given is-general"') == 5
+    color = catalog.sport.color
+    assert content.count(f'class="mp__cell is-given theme-{color}"') == 30
+    assert content.count(f'class="mp__cell is-given theme-{color} is-general"') == 5
     assert "Hallenbad, Sport allgemein" in content
     assert 'data-scope="meine"' in content
     assert "Neu bei deinen Einrichtungen" in content
