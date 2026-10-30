@@ -8,4 +8,5 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("vorschlaege/<int:pk>/", views.decide, name="decide"),
     path("stichtag.csv", views.snapshot, name="snapshot"),
+    path("einrichtungen/<int:pk>/erledigt/", views.facility_done, name="facility_done"),
 ]

@@ -162,3 +162,42 @@ def test_snapshot_csv_from_the_log(staff_client: Client, catalog: Catalog) -> No
 def test_snapshot_needs_a_valid_date(staff_client: Client) -> None:
     assert staff_client.get(f"{URL}stichtag.csv", {"datum": "gestern"}).status_code == 400
     assert staff_client.get(f"{URL}stichtag.csv").status_code == 400
+
+
+def test_mark_facility_done_returns_points(staff_client: Client, catalog: Catalog) -> None:
+    from apps.points.models import PointEvent, PointEventKind
+    from apps.points.services import Target, points_of, save_distribution
+
+    anna, ben = new_person(), new_person()
+    save_distribution(anna, {Target("f", catalog.bad.pk): 30, Target("c", catalog.sport.pk): 5})
+    save_distribution(ben, {Target("f", catalog.bad.pk): 20})
+    url = f"{URL}einrichtungen/{catalog.bad.pk}/erledigt/"
+
+    assert "Als erledigt markieren" in staff_client.get(URL).content.decode()
+    confirm = staff_client.get(url).content.decode()
+    assert "Hallenbad als erledigt markieren?" in confirm
+    assert "<dd>50</dd>" in confirm and "<dd>2</dd>" in confirm
+
+    response = staff_client.post(url, follow=True)
+
+    assert "50 Punkte sind an 2 Personen zurückgegangen" in response.content.decode()
+    assert points_of(anna) == {Target("c", catalog.sport.pk): 5}
+    assert points_of(ben) == {}
+    catalog.bad.refresh_from_db()
+    assert catalog.bad.done_at is not None
+    returned = PointEvent.objects.filter(kind=PointEventKind.RETURNED)
+    assert sorted(returned.values_list("delta", flat=True)) == [-30, -20]
+    assert not returned.filter(measure__isnull=False).exists()
+
+
+def test_marking_done_needs_change_permission(client: Client, catalog: Catalog) -> None:
+    from apps.points.services import Target, points_of, save_distribution
+
+    person = new_person()
+    save_distribution(person, {Target("f", catalog.bad.pk): 30})
+    client.force_login(User.objects.create_user("lesend", is_staff=True))
+    url = f"{URL}einrichtungen/{catalog.bad.pk}/erledigt/"
+
+    assert "Recht „Einrichtung ändern“" in client.get(url).content.decode()
+    assert client.post(url).status_code == 403
+    assert points_of(person) == {Target("f", catalog.bad.pk): 30}

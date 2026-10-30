@@ -1,6 +1,6 @@
 {% autoescape off %}Hallo,
 
-die Stadt setzt „{{ measure }}“ bei {{ facility }} jetzt um. Deine {{ points }} Punkte für {{ facility }} sind deshalb zu dir zurückgekommen.
+{% if measure %}die Stadt setzt „{{ measure }}“ bei {{ facility }} jetzt um.{% else %}die Stadt hat sich um {{ facility }} gekümmert.{% endif %} Deine {{ points }} Punkte für {{ facility }} sind deshalb zu dir zurückgekommen.
 
 Du kannst sie neu verteilen:
 {{ points_url }}

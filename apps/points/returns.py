@@ -1,5 +1,6 @@
-"""Rückfluss: Geht eine Maßnahme in Umsetzung, bekommen die Unterstützer ihrer Einrichtung die
-Punkte zurück und können sie neu verteilen (ADR-027, ersetzt „kein Rückfluss“ aus ADR-011).
+"""Rückfluss: Geht eine Maßnahme in Umsetzung oder markiert die Stadt eine Einrichtung als
+erledigt, bekommen die Unterstützer der Einrichtung ihre Punkte zurück und können sie neu
+verteilen (ADR-027, ADR-029; ersetzt „kein Rückfluss“ aus ADR-011).
 
 Punkte an ein ganzes Thema bleiben stehen; sie gelten keiner einzelnen Einrichtung.
 """
@@ -8,10 +9,11 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from django.db import transaction
+from django.db.models import Count, Sum
 from django.utils import timezone
 
 from apps.access.models import Participant
-from apps.catalog.models import Measure, MeasureStatus
+from apps.catalog.models import Facility, Measure, MeasureStatus
 from apps.points import ledger
 from apps.points.models import Allocation, PointEvent, PointEventKind
 from apps.points.signals import points_returned
@@ -31,14 +33,14 @@ def triggers_return(previous: str | None, current: str) -> bool:
     return current in RETURN_STATUSES and previous not in RETURN_STATUSES
 
 
-def return_points(measure: Measure) -> list[ReturnedPoints]:
-    """Gibt alle Punkte auf der Einrichtung der Maßnahme an ihre Unterstützer zurück.
+def return_points(facility: Facility, *, measure: Measure | None = None) -> list[ReturnedPoints]:
+    """Gibt alle Punkte auf der Einrichtung an ihre Unterstützer zurück.
 
     Läuft in einer Transaktion: Zugänge sperren (feste Reihenfolge gegen Deadlocks), Ereignis
     „zurückgegeben“ schreiben, Vergaben löschen. Benachrichtigt wird erst nach dem Commit.
     """
     with transaction.atomic():
-        supporters = Allocation.objects.filter(facility_id=measure.facility_id)
+        supporters = Allocation.objects.filter(facility_id=facility.pk)
         ids = sorted(set(supporters.values_list("participant_id", flat=True)))
         list(Participant.objects.select_for_update().filter(pk__in=ids).order_by("pk"))
         removed = ledger.remove(
@@ -47,9 +49,32 @@ def return_points(measure: Measure) -> list[ReturnedPoints]:
         returns = [ReturnedPoints(a.participant_id, a.points) for a in removed]
         if returns:
             transaction.on_commit(
-                lambda: points_returned.send(sender=Measure, returns=returns, measure=measure)
+                lambda: points_returned.send(
+                    sender=Facility, returns=returns, facility=facility, measure=measure
+                )
             )
     return returns
+
+
+@dataclass(frozen=True)
+class Support:
+    supporters: int
+    points: int
+
+
+def support_of(facility: Facility) -> Support:
+    """Was beim Erledigen zurückfließen würde; für die Rückfrage."""
+    totals = Allocation.objects.filter(facility=facility).aggregate(
+        supporters=Count("participant", distinct=True), points=Sum("points")
+    )
+    return Support(totals["supporters"], totals["points"] or 0)
+
+
+def mark_done(facility: Facility) -> list[ReturnedPoints]:
+    """Die Stadt hat sich um die Einrichtung gekümmert: Punkte zurück, Datum merken (ADR-029)."""
+    with transaction.atomic():
+        Facility.objects.filter(pk=facility.pk).update(done_at=timezone.now())
+        return return_points(facility)
 
 
 @dataclass(frozen=True)

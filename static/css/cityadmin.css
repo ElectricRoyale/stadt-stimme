@@ -74,6 +74,9 @@
 .va-ledger__gap { margin: 0; font-weight: 800; font-variant-numeric: tabular-nums; }
 .va-ledger__gap.is-citizens { color: var(--ss-red-dark); }
 .va-ledger__gap.is-city { color: var(--ss-gold-ink); }
+.va-ledger__done { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: 10px; }
+.va-ledger__done .btn-outline { gap: 6px; margin-left: auto; }
+.va-ledger__done-at { display: flex; gap: 6px; align-items: center; margin: 0; font-size: var(--ss-fs-small); color: var(--ss-text-muted); }
 .va-bars { display: grid; gap: 4px; margin: 8px 0 0 32px; }
 .va-bars dd { display: grid; grid-template-columns: minmax(0, 1fr) 48px; align-items: center; gap: 8px; margin: 0; font-size: var(--ss-fs-meta); color: var(--ss-text-muted); text-align: right; font-variant-numeric: tabular-nums; }
 .va-bar { display: block; height: 6px; overflow: hidden; border-radius: 2px; background: var(--ss-empty); }
