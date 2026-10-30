@@ -1,0 +1,32 @@
+{# Annehmen oder ablehnen, immer mit öffentlicher Antwort (ADR-016, ADR-026). Funktioniert ohne JavaScript. #}
+<form method="post" class="va-form" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="va-error" role="alert">{% for e in form.non_field_errors %}<p>{{ e }}</p>{% endfor %}</div>{% endif %}
+  {% if item.stage.value == "sammelt" %}
+    <p class="va-notice">{% include "partials/icon.html" with name="info" size=16 %}<span>Der Vorschlag sammelt noch Unterstützung. Vor der Schwelle nur entscheiden, wenn es einen Grund gibt, etwa eine Doppelung oder einen Verstoß gegen die Regeln.</span></p>
+  {% endif %}
+  <fieldset class="va-choice"{% if form.verdict.errors %} aria-describedby="verdict-error"{% endif %}>
+    <legend>Entscheidung</legend>
+    {% for radio in form.verdict %}
+      <label class="va-choice__option">
+        {{ radio.tag }}
+        <span><strong>{{ radio.choice_label }}</strong><span>{% if radio.data.value == "annehmen" %}Am besten mit der Maßnahme, die daraus wird. Ein neuer Ort wird eine eigene Einrichtung.{% else %}Die Begründung steht öffentlich beim Vorschlag.{% endif %}</span></span>
+      </label>
+    {% endfor %}
+    {% if form.verdict.errors %}<p class="va-field-error" id="verdict-error">{{ form.verdict.errors.0 }}</p>{% endif %}
+  </fieldset>
+  <div class="va-field">
+    <label for="{{ form.answer.id_for_label }}">{{ form.answer.label }}</label>
+    <textarea name="{{ form.answer.html_name }}" id="{{ form.answer.id_for_label }}" rows="5" maxlength="600" aria-describedby="answer-hint"{% if form.answer.errors %} aria-invalid="true"{% endif %}>{{ form.answer.value|default:"" }}</textarea>
+    <p id="answer-hint" class="{% if form.answer.errors %}va-field-error{% else %}va-hint{% endif %}">{% if form.answer.errors %}{{ form.answer.errors.0 }}{% else %}Mindestens 20 Zeichen. Klar und ohne Verwaltungssprache.{% endif %}</p>
+  </div>
+  <div class="va-field">
+    <label for="{{ form.measure.id_for_label }}">{{ form.measure.label }}</label>
+    {{ form.measure }}
+    <p class="va-hint">Nur beim Annehmen. Dann führt „Punkte geben“ beim Vorschlag zu dieser Maßnahme.</p>
+  </div>
+  <div class="va-form__foot">
+    <a class="btn-outline" href="{% url 'cityadmin:index' %}#vorschlaege">Später</a>
+    <button type="submit" class="btn-ink">Entscheiden und antworten</button>
+  </div>
+</form>

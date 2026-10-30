@@ -37,11 +37,11 @@ def test_without_demo_mode_city_login_is_not_offered(client: Client) -> None:
 
 
 @pytest.mark.usefixtures("demo")
-def test_staff_logs_in_to_admin(client: Client, staff: User) -> None:
+def test_staff_logs_in_to_city_admin_page(client: Client, staff: User) -> None:
     response = client.post(URL, {"username": "verwaltung", "password": "geheim-123"})
 
-    assert response["Location"] == "/admin/"
-    assert client.get(URL)["Location"] == "/admin/"
+    assert response["Location"] == "/verwaltung/"
+    assert client.get(URL)["Location"] == "/verwaltung/"
 
 
 @pytest.mark.usefixtures("demo")

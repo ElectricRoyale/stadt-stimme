@@ -1,0 +1,36 @@
+{% extends "cityadmin/_shell.html" %}
+
+{% block title %}{{ item.proposal.number }} entscheiden · Verwaltung · StadtStimme{% endblock %}
+{% block main_class %}va va--narrow{% endblock %}
+
+{% block content %}
+  {% with p=item.proposal %}
+    <a class="va-back" href="{% url 'cityadmin:index' %}#vorschlaege">{% include "partials/icon.html" with name="arrow-left" size=16 %}Zur Übersicht</a>
+    <article class="panel va-decide" aria-labelledby="vorschlag-titel">
+      <p class="va-row__tags"><span class="pill stage stage--{{ item.stage.value }}">{{ item.stage.label }}</span><span class="va-row__fact">{{ p.number }}</span></p>
+      <h1 id="vorschlag-titel">{{ p.title }}</h1>
+      <p class="va-decide__text">{{ p.text|default:"Ohne weitere Beschreibung eingereicht." }}</p>
+      <dl class="va-facts">
+        <dt>Thema</dt><dd class="theme-{{ p.category.color }}">{% include "partials/theme_icon.html" with category=p.category %}{{ p.category.name }}</dd>
+        <dt>Ort</dt><dd>{{ p.where }}{% if p.has_point %} (<a href="https://www.openstreetmap.org/?mlat={{ p.latitude }}&amp;mlon={{ p.longitude }}#map=18/{{ p.latitude }}/{{ p.longitude }}" target="_blank" rel="noopener">auf der Karte</a>){% endif %}</dd>
+        <dt>Eingereicht</dt><dd>{{ p.created_at|date:"j. F Y" }}</dd>
+        <dt>Unterstützung</dt><dd>{{ item.supports }} von {{ support_threshold }}</dd>
+        {% if item.review_since %}<dt>Schwelle erreicht</dt><dd>{{ item.review_since|date:"j. F Y" }}</dd>{% endif %}
+      </dl>
+
+      {% if similar and is_open %}
+        <p class="va-notice">{% include "partials/icon.html" with name="info" size=16 %}<span>Ähnliche Maßnahme vorhanden: <strong>{{ similar.0.title }}</strong> ({{ similar.0.facility.name }}). Punkte können schon dorthin.</span></p>
+      {% endif %}
+
+      {% if is_open %}
+        {% include "cityadmin/_decision_form.html" %}
+      {% else %}
+        <div class="va-outcome">
+          <p><strong>Antwort der Stadt vom {{ p.decided_at|date:"j. F Y" }}</strong></p>
+          <p>{{ p.answer|default:"Ohne Begründung entschieden." }}</p>
+          {% if p.measure %}<p class="va-row__fact">Maßnahme: {{ p.measure.title }}</p>{% endif %}
+        </div>
+      {% endif %}
+    </article>
+  {% endwith %}
+{% endblock %}

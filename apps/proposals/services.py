@@ -147,3 +147,33 @@ def place_from_proposal(proposal: Proposal) -> Facility | None:
         proposal.latitude = proposal.longitude = None
         proposal.save(update_fields=["facility", "latitude", "longitude"])
     return facility
+
+
+ANSWER_MIN_LENGTH = 20
+
+
+class DecisionError(Exception):
+    pass
+
+
+def decide_proposal(
+    proposal: Proposal, *, accept: bool, answer: str, measure: Measure | None = None
+) -> Proposal:
+    """Annehmen oder ablehnen, mit öffentlicher Antwort (ADR-016, ADR-026).
+
+    Nur offene Vorschläge; ein angenommener neuer Ort wird eine Einrichtung (ADR-024).
+    """
+    answer = answer.strip()
+    if proposal.status != ProposalStatus.OPEN:
+        raise DecisionError("Dieser Vorschlag ist schon entschieden.")
+    if len(answer) < ANSWER_MIN_LENGTH:
+        raise DecisionError(f"Die Antwort braucht mindestens {ANSWER_MIN_LENGTH} Zeichen.")
+    with transaction.atomic():
+        proposal.status = ProposalStatus.ACCEPTED if accept else ProposalStatus.REJECTED
+        proposal.answer = answer
+        proposal.measure = measure if accept else None
+        proposal.decided_at = timezone.now()
+        proposal.save(update_fields=["status", "answer", "measure", "decided_at"])
+        if accept:
+            place_from_proposal(proposal)
+    return proposal

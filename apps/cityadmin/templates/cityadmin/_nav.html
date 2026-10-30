@@ -1,0 +1,10 @@
+{# Ziele der Verwaltungsseite: Abschnitte der einen Seite, als Seitenleiste oder Tableiste. #}
+{% url 'cityadmin:index' as home %}
+<nav class="shell-nav shell-nav--{{ variant }}" aria-label="{% if variant == 'tab' %}Verwaltung unten{% else %}Verwaltung{% endif %}">
+  <ul>
+    <li><a href="{{ home }}#uebersicht"{% if request.resolver_match.view_name == 'cityadmin:index' %} aria-current="page"{% endif %}>{% include "partials/icon.html" with name="layout-grid" size=20 %}<span class="shell-nav__label">Übersicht</span></a></li>
+    <li><a href="{{ home }}#vorschlaege"{% if request.resolver_match.view_name == 'cityadmin:decide' %} aria-current="page"{% endif %}>{% include "partials/icon.html" with name="lightbulb" size=20 %}<span class="shell-nav__label">Vorschläge</span>{% if tasks %}<span class="shell-nav__badge va-badge"><span aria-hidden="true">{{ tasks|length }}</span><span class="ss-visually-hidden">, {{ tasks|length }} warten auf Antwort</span></span>{% endif %}</a></li>
+    <li><a href="{{ home }}#einrichtungen">{% include "partials/icon.html" with name="building" size=20 %}<span class="shell-nav__label">Einrichtungen</span></a></li>
+    <li><a href="{{ home }}#zugaenge">{% include "partials/icon.html" with name="key-round" size=20 %}<span class="shell-nav__label">Zugänge</span></a></li>
+  </ul>
+</nav>

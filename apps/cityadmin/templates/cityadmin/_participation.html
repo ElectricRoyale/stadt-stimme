@@ -1,0 +1,21 @@
+{# Beteiligung als Summen (keine einzelnen Zugänge): eingelöste Codes je Woche und Anteile. #}
+<section class="panel" aria-labelledby="beteiligung-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="beteiligung-titel">{% if since %}Beteiligung läuft seit {{ since|date:"j. F Y" }}{% else %}Beteiligung noch nicht gestartet{% endif %}</h2>
+      <p class="panel__sub">Ohne festes Ende. Punkte bleiben umverteilbar.</p>
+    </div>
+  </header>
+  {% include "partials/weekly_chart.html" %}
+  <p class="va-figure"><strong>{{ access.redeemed }}</strong> von {{ access.issued }} Codes eingelöst ({{ access.redeemed_share }} %), <strong>{{ access.with_points }}</strong> davon haben Punkte vergeben.</p>
+  <div class="va-stack" aria-hidden="true">
+    <span class="va-stack__part va-stack__part--points" style="width: {{ access.with_points_share }}%"></span>
+    <span class="va-stack__part va-stack__part--redeemed" style="width: calc({{ access.redeemed_share }}% - {{ access.with_points_share }}%)"></span>
+  </div>
+  <ul class="va-legend">
+    <li><span class="va-legend__key va-stack__part--points"></span>Mit Punkten</li>
+    <li><span class="va-legend__key va-stack__part--redeemed"></span>Eingelöst, noch ohne Punkte</li>
+    <li><span class="va-legend__key"></span>Nicht eingelöst</li>
+    {% if access.blocked %}<li>{{ access.blocked }} gesperrt</li>{% endif %}
+  </ul>
+</section>

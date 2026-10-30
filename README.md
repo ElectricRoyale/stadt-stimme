@@ -121,13 +121,20 @@ Server setzt man über `STADTSTIMME_MAP_TILE_URL`, `STADTSTIMME_MAP_ATTRIBUTION`
 ## Vorschläge
 
 Unter `/vorschlaege/` reicht man mit Code einen Vorschlag in drei Schritten ein: Anliegen,
-Einordnen (Thema, optional ein bekannter Ort), Prüfen. Die Verwaltung schaltet Vorschläge im
-Admin unter **Vorschläge** frei oder lehnt sie ab. Erst freigegebene Vorschläge erscheinen beim
-Schreiben als „Gibt es schon ähnlich“ und können unterstützt werden (ADR-014).
+Einordnen (Thema, Ort: allgemein, bekannter oder neuer Ort), Prüfen. Ein Vorschlag ist sofort
+öffentlich und kann unterstützt werden, eine Freigabe gibt es nicht (ADR-025). Ab der Schwelle
+antwortet die Stadt auf der Verwaltungsseite mit Annahme oder Ablehnung und Begründung.
+
+## Verwaltungsseite
+
+`/verwaltung/` (nur im Demo-Modus, Anmeldung unter `/zugang/stadt/` mit einem Django-Benutzer mit
+„Mitarbeiter-Status“) zeigt, was auf eine Antwort wartet, wie die Beteiligung läuft (nur Summen),
+alle Vorschläge nach Schritt, Einrichtungen nach Lücke und die Zugänge je Charge (ADR-026). Zum
+Entscheiden braucht man das Recht „Vorschlag ändern“. Daten pflegt man weiter im Admin.
 
 | Einstellung | Standard |
 | --- | --- |
-| `STADTSTIMME_PROPOSAL_REVIEW_DAYS` (Prüffrist, wird angezeigt) | 14 |
+| `STADTSTIMME_PROPOSAL_REVIEW_DAYS` (Antwortfrist ab der Schwelle) | 14 |
 | `STADTSTIMME_PROPOSAL_SUPPORT_THRESHOLD` (Schwelle, wird angezeigt) | 50 |
 | `STADTSTIMME_PROPOSALS_PER_DAY` (Limit je Zugang) | 5 |
 
