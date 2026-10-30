@@ -70,6 +70,9 @@
 .map-canvas.leaflet-container { font-family: var(--ss-font); }
 .map-canvas__fallback { margin: 0; padding: var(--ss-space-4); font-size: var(--ss-fs-small); color: var(--ss-text-muted); }
 .map-canvas--plain { background-image: linear-gradient(var(--ss-rule) 1px, transparent 1px), linear-gradient(90deg, var(--ss-rule) 1px, transparent 1px); background-size: 48px 48px; }
+.map-canvas__hint { position: absolute; top: 50%; right: 12px; left: 12px; transform: translateY(-50%); z-index: 1000; margin: 0; padding: 8px 12px; border-radius: var(--ss-radius-control); background: rgba(20, 20, 20, 0.82); color: #FFFFFF; font-size: var(--ss-fs-small); text-align: center; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+.map-canvas__hint.is-visible { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .map-canvas__hint { transition: none; } }
 .sq-pin { display: flex; align-items: center; justify-content: center; }
 .sq-pin > span { display: block; box-sizing: border-box; width: var(--size); height: var(--size); border: 2px solid #FFFFFF; border-radius: 50%; background: var(--ss-red); box-shadow: 0 1px 4px rgba(26, 26, 26, 0.3); transition: transform 0.15s ease-out, opacity 0.2s, background-color 0.3s; }
 .sq-pin:hover > span { transform: scale(1.1); }
