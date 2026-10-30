@@ -1,0 +1,23 @@
+{# Briefe mit Code als Summen je Charge. Einzelne Zugänge bleiben pseudonym und erscheinen nie. #}
+<section class="panel" aria-labelledby="zugaenge-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="zugaenge-titel">Zugänge</h2>
+      <p class="panel__sub">Nur Summen, keine einzelnen Zugänge</p>
+    </div>
+  </header>
+  {% if access.batches %}
+    <ul class="va-batches">
+      {% for b in access.batches %}
+        <li>
+          <h3>{{ b.name }}</h3>
+          <span class="va-progress va-progress--wide" aria-hidden="true"><span style="width: {{ b.share }}%"></span></span>
+          <p>{{ b.redeemed }} von {{ b.total }} eingelöst ({{ b.share }} %){% if b.blocked %} · {{ b.blocked }} gesperrt{% endif %}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="panel__empty panel__empty--box">Noch keine Codes erzeugt.</p>
+  {% endif %}
+  <p class="panel__note">Neue Briefe erzeugt der Befehl <code>create_access_codes</code>. Codes sperren und Briefe drucken folgen nach der Teamabstimmung.</p>
+</section>

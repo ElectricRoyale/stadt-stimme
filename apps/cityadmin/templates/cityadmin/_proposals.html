@@ -1,0 +1,45 @@
+{# Alle Vorschläge nach Schritt. Tabs sind Links (?tab=), damit es ohne JavaScript geht. Keine Freigabe (ADR-025). #}
+<section class="panel" aria-labelledby="vorschlaege-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="vorschlaege-titel">Vorschläge</h2>
+      <p class="panel__sub">Sofort öffentlich. Ab {{ support_threshold }} Unterstützungen antwortet die Stadt binnen {{ review_days }} Tagen öffentlich.</p>
+    </div>
+  </header>
+  <nav class="va-tabs" aria-label="Vorschläge nach Schritt">
+    {% for t in tabs %}
+      <a class="va-tabs__tab" href="?tab={{ t.key }}#vorschlaege"{% if t.key == tab.key %} aria-current="true"{% endif %}>{{ t.label }}<span class="va-tabs__count">{{ t.items|length }}</span></a>
+    {% endfor %}
+  </nav>
+  {% if tab.items %}
+    <ul class="va-list">
+      {% for item in tab.items %}
+        {% with p=item.proposal %}
+          <li>
+            <a class="va-row" href="{% url 'cityadmin:decide' p.pk %}">
+              <span class="va-row__icon theme-{{ p.category.color }}">{% include "partials/theme_icon.html" with category=p.category size=20 %}</span>
+              <span class="va-row__body">
+                <span class="va-row__title">{{ p.title }}</span>
+                <span class="va-row__kicker">{{ p.number }} · {{ p.where }} · eingereicht {{ p.created_at|date:"j. M" }}</span>
+                <span class="va-row__tags">
+                  <span class="pill stage stage--{{ item.stage.value }}">{{ item.stage.label }}</span>
+                  {% if item.stage.value == "sammelt" %}
+                    <span class="va-progress" aria-hidden="true"><span style="width: {{ item.progress }}%"></span></span>
+                    <span class="va-row__fact">{{ item.supports }} von {{ support_threshold }}</span>
+                  {% elif item.stage.value == "pruefung" %}
+                    <span class="va-row__fact">{{ item.supports }} Unterstützungen</span>
+                  {% else %}
+                    <span class="va-row__fact">Entschieden {{ p.decided_at|date:"j. M" }}</span>
+                  {% endif %}
+                </span>
+              </span>
+              {% include "partials/icon.html" with name="chevron-right" size=16 class="va-row__chevron" %}
+            </a>
+          </li>
+        {% endwith %}
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="panel__empty panel__empty--box">{{ tab.empty }}</p>
+  {% endif %}
+</section>

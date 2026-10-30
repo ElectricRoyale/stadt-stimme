@@ -45,7 +45,7 @@ def test_submit_shows_sent_state(
     assert (proposal.participant, proposal.facility) == (participant, catalog.bad)
     page = logged_in.get(response["Location"]).content.decode()
     assert f"Vorschlag V-{proposal.pk} eingereicht" in page
-    assert "innerhalb von 14 Tagen" in page
+    assert "ab sofort öffentlich" in page
     assert "Dein Vorschlag" in page
 
 
@@ -57,7 +57,7 @@ def test_sent_state_only_for_own_proposal(logged_in: Client, catalog: Catalog) -
     page = logged_in.get(URL, {"eingereicht": foreign.pk}).content.decode()
 
     assert "eingereicht</h3>" not in page
-    assert "Fremder Vorschlag" not in page
+    assert "Fremder Vorschlag" in page  # sofort öffentlich, aber ohne Bestätigung
 
 
 def test_general_proposal_without_facility(logged_in: Client, catalog: Catalog) -> None:
@@ -89,25 +89,24 @@ def test_invalid_input_is_reported(
 def test_list_shows_stages_and_answer(client: Client, catalog: Catalog) -> None:
     now = timezone.now()
     Proposal.objects.create(
-        participant=new_person(), title="Noch nicht freigegeben", category=catalog.sport
+        participant=new_person(), title="Gerade eingereicht", category=catalog.sport
     )
     Proposal.objects.create(
         participant=new_person(),
         title="Längere Öffnungszeiten",
         category=catalog.sport,
         status=ProposalStatus.ACCEPTED,
-        published_at=now,
         decided_at=now,
         answer="Kommt ab Januar.",
     )
 
     content = client.get(URL).content.decode()
 
-    assert "Noch nicht freigegeben" not in content
+    assert "Gerade eingereicht" in content
     assert "Längere Öffnungszeiten" in content
     assert "Kommt ab Januar." in content
     assert 'data-stage="angenommen"' in content
-    assert "1 von anderen, erst nach Freigabe öffentlich" in content
+    assert "Freigabe" not in content
 
 
 def test_stage_filter_without_javascript(client: Client, catalog: Catalog) -> None:
@@ -115,8 +114,6 @@ def test_stage_filter_without_javascript(client: Client, catalog: Catalog) -> No
         participant=new_person(),
         title="Sammelt noch Stimmen",
         category=catalog.sport,
-        status=ProposalStatus.PUBLISHED,
-        published_at=timezone.now(),
     )
 
     content = client.get(URL, {"schritt": "angenommen"}).content.decode()
@@ -130,7 +127,7 @@ def test_similar_and_support(logged_in: Client, catalog: Catalog) -> None:
         participant=new_person(),
         title="Abendöffnung im Hallenbad",
         category=catalog.sport,
-        status=ProposalStatus.PUBLISHED,
+        status=ProposalStatus.OPEN,
     )
 
     items = logged_in.get("/vorschlaege/aehnlich/", {"q": "Hallenbad abends"}).json()["items"]
@@ -143,29 +140,38 @@ def test_similar_and_support(logged_in: Client, catalog: Catalog) -> None:
     assert data["sentence"] == "1 von 50 Unterstützungen, noch 49 bis zur Prüfung."
 
 
-def test_support_needs_code_and_published_proposal(
+def test_support_needs_code_and_open_proposal(
     logged_in: Client, participant: Participant, catalog: Catalog
 ) -> None:
-    hidden = Proposal.objects.create(
-        participant=new_person(), title="Noch nicht frei", category=catalog.sport
+    decided = Proposal.objects.create(
+        participant=new_person(),
+        title="Schon entschieden",
+        category=catalog.sport,
+        status=ProposalStatus.REJECTED,
+    )
+    fresh = Proposal.objects.create(
+        participant=new_person(), title="Gerade eingereicht", category=catalog.sport
     )
     own = Proposal.objects.create(
         participant=participant,
         title="Mein eigener",
         category=catalog.sport,
-        status=ProposalStatus.PUBLISHED,
+        status=ProposalStatus.OPEN,
     )
 
-    assert logged_in.post(f"/vorschlaege/{hidden.pk}/unterstuetzen/").status_code == 404
+    assert logged_in.post(f"/vorschlaege/{decided.pk}/unterstuetzen/").status_code == 404
+    assert logged_in.post(f"/vorschlaege/{fresh.pk}/unterstuetzen/").status_code == 200
     assert logged_in.post(f"/vorschlaege/{own.pk}/unterstuetzen/").status_code == 400
     assert Client().post(f"/vorschlaege/{own.pk}/unterstuetzen/").status_code == 403
 
 
-def test_publish_needs_change_permission() -> None:
+def test_decisions_need_change_permission() -> None:
     viewer = User.objects.create_user("lesend", is_staff=True)
     viewer.user_permissions.add(Permission.objects.get(codename="view_proposal"))
     request = RequestFactory().get("/admin/proposals/proposal/")
     request.user = viewer
     model_admin = admin.site._registry[Proposal]
 
-    assert "publish" not in model_admin.get_actions(request)
+    actions = model_admin.get_actions(request)
+    assert "accept" not in actions and "reject" not in actions
+    assert "publish" not in actions

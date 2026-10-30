@@ -13,8 +13,9 @@ TEXT_MAX_LENGTH = 600
 
 
 class ProposalStatus(models.TextChoices):
-    SUBMITTED = "eingereicht", "Eingereicht"
-    PUBLISHED = "freigegeben", "Freigegeben"
+    """Offen heißt: sofort öffentlich und unterstützbar, ohne Freigabe (ADR-025)."""
+
+    OPEN = "offen", "Offen"
     ACCEPTED = "angenommen", "Angenommen"
     REJECTED = "abgelehnt", "Abgelehnt"
 
@@ -49,10 +50,9 @@ class Proposal(models.Model):
         "Längengrad", max_digits=9, decimal_places=6, null=True, blank=True
     )
     status = models.CharField(
-        "Status", max_length=20, choices=ProposalStatus.choices, default=ProposalStatus.SUBMITTED
+        "Status", max_length=20, choices=ProposalStatus.choices, default=ProposalStatus.OPEN
     )
     created_at = models.DateTimeField("Eingereicht am", auto_now_add=True)
-    published_at = models.DateTimeField("Freigegeben am", null=True, blank=True)
     decided_at = models.DateTimeField("Entschieden am", null=True, blank=True)
     answer = models.TextField(
         "Antwort der Stadt",

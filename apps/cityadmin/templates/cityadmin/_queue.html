@@ -1,0 +1,30 @@
+{# Was eine Frist hat, früheste zuerst. Überfällig steht in roter Schrift, nie als rote Fläche. #}
+<section class="panel" aria-labelledby="aufgaben-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="aufgaben-titel">Wartet auf Sie</h2>
+      <p class="panel__sub">{% if overdue %}{{ tasks|length }} {% if tasks|length == 1 %}Antwort{% else %}Antworten{% endif %} fällig, {{ overdue }} davon überfällig{% else %}Antwort binnen {{ review_days }} Tagen, sobald ein Vorschlag {{ support_threshold }} Unterstützungen hat{% endif %}</p>
+    </div>
+  </header>
+  {% if tasks %}
+    <ol class="va-list">
+      {% for task in tasks %}
+        {% with p=task.item.proposal %}
+          <li>
+            <a class="va-row" href="{% url 'cityadmin:decide' p.pk %}">
+              {% include "partials/icon.html" with name="message-square-reply" size=20 stroke="1.75" class="va-row__icon" %}
+              <span class="va-row__body">
+                <span class="va-row__kicker">Schwelle erreicht, Antwort fällig · {{ p.number }}</span>
+                <span class="va-row__title">{{ p.title }}</span>
+                <span class="va-row__fact{% if task.urgent %} is-urgent{% endif %}">{{ task.due_text|capfirst }}, bis {{ task.due|date:"j. M" }}</span>
+              </span>
+              <span class="va-row__action">Antworten</span>
+            </a>
+          </li>
+        {% endwith %}
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p class="panel__empty panel__empty--box">Nichts mit Frist offen. Vorschläge erscheinen hier, sobald sie {{ support_threshold }} Unterstützungen haben.</p>
+  {% endif %}
+</section>

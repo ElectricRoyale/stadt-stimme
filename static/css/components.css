@@ -111,7 +111,6 @@
 
 /* Schritte eines Vorschlags (ADR-016) */
 .stage { white-space: nowrap; }
-.stage--eingereicht { background: var(--ss-notice-bg); color: var(--ss-notice-ink); }
 .stage--sammelt { background: var(--ss-red-tint); color: var(--ss-red-dark); }
 .stage--pruefung { background: var(--ss-rule); color: var(--ss-text); }
 .stage--angenommen { background: var(--ss-positive-bg); color: var(--ss-positive-ink); }

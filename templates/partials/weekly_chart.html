@@ -1,0 +1,25 @@
+{# Eingelöste Codes je Woche als Balken; braucht participation (reporting.dashboard) und overview.css. #}
+<figure class="wk">
+  <div class="wk__chart" aria-hidden="true">
+    <span class="wk__line" style="--at: 100;"><span>{{ participation.top }}</span></span>
+    <span class="wk__line" style="--at: 50;"><span>{{ participation.middle }}</span></span>
+    <span class="wk__line wk__line--base" style="--at: 0;"><span>0</span></span>
+    <div class="wk__bars">
+      {% for week, height in participation.bars %}
+        <span class="wk__bar{% if week.is_current %} is-current{% endif %}" style="--h: {{ height|stringformat:'s' }};"></span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="wk__labels" aria-hidden="true">
+    {% for week in participation.weeks %}<span{% if week.is_current %} class="is-current"{% endif %}>KW {{ week.week }}</span>{% endfor %}
+  </div>
+  {# Tabellen ignorieren die 1-px-Höhe; der Wrapper hält sie klein, sonst wird die Seite länger. #}
+  <div class="ss-visually-hidden"><table>
+    <caption>Eingelöste Codes je Kalenderwoche</caption>
+    <thead><tr><th scope="col">Woche</th><th scope="col">Codes</th></tr></thead>
+    <tbody>
+      {% for week in participation.weeks %}<tr><th scope="row">KW {{ week.week }}{% if week.is_current %} (läuft noch){% endif %}</th><td>{{ week.count }}</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+  <figcaption class="panel__note">KW {{ participation.current.week }} läuft noch: {{ participation.current.count }} {% if participation.current.count == 1 %}Code{% else %}Codes{% endif %} bis heute.</figcaption>
+</figure>

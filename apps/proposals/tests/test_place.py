@@ -104,7 +104,7 @@ def _new_place(catalog: Catalog) -> Proposal:
         participant=new_person(),
         title="Zebrastreifen an der Kreuzung",
         category=catalog.sport,
-        status=ProposalStatus.PUBLISHED,
+        status=ProposalStatus.OPEN,
         latitude=Decimal("49.487459"),
         longitude=Decimal("8.466039"),
     )

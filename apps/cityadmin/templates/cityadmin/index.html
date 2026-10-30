@@ -1,0 +1,31 @@
+{% extends "cityadmin/_shell.html" %}
+
+{% block title %}Verwaltung · StadtStimme{% endblock %}
+{% block main_class %}va{% endblock %}
+
+{% block content %}
+  <header class="va-head" id="uebersicht" tabindex="-1">
+    <p class="va-head__meta">Stand {{ now|date:"d.m.Y, H:i" }} Uhr</p>
+    <h1>Übersicht der Verwaltung</h1>
+    <p class="va-head__lead">
+      {% if tasks %}
+        {{ tasks|length }} {% if tasks|length == 1 %}Vorschlag wartet{% else %}Vorschläge warten{% endif %} auf eine Antwort der Stadt{% if overdue %}, {{ overdue }} davon über der Frist{% endif %}. Die früheste Frist steht oben unter „Wartet auf Sie“.
+      {% else %}
+        Kein Vorschlag wartet auf eine Antwort. Neue Vorschläge sind sofort öffentlich und sammeln Unterstützung.
+      {% endif %}
+    </p>
+  </header>
+
+  {# Telefon: Aufgaben zuerst. Ab 1200 px links Beteiligung, Vorschläge, Einrichtungen; rechts Aufgaben und Zugänge. #}
+  <div class="va-grid">
+    <div class="va-col va-col--main">
+      <div class="va-slot va-slot--2">{% include "cityadmin/_participation.html" %}</div>
+      <div class="va-slot va-slot--3" id="vorschlaege" tabindex="-1">{% include "cityadmin/_proposals.html" %}</div>
+      <div class="va-slot va-slot--4" id="einrichtungen" tabindex="-1">{% include "cityadmin/_facilities.html" %}</div>
+    </div>
+    <div class="va-col va-col--side">
+      <div class="va-slot va-slot--1">{% include "cityadmin/_queue.html" %}</div>
+      <div class="va-slot va-slot--5" id="zugaenge" tabindex="-1">{% include "cityadmin/_access.html" %}</div>
+    </div>
+  </div>
+{% endblock %}

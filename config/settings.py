@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "apps.points",
     "apps.reporting",
     "apps.proposals",
+    "apps.cityadmin",
 ]
 
 MIDDLEWARE = [
@@ -158,6 +159,7 @@ ACCESS_LOCKOUT_MINUTES = env_int("STADTSTIMME_LOCKOUT_MINUTES", default=60)
 POINTS_EXPIRY_DAYS = env_int("STADTSTIMME_POINTS_EXPIRY_DAYS", default=183)
 
 # Vorschläge (ADR-014). Prüffrist und Schwelle sind Platzhalter, bis die Stadt sie festlegt.
+# Antwortfrist der Stadt ab Erreichen der Schwelle (ADR-025).
 PROPOSAL_REVIEW_DAYS = env_int("STADTSTIMME_PROPOSAL_REVIEW_DAYS", default=14)
 PROPOSAL_SUPPORT_THRESHOLD = env_int("STADTSTIMME_PROPOSAL_SUPPORT_THRESHOLD", default=50)
 PROPOSALS_PER_DAY = env_int("STADTSTIMME_PROPOSALS_PER_DAY", default=5)

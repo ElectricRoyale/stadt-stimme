@@ -1,0 +1,49 @@
+{# Einrichtungen nach Lücke wie in den Ergebnissen (ADR-013), Maßnahmen aufklappbar. Pflege im Admin. #}
+<section class="panel" aria-labelledby="einrichtungen-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="einrichtungen-titel">Einrichtungen und Haushalt</h2>
+      <p class="panel__sub">{{ ledger|length }} Einrichtungen{% if fiscal_year %} · Ist-Ausgaben {{ fiscal_year }}{% endif %}</p>
+    </div>
+    {% if admin_enabled %}
+      <div class="va-actions">
+        <a class="btn-outline" href="{% url 'admin:catalog_facility_changelist' %}">{% include "partials/icon.html" with name="pencil" size=16 %}Daten pflegen</a>
+      </div>
+    {% endif %}
+  </header>
+  {% if ledger %}
+    <ul class="va-ledger">
+      {% for row in ledger %}
+        {% with g=row.gap f=row.gap.facility %}
+          <li class="va-ledger__item">
+            <div class="va-ledger__head">
+              <span class="va-row__icon theme-{{ g.category.color }}">{% include "partials/theme_icon.html" with category=g.category size=20 %}</span>
+              <div class="va-ledger__name">
+                <h3>{{ g.name }}</h3>
+                <p>{{ f.external_id }}{% if f.address %} · {{ f.address }}{% endif %} · {{ g.spend_text }}</p>
+              </div>
+              <p class="va-ledger__gap is-{{ g.tone }}"><span class="ss-visually-hidden">Lücke </span>{{ g.gap_text }}</p>
+            </div>
+            <dl class="va-bars">
+              <div><dt class="ss-visually-hidden">Anteil an den Bürgerpunkten</dt><dd><span class="va-bar va-bar--wish"><span style="width: {{ g.wish }}%"></span></span><span>{{ g.wish }} %</span></dd></div>
+              <div><dt class="ss-visually-hidden">Anteil an den Ist-Ausgaben</dt><dd><span class="va-bar va-bar--spend"><span style="width: {{ g.spend }}%"></span></span><span>{{ g.spend }} %</span></dd></div>
+            </dl>
+            {% if row.measures %}
+              <details class="va-measures">
+                <summary>{{ row.measures|length }} {% if row.measures|length == 1 %}Maßnahme{% else %}Maßnahmen{% endif %} zeigen</summary>
+                <ul>
+                  {% for m in row.measures %}
+                    <li><span>{{ m.title }}</span><span class="pill pill--{{ m.status }}">{{ m.get_status_display }}</span>{% if admin_enabled %}<a href="{% url 'admin:catalog_measure_change' m.pk %}">Status ändern<span class="ss-visually-hidden">: {{ m.title }}</span></a>{% endif %}</li>
+                  {% endfor %}
+                </ul>
+              </details>
+            {% endif %}
+          </li>
+        {% endwith %}
+      {% endfor %}
+    </ul>
+    <p class="panel__note">Rot: Anteil an allen Bürgerpunkten. Gold: Anteil an allen Ist-Ausgaben. Lücke in Prozentpunkten; positiv heißt, den Menschen ist es wichtiger als bisher bezahlt.</p>
+  {% else %}
+    <p class="panel__empty panel__empty--box">Noch keine Einrichtungen. Sie kommen per CSV-Import in den Katalog.</p>
+  {% endif %}
+</section>

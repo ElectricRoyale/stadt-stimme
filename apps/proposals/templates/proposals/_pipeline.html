@@ -5,7 +5,6 @@
     <p class="panel__sub">Wähle einen Schritt, um die Liste darauf zu beschränken.</p>
   </div>
   <div class="prop-way__grid">
-    {% include "proposals/_way_step.html" with stage="eingereicht" label="Eingereicht" count=board.counts.eingereicht %}
     {% include "proposals/_way_step.html" with stage="sammelt" label="Sammelt Unterstützung" count=board.counts.sammelt %}
     {% include "proposals/_way_step.html" with stage="pruefung" label="In Prüfung" count=board.counts.pruefung last=True %}
     <div class="prop-way__fork">

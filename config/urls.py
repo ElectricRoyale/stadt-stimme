@@ -1,4 +1,4 @@
-"""URL-Konfiguration. Der Admin ist nur im Demo-Modus erreichbar (Admin-Login zurückgestellt)."""
+"""URL-Konfiguration. Admin und Verwaltungsseite nur im Demo-Modus (Admin-Login zurückgestellt)."""
 
 from django.conf import settings
 from django.contrib import admin
@@ -14,4 +14,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
 ]
 
 if settings.DEMO_MODE:
-    urlpatterns.append(path("admin/", admin.site.urls))
+    urlpatterns += [
+        path("admin/", admin.site.urls),
+        path("verwaltung/", include("apps.cityadmin.urls")),
+    ]

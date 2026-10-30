@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+{% comment %}
+Schale der Verwaltung: gleiche Seitenleiste wie die Bürgerseite, eigene Ziele, Konto statt Code.
+Wird von index.html und decide.html über {% extends "cityadmin/_shell.html" %} genutzt.
+{% endcomment %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/overview.css' %}">
+  <link rel="stylesheet" href="{% static 'css/cityadmin.css' %}">
+{% endblock %}
+
+{% block phone_tools %}{% include "cityadmin/_account.html" with compact=True %}{% endblock %}
+{% block topbar %}{% endblock %}
+{% block side_nav %}{% include "cityadmin/_nav.html" with variant="side" %}{% endblock %}
+{% block side_foot %}
+  <a class="va-citizen-link" href="{% url 'reporting:overview' %}">{% include "partials/icon.html" with name="arrow-up-right" size=16 %}Bürgeransicht öffnen</a>
+  {% include "cityadmin/_account.html" %}
+{% endblock %}
+{% block tab_nav %}{% include "cityadmin/_nav.html" with variant="tab" %}{% endblock %}

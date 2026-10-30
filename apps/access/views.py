@@ -66,10 +66,10 @@ STAFF_LOGIN_FAILED = "Benutzername oder Passwort stimmt nicht."
 
 @require_http_methods(["GET", "POST"])
 def staff_login(request: HttpRequest) -> HttpResponse:
-    """Anmeldung der Stadtverwaltung für den Admin. Den Admin gibt es bisher nur im Demo-Modus."""
+    """Anmeldung der Stadtverwaltung, führt auf die Verwaltungsseite. Bisher nur im Demo-Modus."""
     enabled = settings.DEMO_MODE
     if enabled and request.user.is_authenticated and request.user.is_staff:
-        return redirect("admin:index")
+        return redirect("cityadmin:index")
     error, status = None, 200
     if enabled and request.method == "POST":
         client = _client_address(request)
@@ -78,7 +78,7 @@ def staff_login(request: HttpRequest) -> HttpResponse:
             error, status = RedeemError.LOCKED_OUT.value, 429
         elif form.is_valid() and form.get_user().is_staff:
             staff_log_in(request, form.get_user())
-            return redirect("admin:index")
+            return redirect("cityadmin:index")
         else:
             record_failed_attempt(client)
             error = STAFF_LOGIN_FAILED
