@@ -27,6 +27,7 @@ def _notify_returned(
         participant_id__in=points, confirmed_at__isnull=False
     )
     link = absolute(reverse("points:distribute"))
+    proposals = absolute(reverse("proposals:index"))
     send_to_contacts(
         list(contacts),
         "points_returned",
@@ -35,5 +36,6 @@ def _notify_returned(
             "facility": facility.name,
             "measure": measure.title if measure else "",
             "points_url": link,
+            "proposals_url": proposals,
         },
     )

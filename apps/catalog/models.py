@@ -83,8 +83,9 @@ class Category(models.Model):
 class Facility(models.Model):
     """Öffentliche Einrichtung der Kommune; trägt Maßnahmen.
 
-    „Erledigt“ heißt: Die Stadt hat sich um den aktuellen Wunsch gekümmert, die Punkte sind
-    zurück bei den Unterstützern (ADR-029). Die Einrichtung bleibt wählbar.
+    „Erledigt“ heißt: Die Stadt hat sich um den Wunsch gekümmert, die Punkte sind zurück bei den
+    Unterstützern, und in „Punkte verteilen“ fehlt die Einrichtung, bis ein neuer Vorschlag dort
+    angenommen oder sie wieder geöffnet wird (ADR-029).
     """
 
     external_id = models.CharField(
@@ -120,11 +121,11 @@ class Facility(models.Model):
         validators=[MinValueValidator(-180), MaxValueValidator(180)],
     )
     done_at = models.DateTimeField(
-        "Zuletzt erledigt",
+        "Erledigt seit",
         null=True,
         blank=True,
         editable=False,
-        help_text="Gesetzt über „Erledigt“ auf der Verwaltungsseite.",
+        help_text="Gesetzt über „Erledigt“ auf der Verwaltungsseite; leer heißt wählbar.",
     )
     created_at = models.DateTimeField("Angelegt", auto_now_add=True)
     updated_at = models.DateTimeField("Geändert", auto_now=True)
@@ -138,8 +139,17 @@ class Facility(models.Model):
         return self.name
 
     @property
+    def is_done(self) -> bool:
+        return self.done_at is not None
+
+    @property
     def has_location(self) -> bool:
         return self.latitude is not None and self.longitude is not None
+
+    def reopen(self) -> None:
+        """Wieder wählbar in „Punkte verteilen“ (ADR-029)."""
+        Facility.objects.filter(pk=self.pk).update(done_at=None)
+        self.done_at = None
 
     def clean(self) -> None:
         super().clean()

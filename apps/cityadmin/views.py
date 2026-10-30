@@ -11,7 +11,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_GET, require_http_methods
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from apps.catalog.models import Facility
 from apps.cityadmin.desk import (
@@ -141,6 +141,8 @@ def facility_done(request: HttpRequest, pk: int) -> HttpResponse:
     GET zeigt eine Rückfrage mit den Zahlen, weil sich das nicht rückgängig machen lässt.
     """
     facility = get_object_or_404(Facility.objects.select_related("category"), pk=pk)
+    if facility.is_done:
+        return redirect(f"{reverse('cityadmin:index')}#einrichtungen")
     if request.method == "POST":
         if not request.user.has_perm("catalog.change_facility"):
             raise PermissionDenied
@@ -149,8 +151,8 @@ def facility_done(request: HttpRequest, pk: int) -> HttpResponse:
         points = sum(r.points for r in returned)
         messages.success(
             request,
-            f"{facility.name} ist erledigt. {points} Punkte sind an {people} "
-            f"{'Person' if people == 1 else 'Personen'} zurückgegangen.",
+            f"{facility.name} ist erledigt und fehlt jetzt in „Punkte verteilen“. {points} Punkte "
+            f"sind an {people} {'Person' if people == 1 else 'Personen'} zurückgegangen.",
         )
         return redirect(f"{reverse('cityadmin:index')}#einrichtungen")
     return render(
@@ -163,3 +165,15 @@ def facility_done(request: HttpRequest, pk: int) -> HttpResponse:
             "can_change": request.user.has_perm("catalog.change_facility"),
         },
     )
+
+
+@require_POST
+@staff_required
+def facility_reopen(request: HttpRequest, pk: int) -> HttpResponse:
+    """Erledigte Einrichtung wieder wählbar machen, z. B. nach einem Fehlklick (ADR-029)."""
+    if not request.user.has_perm("catalog.change_facility"):
+        raise PermissionDenied
+    facility = get_object_or_404(Facility, pk=pk)
+    facility.reopen()
+    messages.success(request, f"{facility.name} ist wieder in „Punkte verteilen“ wählbar.")
+    return redirect(f"{reverse('cityadmin:index')}#einrichtungen")

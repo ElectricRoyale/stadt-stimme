@@ -25,8 +25,15 @@
               <p class="va-ledger__gap is-{{ g.tone }}"><span class="ss-visually-hidden">Lücke </span>{{ g.gap_text }}</p>
             </div>
             <div class="va-ledger__done">
-              {% if f.done_at %}<p class="va-ledger__done-at">{% include "partials/icon.html" with name="circle-check" size=16 %}Zuletzt erledigt am {{ f.done_at|date:"j. F Y" }}</p>{% endif %}
-              <a class="btn-outline" href="{% url 'cityadmin:facility_done' f.pk %}">{% include "partials/icon.html" with name="check" size=16 %}Als erledigt markieren<span class="ss-visually-hidden">: {{ g.name }}</span></a>
+              {% if f.done_at %}
+                <p class="va-ledger__done-at">{% include "partials/icon.html" with name="circle-check" size=16 %}Erledigt seit {{ f.done_at|date:"j. F Y" }}, nicht in „Punkte verteilen“</p>
+                <form method="post" action="{% url 'cityadmin:facility_reopen' f.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-outline">Wieder öffnen<span class="ss-visually-hidden">: {{ g.name }}</span></button>
+                </form>
+              {% else %}
+                <a class="btn-outline" href="{% url 'cityadmin:facility_done' f.pk %}">{% include "partials/icon.html" with name="check" size=16 %}Als erledigt markieren<span class="ss-visually-hidden">: {{ g.name }}</span></a>
+              {% endif %}
             </div>
             <dl class="va-bars">
               <div><dt class="ss-visually-hidden">Anteil an den Bürgerpunkten</dt><dd><span class="va-bar va-bar--wish"><span style="width: {{ g.wish }}%"></span></span><span>{{ g.wish }} %</span></dd></div>

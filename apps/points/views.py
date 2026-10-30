@@ -24,6 +24,7 @@ from apps.points.overview import (
 from apps.points.returns import recent_changes
 from apps.points.services import (
     BudgetExceededError,
+    DoneFacilityError,
     last_saved_at,
     points_of,
     save_distribution,
@@ -55,7 +56,7 @@ def distribute(request: HttpRequest, participant: Participant) -> HttpResponse:
         if form.is_valid():
             try:
                 save_distribution(participant, form.points())
-            except BudgetExceededError as error:
+            except (BudgetExceededError, DoneFacilityError) as error:
                 form.add_error(None, str(error))
             else:
                 messages.success(request, "Deine Verteilung ist gespeichert.")

@@ -149,6 +149,17 @@ def place_from_proposal(proposal: Proposal) -> Facility | None:
     return facility
 
 
+def after_accept(proposal: Proposal) -> None:
+    """Folgen des Annehmens, egal ob über Verwaltungsseite oder Admin.
+
+    Neuer Ort wird eine Einrichtung (ADR-024); eine erledigte Einrichtung ist wieder wählbar,
+    weil Bürger dort erneut einen Wunsch haben (ADR-029).
+    """
+    place_from_proposal(proposal)
+    if proposal.facility is not None and proposal.facility.is_done:
+        proposal.facility.reopen()
+
+
 ANSWER_MIN_LENGTH = 20
 
 
@@ -175,5 +186,5 @@ def decide_proposal(
         proposal.decided_at = timezone.now()
         proposal.save(update_fields=["status", "answer", "measure", "decided_at"])
         if accept:
-            place_from_proposal(proposal)
+            after_accept(proposal)
     return proposal
