@@ -40,7 +40,7 @@
 /* Umschalter mit zwei Werten, z. B. Alle / Meine */
 .seg { display: inline-flex; padding: 2px; border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); }
 .seg[hidden] { display: none; }
-.seg button { min-height: 36px; padding: 0 var(--ss-space-3); border: 0; border-radius: 4px; background: transparent; color: var(--ss-text); font: inherit; font-size: var(--ss-fs-small); cursor: pointer; }
+.seg button { min-height: 36px; padding: 0 var(--ss-space-3); border: 0; border-radius: 16px; background: transparent; color: var(--ss-text); font: inherit; font-size: var(--ss-fs-small); cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--ss-text); color: #FFFFFF; }
 
 /* Ein-/Aus-Schalter, z. B. Unterstützen */
