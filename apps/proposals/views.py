@@ -1,6 +1,5 @@
 """Vorschläge: Weg aller Vorschläge, Liste und „Vorschlag machen“ auf einer Seite (ADR-016)."""
 
-from datetime import timedelta
 from decimal import Decimal
 from typing import Any
 
@@ -100,7 +99,7 @@ def support(request: HttpRequest, pk: int) -> JsonResponse:
     participant = current_participant(request)
     if participant is None:
         return JsonResponse({"error": "Bitte melde dich mit deinem Code an."}, status=403)
-    proposal = get_object_or_404(Proposal, pk=pk, status=ProposalStatus.PUBLISHED)
+    proposal = get_object_or_404(Proposal, pk=pk, status=ProposalStatus.OPEN)
     if proposal.participant_id == participant.pk:
         return JsonResponse(
             {"error": "Eigene Vorschläge kannst du nicht unterstützen."}, status=400
@@ -149,11 +148,9 @@ def _context(
         "place_bounds": _place_bounds(),
         "categories": form.fields["category"].queryset,  # type: ignore[attr-defined]
         "now": timezone.localtime(),
-        "decision_by": timezone.localdate() + timedelta(days=settings.PROPOSAL_REVIEW_DAYS),
         "title_min": TITLE_MIN_LENGTH,
         "title_max": TITLE_MAX_LENGTH,
         "text_max": TEXT_MAX_LENGTH,
-        "review_days": settings.PROPOSAL_REVIEW_DAYS,
         "support_threshold": settings.PROPOSAL_SUPPORT_THRESHOLD,
         "per_day": settings.PROPOSALS_PER_DAY,
     }

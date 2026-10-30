@@ -1,4 +1,4 @@
-{# Vier Stationen: eingereicht, sammelt, in Prüfung, entschieden. Die Strecke dazwischen ist der Stand zur Schwelle. #}
+{# Vier Stationen: eingereicht (immer erledigt, ADR-025), sammelt, in Prüfung, entschieden. Die Strecke dazwischen ist der Stand zur Schwelle. #}
 {% with m=item.marks %}
 <span class="track{% if item.stage == 'sammelt' %} is-live{% endif %}" aria-hidden="true">
   <span class="track__station is-{{ m.0 }}">{% if m.0 == "no" %}{% include "partials/icon.html" with name="x" size=10 stroke="3" %}{% endif %}</span>

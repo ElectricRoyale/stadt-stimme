@@ -98,7 +98,7 @@ def similar_proposals(text: str, viewer: Participant | None) -> list[SimilarProp
     candidates = (
         Proposal.objects.filter(
             _title_matches(words),
-            status__in=[ProposalStatus.PUBLISHED, ProposalStatus.ACCEPTED],
+            status__in=[ProposalStatus.OPEN, ProposalStatus.ACCEPTED],
         )
         .annotate(support_count=Count("supports"))
         .order_by("-created_at")[:50]

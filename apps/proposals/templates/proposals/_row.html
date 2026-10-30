@@ -10,7 +10,7 @@
       <p class="prop-row__meta">
         <span class="theme-{{ p.category.color }}">{% include "partials/theme_icon.html" with category=p.category size=14 %}{{ p.category.name }}</span>
         <span>{% include "partials/icon.html" with name="map-pin" size=14 %}{{ p.where }}</span>
-        <span>{{ p.number }}, {% if p.published_at %}öffentlich seit {{ p.published_at|date:"j. F" }}{% else %}eingereicht am {{ p.created_at|date:"j. F" }}{% endif %}</span>
+        <span>{{ p.number }}, eingereicht am {{ p.created_at|date:"j. F" }}</span>
       </p>
     </div>
     {% if participant and item.can_support %}<div class="prop-row__action">{% include "proposals/_support.html" %}</div>

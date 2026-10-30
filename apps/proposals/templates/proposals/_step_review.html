@@ -11,8 +11,7 @@
     </div>
   </dl>
   <ul class="prop-notes">
-    <li>{% include "partials/icon.html" with name="eye-off" size=16 stroke="1.75" %}<span>Bis zur Freigabe siehst nur du den Vorschlag. Die Stadt entscheidet bis {{ decision_by|date:"j. F" }}.</span></li>
-    <li>{% include "partials/icon.html" with name="users" size=16 stroke="1.75" %}<span>Danach können andere ihn unterstützen. Ab {{ support_threshold }} Unterstützungen prüft ihn die Verwaltung und antwortet mit Begründung.</span></li>
+    <li>{% include "partials/icon.html" with name="users" size=16 stroke="1.75" %}<span>Er ist sofort öffentlich und andere können ihn unterstützen. Ab {{ support_threshold }} Unterstützungen prüft ihn die Verwaltung und antwortet mit Begründung.</span></li>
     <li>{% include "partials/icon.html" with name="shield-check" size=16 stroke="1.75" %}<span>Er erscheint ohne Namen, nur mit einer Nummer.</span></li>
     <li>{% include "partials/icon.html" with name="hourglass" size=16 stroke="1.75" %}<span>Du kannst heute noch {{ board.left_today }} {% if board.left_today == 1 %}Vorschlag{% else %}Vorschläge{% endif %} einreichen.</span></li>
   </ul>

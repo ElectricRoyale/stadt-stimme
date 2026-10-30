@@ -57,15 +57,13 @@ def test_proposal_without_facility_shows_at_theme(logged_in: Client, catalog: Ca
 
 
 def test_only_accepted_proposals_appear(logged_in: Client, catalog: Catalog) -> None:
-    _proposal(catalog, "Noch in Prüfung", facility=catalog.bad, status=ProposalStatus.PUBLISHED)
+    _proposal(catalog, "Noch in Prüfung", facility=catalog.bad, status=ProposalStatus.OPEN)
 
     assert "Noch in Prüfung" not in logged_in.get(URL).content.decode()
 
 
 def test_proposal_list_links_to_points(client: Client, catalog: Catalog) -> None:
-    proposal = _proposal(catalog, "Längere Öffnungszeiten", facility=catalog.bad)
-    proposal.published_at = timezone.now()
-    proposal.save()
+    _proposal(catalog, "Längere Öffnungszeiten", facility=catalog.bad)
 
     content = client.get("/vorschlaege/").content.decode()
 

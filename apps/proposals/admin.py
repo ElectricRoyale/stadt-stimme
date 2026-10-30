@@ -16,7 +16,7 @@ DECIDED = (ProposalStatus.ACCEPTED, ProposalStatus.REJECTED)
 
 @admin.register(Proposal)
 class ProposalAdmin(admin.ModelAdmin):
-    """Die Verwaltung prüft, gibt frei und entscheidet (ADR-016). Inhalte kommen von Bürgern."""
+    """Die Verwaltung entscheidet (ADR-016); eine Freigabe gibt es nicht (ADR-025)."""
 
     list_display = ["number", "title", "category", "facility", "status", "supports", "created_at"]
     list_filter = ["status", "category"]
@@ -30,7 +30,6 @@ class ProposalAdmin(admin.ModelAdmin):
         "map_link",
         "created_at",
         "status",
-        "published_at",
         "decided_at",
         "answer",
         "measure",
@@ -43,11 +42,10 @@ class ProposalAdmin(admin.ModelAdmin):
         "facility",
         "map_link",
         "created_at",
-        "published_at",
         "decided_at",
     ]
     autocomplete_fields = ["measure"]
-    actions = ["publish", "accept", "reject"]
+    actions = ["accept", "reject"]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Proposal]:
         queryset: QuerySet[Proposal] = super().get_queryset(request)
@@ -88,13 +86,6 @@ class ProposalAdmin(admin.ModelAdmin):
         if obj.status == ProposalStatus.ACCEPTED:
             place_from_proposal(obj)
 
-    @admin.action(description="Freigeben", permissions=["change"])
-    def publish(self, request: HttpRequest, queryset: QuerySet[Proposal]) -> None:
-        queryset.update(
-            status=ProposalStatus.PUBLISHED,
-            published_at=Coalesce("published_at", timezone.now()),
-        )
-
     @admin.action(description="Annehmen", permissions=["change"])
     def accept(self, request: HttpRequest, queryset: QuerySet[Proposal]) -> None:
         _decide(queryset, ProposalStatus.ACCEPTED)
@@ -107,12 +98,9 @@ class ProposalAdmin(admin.ModelAdmin):
 
 
 def stamp_dates(proposal: Proposal) -> None:
-    """Freigabe- und Entscheidungsdatum aus dem Status, beim ersten Erreichen gesetzt."""
-    now = timezone.now()
-    if proposal.status == ProposalStatus.PUBLISHED and proposal.published_at is None:
-        proposal.published_at = now
+    """Entscheidungsdatum beim ersten Erreichen von angenommen oder abgelehnt."""
     if proposal.status in DECIDED and proposal.decided_at is None:
-        proposal.decided_at = now
+        proposal.decided_at = timezone.now()
 
 
 def _decide(queryset: QuerySet[Proposal], status: str) -> None:

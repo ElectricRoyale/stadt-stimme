@@ -15,16 +15,16 @@ from apps.reporting.tests.helpers import new_person
 pytestmark = pytest.mark.django_db
 
 
-def _published(catalog: Catalog, title: str) -> Proposal:
+def _open(catalog: Catalog, title: str) -> Proposal:
     return Proposal.objects.create(
         participant=new_person(),
         title=title,
         category=catalog.sport,
-        status=ProposalStatus.PUBLISHED,
+        status=ProposalStatus.OPEN,
     )
 
 
-def test_submit_strips_and_starts_unpublished(participant: Participant, catalog: Catalog) -> None:
+def test_submit_strips_and_is_open_at_once(participant: Participant, catalog: Catalog) -> None:
     proposal = submit_proposal(
         participant,
         title="  Abendöffnung im Hallenbad  ",
@@ -34,7 +34,7 @@ def test_submit_strips_and_starts_unpublished(participant: Participant, catalog:
     )
 
     assert proposal.title == "Abendöffnung im Hallenbad"
-    assert proposal.status == ProposalStatus.SUBMITTED
+    assert proposal.status == ProposalStatus.OPEN
     assert proposal.number == f"V-{proposal.pk}"
 
 
@@ -51,14 +51,17 @@ def test_daily_limit(participant: Participant, catalog: Catalog) -> None:
         )
 
 
-def test_similar_ranks_by_shared_words_and_hides_unpublished(
+def test_similar_ranks_by_shared_words_and_hides_rejected(
     participant: Participant, catalog: Catalog
 ) -> None:
-    best = _published(catalog, "Abendöffnung im Hallenbad")
-    other = _published(catalog, "Neue Duschen im Hallenbad")
-    _published(catalog, "Mehr Fahrradbügel am Bahnhof")
+    best = _open(catalog, "Abendöffnung im Hallenbad")
+    other = _open(catalog, "Neue Duschen im Hallenbad")
+    _open(catalog, "Mehr Fahrradbügel am Bahnhof")
     Proposal.objects.create(
-        participant=new_person(), title="Hallenbad Abendöffnung bitte", category=catalog.sport
+        participant=new_person(),
+        title="Hallenbad Abendöffnung bitte",
+        category=catalog.sport,
+        status=ProposalStatus.REJECTED,
     )
 
     items = similar_proposals("Längere Abendöffnung für das Hallenbad", participant)
@@ -68,7 +71,7 @@ def test_similar_ranks_by_shared_words_and_hides_unpublished(
 
 
 def test_toggle_support(participant: Participant, catalog: Catalog) -> None:
-    proposal = _published(catalog, "Abendöffnung im Hallenbad")
+    proposal = _open(catalog, "Abendöffnung im Hallenbad")
 
     assert toggle_support(proposal, participant) is True
     assert similar_proposals("Hallenbad", participant)[0].supported is True

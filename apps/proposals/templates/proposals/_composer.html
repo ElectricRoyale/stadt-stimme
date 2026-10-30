@@ -5,7 +5,7 @@
     <div class="prop-sent" role="status">
       {% include "partials/icon.html" with name="circle-check" size=32 stroke="1.75" %}
       <h3>Vorschlag {{ sent.proposal.number }} eingereicht</h3>
-      <p>Die Stadt prüft innerhalb von {{ review_days }} Tagen, ob sie ihn freigibt. Du findest ihn in der Liste unter „Meine“.</p>
+      <p>Er ist ab sofort öffentlich und kann unterstützt werden. Du findest ihn in der Liste unter „Meine“.</p>
       <a class="btn-outline" href="{% url 'proposals:index' %}#vorschlag-neu">Noch einen Vorschlag machen</a>
     </div>
   {% elif not participant %}

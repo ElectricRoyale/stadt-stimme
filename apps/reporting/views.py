@@ -49,7 +49,6 @@ def overview(request: HttpRequest) -> HttpResponse:
             "since": participation_since(),
             "now": timezone.localtime(),
             "support_threshold": settings.PROPOSAL_SUPPORT_THRESHOLD,
-            "review_days": settings.PROPOSAL_REVIEW_DAYS,
             "map_data": map_payload(stats, results),
             "budget": POINTS_BUDGET,
             "remaining": mine.free,
