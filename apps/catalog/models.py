@@ -81,7 +81,11 @@ class Category(models.Model):
 
 
 class Facility(models.Model):
-    """Öffentliche Einrichtung der Kommune. Wird nie „erledigt“, trägt aber Maßnahmen."""
+    """Öffentliche Einrichtung der Kommune; trägt Maßnahmen.
+
+    „Erledigt“ heißt: Die Stadt hat sich um den aktuellen Wunsch gekümmert, die Punkte sind
+    zurück bei den Unterstützern (ADR-029). Die Einrichtung bleibt wählbar.
+    """
 
     external_id = models.CharField(
         "Externe ID",
@@ -114,6 +118,13 @@ class Facility(models.Model):
         null=True,
         blank=True,
         validators=[MinValueValidator(-180), MaxValueValidator(180)],
+    )
+    done_at = models.DateTimeField(
+        "Zuletzt erledigt",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Gesetzt über „Erledigt“ auf der Verwaltungsseite.",
     )
     created_at = models.DateTimeField("Angelegt", auto_now_add=True)
     updated_at = models.DateTimeField("Geändert", auto_now=True)

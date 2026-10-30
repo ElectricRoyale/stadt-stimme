@@ -125,7 +125,7 @@ def test_return_is_all_or_nothing(
         mock.patch("apps.points.returns.transaction.on_commit", side_effect=RuntimeError("weg")),
         pytest.raises(RuntimeError),
     ):
-        return_points(measure)
+        return_points(measure.facility, measure=measure)
 
     assert Allocation.objects.filter(facility=catalog.bad).count() == 2
     assert PointEvent.objects.count() == events_before

@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_http_methods
 
+from apps.catalog.models import Facility
 from apps.cityadmin.desk import (
     access_summary,
     answer_tasks,
@@ -22,6 +23,7 @@ from apps.cityadmin.desk import (
 )
 from apps.cityadmin.forms import DecisionForm, SnapshotForm
 from apps.cityadmin.snapshot import snapshot_csv
+from apps.points.returns import mark_done, support_of
 from apps.proposals.board import build_board, item_for
 from apps.proposals.models import Proposal, ProposalStatus
 from apps.proposals.services import DecisionError, decide_proposal, similar_measures
@@ -128,4 +130,36 @@ def decide(request: HttpRequest, pk: int) -> HttpResponse:
             "support_threshold": settings.PROPOSAL_SUPPORT_THRESHOLD,
         },
         status=status,
+    )
+
+
+@require_http_methods(["GET", "POST"])
+@staff_required
+def facility_done(request: HttpRequest, pk: int) -> HttpResponse:
+    """Einrichtung als erledigt markieren: Punkte gehen an die Unterstützer zurück (ADR-029).
+
+    GET zeigt eine Rückfrage mit den Zahlen, weil sich das nicht rückgängig machen lässt.
+    """
+    facility = get_object_or_404(Facility.objects.select_related("category"), pk=pk)
+    if request.method == "POST":
+        if not request.user.has_perm("catalog.change_facility"):
+            raise PermissionDenied
+        returned = mark_done(facility)
+        people = len({r.participant_id for r in returned})
+        points = sum(r.points for r in returned)
+        messages.success(
+            request,
+            f"{facility.name} ist erledigt. {points} Punkte sind an {people} "
+            f"{'Person' if people == 1 else 'Personen'} zurückgegangen.",
+        )
+        return redirect(f"{reverse('cityadmin:index')}#einrichtungen")
+    return render(
+        request,
+        "cityadmin/facility_done.html",
+        {
+            "brand_tag": "Verwaltung",
+            "facility": facility,
+            "support": support_of(facility),
+            "can_change": request.user.has_perm("catalog.change_facility"),
+        },
     )

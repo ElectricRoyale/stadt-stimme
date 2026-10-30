@@ -1,0 +1,28 @@
+{% extends "cityadmin/_shell.html" %}
+
+{% block title %}{{ facility.name }} erledigt · Verwaltung · StadtStimme{% endblock %}
+{% block main_class %}va va--narrow{% endblock %}
+
+{% block content %}
+  <a class="va-back" href="{% url 'cityadmin:index' %}#einrichtungen">{% include "partials/icon.html" with name="arrow-left" size=16 %}Zur Übersicht</a>
+  <article class="panel va-decide" aria-labelledby="erledigt-titel">
+    <h1 id="erledigt-titel">{{ facility.name }} als erledigt markieren?</h1>
+    <p class="va-decide__text">Die Stadt hat sich um den Wunsch an diese Einrichtung gekümmert. Alle Punkte, die Bürger ihr gegeben haben, gehen an sie zurück. Wer eine bestätigte E-Mail hat, bekommt einen Hinweis. Die Einrichtung bleibt wählbar und kann später wieder Punkte bekommen.</p>
+    <dl class="va-facts">
+      <dt>Thema</dt><dd class="theme-{{ facility.category.color }}">{% include "partials/theme_icon.html" with category=facility.category %}{{ facility.category.name }}</dd>
+      <dt>Unterstützer</dt><dd>{{ support.supporters }}</dd>
+      <dt>Punkte, die zurückgehen</dt><dd>{{ support.points }}</dd>
+      {% if facility.done_at %}<dt>Zuletzt erledigt</dt><dd>{{ facility.done_at|date:"j. F Y" }}</dd>{% endif %}
+    </dl>
+    {% if can_change %}
+      <p class="va-notice">{% include "partials/icon.html" with name="info" size=16 %}<span>Das lässt sich nicht rückgängig machen. Punkte an „{{ facility.category.name }} allgemein“ bleiben stehen.</span></p>
+      <form method="post" class="va-form__foot">
+        {% csrf_token %}
+        <a class="btn-outline" href="{% url 'cityadmin:index' %}#einrichtungen">Abbrechen</a>
+        <button type="submit" class="btn-ink">Erledigt, Punkte zurückgeben</button>
+      </form>
+    {% else %}
+      <p class="va-notice">{% include "partials/icon.html" with name="info" size=16 %}<span>Dafür brauchst du das Recht „Einrichtung ändern“.</span></p>
+    {% endif %}
+  </article>
+{% endblock %}

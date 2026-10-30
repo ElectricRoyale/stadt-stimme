@@ -160,3 +160,21 @@ def test_failed_warnings_do_not_block_expiry(participant: Participant, catalog: 
         call_command("run_daily_tasks")
 
     assert points_of(participant) == {}
+
+
+def test_done_facility_mail_without_measure(
+    participant: Participant,
+    catalog: Catalog,
+    django_capture_on_commit_callbacks: Callable[..., Any],
+) -> None:
+    from apps.points.returns import mark_done
+
+    confirmed_contact(participant, "anna@example.org")
+    save_distribution(participant, {Target("f", catalog.bad.pk): 30})
+
+    with django_capture_on_commit_callbacks(execute=True):
+        mark_done(catalog.bad)
+
+    body = str(mail.outbox[0].body)
+    assert "die Stadt hat sich um Hallenbad gekümmert" in body
+    assert "30 Punkte" in body

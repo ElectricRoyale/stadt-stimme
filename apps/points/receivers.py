@@ -35,7 +35,7 @@ def _return_on_progress(sender: Any, instance: Measure, raw: bool = False, **kwa
     if raw:  # Fixtures laden
         return
     if triggers_return(getattr(instance, _PREVIOUS_STATUS, None), instance.status):
-        return_points(instance)
+        return_points(instance.facility, measure=instance)
 
 
 @receiver(pre_delete, sender=Participant)

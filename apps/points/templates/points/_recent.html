@@ -5,7 +5,7 @@
     {% for change in recent_changes %}
       <li>
         {% if change.kind == "zurueckgegeben" %}
-          <strong>{{ change.points }} Punkte</strong> von {{ change.target_name }} sind zurück{% if change.measure_title %}, weil die Stadt „{{ change.measure_title }}“ jetzt umsetzt{% endif %}.
+          <strong>{{ change.points }} Punkte</strong> von {{ change.target_name }} sind zurück, {% if change.measure_title %}weil die Stadt „{{ change.measure_title }}“ jetzt umsetzt{% else %}weil die Stadt sich darum gekümmert hat{% endif %}.
         {% else %}
           <strong>{{ change.points }} Punkte</strong> für {{ change.target_name }} sind verfallen, weil du länger nicht hier warst.
         {% endif %}
