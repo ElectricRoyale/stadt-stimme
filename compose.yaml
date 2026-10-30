@@ -20,6 +20,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stadtstimme}
       EMAIL_HOST: mailpit
       EMAIL_PORT: 1025
+      STADTSTIMME_SITE_URL: ${STADTSTIMME_SITE_URL:-http://localhost:8000}
+      STADTSTIMME_EMAIL_KEY: ${STADTSTIMME_EMAIL_KEY:-demo-only-insecure-email-key}
     ports:
       - "127.0.0.1:${APP_PORT:-8000}:8000"
     depends_on:
@@ -31,6 +33,30 @@ services:
       timeout: 5s
       retries: 12
       start_period: 10s
+
+  # Tägliche Aufgaben (Verfallswarnung, Verfall) um DAILY_TASKS_AT Uhr UTC. Gleiches Image wie app,
+  # startet erst, wenn app die Migrationen ausgeführt hat.
+  scheduler:
+    build: .
+    entrypoint: ["docker/daily.sh"]
+    command: []
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-demo-only-insecure-secret-key-change-me}
+      STADTSTIMME_CODE_PEPPER: ${STADTSTIMME_CODE_PEPPER:-demo-only-insecure-code-pepper}
+      STADTSTIMME_CITY_NAME: ${STADTSTIMME_CITY_NAME:-Mannheim}
+      STADTSTIMME_SITE_URL: ${STADTSTIMME_SITE_URL:-http://localhost:8000}
+      STADTSTIMME_EMAIL_KEY: ${STADTSTIMME_EMAIL_KEY:-demo-only-insecure-email-key}
+      DAILY_TASKS_AT: ${DAILY_TASKS_AT:-02:00}
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB:-stadtstimme}
+      POSTGRES_USER: ${POSTGRES_USER:-stadtstimme}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stadtstimme}
+      EMAIL_HOST: mailpit
+      EMAIL_PORT: 1025
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
 
   db:
     image: postgres:16-alpine

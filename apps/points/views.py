@@ -21,6 +21,7 @@ from apps.points.overview import (
     ledger_cells,
     map_places,
 )
+from apps.points.returns import recent_changes
 from apps.points.services import (
     BudgetExceededError,
     last_saved_at,
@@ -81,6 +82,7 @@ def distribute(request: HttpRequest, participant: Participant) -> HttpResponse:
             "remaining": POINTS_BUDGET - used,
             "saved_at": last_saved_at(participant),
             "valid_until": valid_until(participant),
+            "recent_changes": recent_changes(participant),
         },
         status=200 if not form.is_bound or form.is_valid() else 422,
     )

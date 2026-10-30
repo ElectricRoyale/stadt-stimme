@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "apps.reporting",
     "apps.proposals",
     "apps.cityadmin",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [
@@ -147,6 +148,7 @@ EMAIL_PORT = env_int("EMAIL_PORT", default=1025)
 EMAIL_HOST_USER = env_str("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env_str("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=False)
+EMAIL_TIMEOUT = env_int("EMAIL_TIMEOUT", default=10)
 DEFAULT_FROM_EMAIL = env_str("DEFAULT_FROM_EMAIL", default="StadtStimme <noreply@localhost>")
 
 # Zugang per Code (ADR-001). Schlüssel für die Code-Hashes: eigener Wert empfohlen, weil ein
@@ -155,8 +157,19 @@ ACCESS_CODE_PEPPER = env_str("STADTSTIMME_CODE_PEPPER", default=SECRET_KEY)
 ACCESS_MAX_FAILED_ATTEMPTS = env_int("STADTSTIMME_MAX_FAILED_ATTEMPTS", default=10)
 ACCESS_LOCKOUT_MINUTES = env_int("STADTSTIMME_LOCKOUT_MINUTES", default=60)
 
-# Punkte verfallen nach so vielen Tagen ohne Aktivität (ADR-003).
+# Punkte verfallen nach so vielen Tagen ohne Aktivität (ADR-003). So viele Tage vorher geht eine
+# Warnung an alle mit bestätigter E-Mail (ADR-004).
 POINTS_EXPIRY_DAYS = env_int("STADTSTIMME_POINTS_EXPIRY_DAYS", default=183)
+POINTS_EXPIRY_WARNING_DAYS = env_int("STADTSTIMME_POINTS_EXPIRY_WARNING_DAYS", default=14)
+
+# Benachrichtigungen per E-Mail (ADR-004). Adresse der Seite für Links in E-Mails.
+SITE_URL = env_str("STADTSTIMME_SITE_URL", default="http://localhost:8000").rstrip("/")
+# Schlüssel für die verschlüsselten E-Mail-Adressen. Eigener Wert empfohlen, weil ein Wechsel alle
+# gespeicherten Adressen unlesbar macht. Ohne eigenen Wert gilt SECRET_KEY.
+EMAIL_ADDRESS_KEY = env_str("STADTSTIMME_EMAIL_KEY", default=SECRET_KEY)
+# Bestätigungslink gilt so viele Stunden; neue Bestätigungsmail frühestens nach so vielen Minuten.
+EMAIL_CONFIRM_HOURS = env_int("STADTSTIMME_EMAIL_CONFIRM_HOURS", default=72)
+EMAIL_RESEND_MINUTES = env_int("STADTSTIMME_EMAIL_RESEND_MINUTES", default=10)
 
 # Vorschläge (ADR-014). Prüffrist und Schwelle sind Platzhalter, bis die Stadt sie festlegt.
 # Antwortfrist der Stadt ab Erreichen der Schwelle (ADR-025).

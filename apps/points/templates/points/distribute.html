@@ -25,6 +25,8 @@
     <p class="dist-head__hint">Gib Punkte an eine Einrichtung oder an ein ganzes Thema. Gespeichert wird immer die ganze Verteilung auf einmal.</p>
   </header>
 
+  {% if recent_changes %}{% include "points/_recent.html" %}{% endif %}
+
   {% if form.errors %}
     <div class="dist-alert" role="alert">
       {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}

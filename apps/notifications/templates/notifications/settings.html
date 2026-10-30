@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Hinweise per E-Mail · StadtStimme{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notify">
+  <h1>Hinweise per E-Mail</h1>
+  <p class="notify__lead">Freiwillig. Wir schreiben dir nur, wenn deine Punkte bald verfallen oder zu dir zurückkommen, weil die Stadt etwas umsetzt.</p>
+
+  {% if contact.state.value == "bestaetigt" %}
+    <p class="notify__state notify__state--ok" role="status">{% include "partials/icon.html" with name="check" size=18 %}<span>Hinweise gehen an <strong>{{ contact.masked_email }}</strong>.</span></p>
+  {% elif contact.state.value == "offen" %}
+    <p class="notify__state" role="status">{% include "partials/icon.html" with name="info" size=18 %}<span>Wir warten auf deine Bestätigung für <strong>{{ contact.masked_email }}</strong>. Bis dahin schicken wir nichts.</span></p>
+  {% endif %}
+
+  <form method="post" class="notify__form" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="notify__alert" role="alert">{% for e in form.non_field_errors %}<p>{{ e }}</p>{% endfor %}</div>{% endif %}
+    <label class="notify__label" for="{{ form.email.id_for_label }}">{% if contact.state.value == "keine" %}{{ form.email.label }}{% else %}Andere E-Mail-Adresse{% endif %}</label>
+    <input class="notify__input" type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}" value="{{ form.email.value|default:'' }}" autocomplete="email" inputmode="email" maxlength="254" required aria-describedby="email-hint"{% if form.email.errors %} aria-invalid="true"{% endif %}>
+    <p id="email-hint" class="{% if form.email.errors %}notify__error{% else %}notify__hint{% endif %}">{% if form.email.errors %}{{ form.email.errors.0 }}{% else %}Du bekommst einen Link zur Bestätigung. Erst danach schicken wir Hinweise.{% endif %}</p>
+    <button type="submit" class="btn-ink">Bestätigungslink senden</button>
+  </form>
+
+  {% if contact.state.value != "keine" %}
+    <form method="post" action="{% url 'notifications:remove' %}" class="notify__remove">
+      {% csrf_token %}
+      <button type="submit" class="btn-outline">E-Mail-Adresse löschen</button>
+    </form>
+  {% endif %}
+
+  <p class="notify__privacy">Die Adresse liegt verschlüsselt und getrennt von deinen Punkten. Jede E-Mail enthält einen Link zum Abmelden; dann löschen wir die Adresse sofort.</p>
+  <p><a href="{% url 'access:account' %}">Zurück zu Mein Bereich</a></p>
+</div>
+{% endblock %}

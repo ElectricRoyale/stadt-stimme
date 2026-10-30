@@ -1,0 +1,17 @@
+{# Punkte, die ohne eigenes Zutun zurückkamen oder verfielen, letzte 30 Tage (ADR-027, L6). #}
+<section class="dist-recent" aria-labelledby="zurueck">
+  <h2 id="zurueck" class="dist-recent__title">{% include "partials/icon.html" with name="info" size=18 %}<span>Wieder frei in den letzten 30 Tagen</span></h2>
+  <ul class="dist-recent__list">
+    {% for change in recent_changes %}
+      <li>
+        {% if change.kind == "zurueckgegeben" %}
+          <strong>{{ change.points }} Punkte</strong> von {{ change.target_name }} sind zurück{% if change.measure_title %}, weil die Stadt „{{ change.measure_title }}“ jetzt umsetzt{% endif %}.
+        {% else %}
+          <strong>{{ change.points }} Punkte</strong> für {{ change.target_name }} sind verfallen, weil du länger nicht hier warst.
+        {% endif %}
+        <span class="dist-recent__date">{{ change.at|date:"j. F" }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="dist-recent__hint">Du kannst sie neu verteilen.</p>
+</section>

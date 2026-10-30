@@ -4,3 +4,4 @@ psycopg[binary]==3.3.6
 gunicorn==26.2.0
 whitenoise==6.12.0
 django-import-export==4.4.4
+cryptography==50.0.1

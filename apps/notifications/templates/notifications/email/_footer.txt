@@ -1,0 +1,4 @@
+--
+StadtStimme {{ city_name }}
+{% if unsubscribe_url %}Keine E-Mails mehr? Hier abmelden, die Adresse wird dann gelöscht:
+{{ unsubscribe_url }}{% endif %}

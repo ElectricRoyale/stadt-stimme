@@ -1,0 +1,19 @@
+{# Stichtags-Export aus dem Ereignis-Log (M7, ADR-027). Ein GET-Formular, funktioniert ohne JavaScript. #}
+<section class="panel" aria-labelledby="stichtag-titel">
+  <header class="panel__head">
+    <div>
+      <h2 id="stichtag-titel">Stichtag</h2>
+      <p class="panel__sub">Punkte und Unterstützer je Ziel zum Tagesende</p>
+    </div>
+  </header>
+  <form method="get" action="{% url 'cityadmin:snapshot' %}" class="va-form">
+    <div class="va-field">
+      <label for="{{ snapshot_form.datum.id_for_label }}">{{ snapshot_form.datum.label }}</label>
+      {{ snapshot_form.datum }}
+    </div>
+    <div class="va-form__foot">
+      <button type="submit" class="btn-ink">{% include "partials/icon.html" with name="download" size=18 %}<span>CSV herunterladen</span></button>
+    </div>
+  </form>
+  <p class="panel__note">Aus dem unveränderlichen Protokoll aller Punktebewegungen, daher jederzeit gleich nachrechenbar. Verfallene Punkte fallen mit dem nächtlichen Lauf heraus.</p>
+</section>

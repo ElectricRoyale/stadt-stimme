@@ -46,3 +46,11 @@ class DecisionForm(forms.Form):
     @property
     def accept(self) -> bool:
         return bool(self.cleaned_data.get("verdict") == ACCEPT)
+
+
+class SnapshotForm(forms.Form):
+    datum = forms.DateField(
+        label="Datum",
+        widget=forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+        error_messages={"required": "Bitte ein Datum wählen.", "invalid": "Kein gültiges Datum."},
+    )

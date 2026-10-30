@@ -92,14 +92,34 @@ neuer Wert macht alle ausgegebenen Codes ungültig. Ohne eigenen Wert gilt `DJAN
 ## Punkte verteilen
 
 Jede Person hat 100 Punkte und gibt sie an Einrichtungen oder an ein ganzes Thema
-(„Sport allgemein“, ADR-011). Sie kann jederzeit umverteilen. Punkte verfallen nach
-183 Tagen ohne Aktivität (ADR-003, `STADTSTIMME_POINTS_EXPIRY_DAYS`). Ergebnisse zählen
-verfallene Punkte sofort nicht mehr mit. Gelöscht werden sie, sobald die Person zurückkommt,
-oder mit diesem Befehl (z. B. täglich per Cron):
+(„Sport allgemein“, ADR-011). Sie kann jederzeit umverteilen. Jede Änderung landet zusätzlich
+als unveränderliches Ereignis im Log (ADR-027); daraus kommt der Stichtags-Export auf der
+Verwaltungsseite.
+
+**Rückfluss:** Setzt die Stadt eine Maßnahme auf „in Umsetzung“ (Admin, Verwaltung oder
+CSV-Import), bekommen alle Unterstützer ihre Punkte auf dieser Einrichtung zurück und können sie
+neu verteilen. Punkte an ein ganzes Thema bleiben stehen.
+
+**Verfall:** Punkte verfallen nach 183 Tagen ohne Aktivität (ADR-003,
+`STADTSTIMME_POINTS_EXPIRY_DAYS`). Ergebnisse zählen verfallene Punkte sofort nicht mehr mit.
+Entzogen werden sie, sobald die Person zurückkommt, oder durch den täglichen Lauf. Der Dienst
+`scheduler` in docker compose ruft dafür um `DAILY_TASKS_AT` (Standard 02:00 UTC) diesen
+Befehl auf; er ist idempotent und lässt sich jederzeit von Hand starten:
 
 ```bash
-docker compose exec app python manage.py expire_points
+docker compose exec app python manage.py run_daily_tasks   # Warnungen, dann Verfall
 ```
+
+## Hinweise per E-Mail
+
+Unter „Mein Bereich“ → „E-Mail für Hinweise einrichten“ kann man freiwillig eine Adresse
+hinterlegen (ADR-004, ADR-028). Erst nach Klick auf den Bestätigungslink (Double-Opt-in) gehen
+Hinweise raus: 14 Tage vor dem Verfall (`STADTSTIMME_POINTS_EXPIRY_WARNING_DAYS`) und wenn Punkte
+zurückkommen. Jede E-Mail hat einen Abmeldelink, der die Adresse löscht. Gespeichert wird die
+Adresse verschlüsselt; für den Betrieb einen eigenen `STADTSTIMME_EMAIL_KEY` setzen und nie
+ändern. Lokal fängt Mailpit alle E-Mails ab (http://localhost:8025), im Betrieb gelten
+`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` und
+`DEFAULT_FROM_EMAIL`. Links in E-Mails beginnen mit `STADTSTIMME_SITE_URL`.
 
 ## Übersicht, Ergebnisse und Karte
 
@@ -169,18 +189,18 @@ config/          Einstellungen (alles über Umgebungsvariablen), URLs, WSGI
 apps/core/       Einstieg (Weiterleitung), Health-Check, Demo-Admin-Befehl
 apps/catalog/    Einrichtungen, Gebäude, Maßnahmen, Ausgaben; CSV-Import und Admin
 apps/access/     Aktivierungscodes, Code-Login, Sperre nach Fehlversuchen
-apps/points/     Punkte verteilen, Verfall
+apps/points/     Punkte verteilen, Ereignis-Log, Rückfluss, Verfall
+apps/notifications/ Freiwillige E-Mail-Hinweise mit Double-Opt-in
 apps/reporting/  Öffentliche Übersicht und Ergebnisse: Vergleich, Karte
 apps/proposals/  Vorschläge einreichen, freigeben, unterstützen
 templates/       Basis-Template (mobile-first, deutsch)
 static/          CSS, Schrift und kleine Skripte ohne Build-Schritt
 data/demo/       Fiktive Testdaten in Mannheim
-docker/          Entrypoint: Migrationen, Demo-Admin, Start
+docker/          Entrypoint: Migrationen, Demo-Admin, Start; täglicher Scheduler
 docs/            Entscheidungen (ADRs)
 ```
 
-Fachliche Module kommen phasenweise als eigene Django-Apps dazu, als Nächstes
-`notifications`. Fachlogik liegt jeweils in `services.py`, Views bleiben dünn.
+Fachliche Module kommen phasenweise als eigene Django-Apps dazu. Fachlogik liegt jeweils in `services.py`, Views bleiben dünn.
 
 ## Fahrplan
 
@@ -191,7 +211,7 @@ Fachliche Module kommen phasenweise als eigene Django-Apps dazu, als Nächstes
 | 2 | Code-Login (Zwischenlösung) | Rate-Limit greift, kein Code im Klartext |
 | 3 | Punktevergabe | 5 Testpersonen in unter 5 Minuten |
 | 4 | Transparenz: Ergebnisse, Vergleich, Stichtags-Export | Stichtagswerte reproduzierbar |
-| 5 | Benachrichtigungen (Verfall bereits in Phase 3, Rückfluss entfällt laut ADR-011) | Job-Tests grün |
+| 5 | Benachrichtigungen, Ereignis-Log, Rückfluss (ADR-027, ADR-028) | Job-Tests grün |
 | 6 | Zugang final, Barrierefreiheit, Datenschutz, Pilot | Freigabe Datenschutz |
 
 Entscheidungen: [docs/DECISIONS.md](docs/DECISIONS.md)

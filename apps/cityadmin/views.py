@@ -7,7 +7,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -20,7 +20,8 @@ from apps.cityadmin.desk import (
     proposal_tabs,
     selected_tab,
 )
-from apps.cityadmin.forms import DecisionForm
+from apps.cityadmin.forms import DecisionForm, SnapshotForm
+from apps.cityadmin.snapshot import snapshot_csv
 from apps.proposals.board import build_board, item_for
 from apps.proposals.models import Proposal, ProposalStatus
 from apps.proposals.services import DecisionError, decide_proposal, similar_measures
@@ -69,8 +70,24 @@ def index(request: HttpRequest) -> HttpResponse:
             "support_threshold": settings.PROPOSAL_SUPPORT_THRESHOLD,
             "review_days": settings.PROPOSAL_REVIEW_DAYS,
             "admin_enabled": settings.DEMO_MODE,
+            "snapshot_form": SnapshotForm(initial={"datum": timezone.localdate()}),
         },
     )
+
+
+@require_GET
+@staff_required
+def snapshot(request: HttpRequest) -> HttpResponse:
+    """CSV mit Punkten und Unterstützern je Ziel zum Ende des gewählten Tages (M7, ADR-027)."""
+    form = SnapshotForm(request.GET)
+    if not form.is_valid():
+        return HttpResponseBadRequest("Bitte ein gültiges Datum im Format JJJJ-MM-TT angeben.")
+    day = form.cleaned_data["datum"]
+    response = HttpResponse(
+        snapshot_csv(day, settings.CITY_NAME), content_type="text/csv; charset=utf-8"
+    )
+    response["Content-Disposition"] = f'attachment; filename="stadtstimme-stichtag-{day}.csv"'
+    return response
 
 
 @require_http_methods(["GET", "POST"])
