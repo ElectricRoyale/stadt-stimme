@@ -41,9 +41,54 @@
     use(0);
   }
 
+  // Zoomen mit Strg/⌘ + Mausrad und Touchpad-Pinch; ein normales Mausrad scrollt weiter die
+  // Seite. Chrome, Edge und Firefox melden Pinch als Mausrad mit ctrlKey, Safari als Geste.
+  var HINT_MS = 1500;
+  var MODIFIER = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Strg";
+
+  function wheelWithModifier(map, node) {
+    var hint = document.createElement("p");
+    hint.className = "map-canvas__hint";
+    hint.setAttribute("aria-hidden", "true");
+    hint.textContent = "Zum Zoomen " + MODIFIER + " gedrückt halten und scrollen";
+    node.appendChild(hint);
+    var timer = null;
+
+    // Vor Leaflets eigenem Handler: ohne Taste bekommt Leaflet das Ereignis nicht.
+    node.addEventListener("wheel", function (e) {
+      if (e.ctrlKey || e.metaKey) {
+        hint.classList.remove("is-visible");
+        return;
+      }
+      e.stopImmediatePropagation();
+      hint.classList.add("is-visible");
+      clearTimeout(timer);
+      timer = setTimeout(function () { hint.classList.remove("is-visible"); }, HINT_MS);
+    }, { capture: true, passive: true });
+  }
+
+  function safariPinch(map, node) {
+    var startZoom = null;
+    var around = null;
+    node.addEventListener("gesturestart", function (e) {
+      e.preventDefault();
+      startZoom = map.getZoom();
+      around = map.mouseEventToContainerPoint(e);
+    });
+    node.addEventListener("gesturechange", function (e) { e.preventDefault(); });
+    node.addEventListener("gestureend", function (e) {
+      e.preventDefault();
+      if (startZoom === null || !e.scale) return;
+      map.setZoomAround(around, Math.round(startZoom + Math.log2(e.scale)));
+      startZoom = null;
+    });
+  }
+
   function create(node, points) {
     node.textContent = "";
-    var map = L.map(node, { scrollWheelZoom: false, zoomControl: true });
+    var map = L.map(node, { scrollWheelZoom: true, zoomControl: true });
+    wheelWithModifier(map, node);
+    safariPinch(map, node);
     tiles(map, node);
     if (points.length) map.fitBounds(points, { padding: [40, 40], maxZoom: 16 });
     else map.setView([51.16, 10.45], 6);
