@@ -82,9 +82,10 @@ def build_groups(points: Mapping[Target, int], fiscal_year: int | None) -> list[
     total = sum(spend.values(), Decimal(0))
     facilities = Prefetch(
         "facilities",
-        queryset=Facility.objects.order_by("name").prefetch_related(
-            Prefetch("measures", queryset=Measure.objects.order_by("title"))
-        ),
+        # Erledigte Einrichtungen fehlen, bis sie wieder geöffnet werden (ADR-029).
+        queryset=Facility.objects.filter(done_at__isnull=True)
+        .order_by("name")
+        .prefetch_related(Prefetch("measures", queryset=Measure.objects.order_by("title"))),
     )
     at_place, at_theme = _accepted_proposals()
     groups = []

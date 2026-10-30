@@ -178,3 +178,4 @@ def test_done_facility_mail_without_measure(
     body = str(mail.outbox[0].body)
     assert "die Stadt hat sich um Hallenbad gekümmert" in body
     assert "30 Punkte" in body
+    assert "mach einen Vorschlag" in body and "/vorschlaege/" in body

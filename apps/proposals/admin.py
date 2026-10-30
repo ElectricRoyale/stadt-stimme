@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 
 from apps.proposals.models import Proposal, ProposalStatus
-from apps.proposals.services import place_from_proposal
+from apps.proposals.services import after_accept
 
 DECIDED = (ProposalStatus.ACCEPTED, ProposalStatus.REJECTED)
 
@@ -84,13 +84,13 @@ class ProposalAdmin(admin.ModelAdmin):
         stamp_dates(obj)
         super().save_model(request, obj, form, change)
         if obj.status == ProposalStatus.ACCEPTED:
-            place_from_proposal(obj)
+            after_accept(obj)
 
     @admin.action(description="Annehmen", permissions=["change"])
     def accept(self, request: HttpRequest, queryset: QuerySet[Proposal]) -> None:
         _decide(queryset, ProposalStatus.ACCEPTED)
-        for proposal in queryset.filter(latitude__isnull=False, facility__isnull=True):
-            place_from_proposal(proposal)
+        for proposal in queryset.select_related("facility"):
+            after_accept(proposal)
 
     @admin.action(description="Ablehnen", permissions=["change"])
     def reject(self, request: HttpRequest, queryset: QuerySet[Proposal]) -> None:

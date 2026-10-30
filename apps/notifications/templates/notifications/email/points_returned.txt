@@ -4,5 +4,8 @@
 
 Du kannst sie neu verteilen:
 {{ points_url }}
-
+{% if not measure %}
+Fehlt bei {{ facility }} später wieder etwas? Dann mach einen Vorschlag und wähle den Ort aus:
+{{ proposals_url }}
+{% endif %}
 {% include "notifications/email/_footer.txt" %}{% endautoescape %}
