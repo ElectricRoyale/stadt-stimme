@@ -122,7 +122,7 @@
 }
 
 @media (min-width: 1024px) {
-  .res { padding: 24px 32px 40px; }
+  .res { padding: 32px; }
   .res-grid { grid-template-columns: minmax(0, 1fr) max(400px, var(--ss-side-col)); gap: var(--ss-space-6); align-items: start; }
   .res-map { grid-column: 1; grid-row: 1; }
   .res-lists { grid-column: 1; grid-row: 2; }

@@ -55,7 +55,7 @@
   --ss-fs-figure: 28px;
 
   /* Form */
-  --ss-radius: 8px;
+  --ss-radius: 20px;
   --ss-radius-control: 6px;
   --ss-radius-cell: 2px;
   --ss-focus-outline: 3px solid var(--ss-text);

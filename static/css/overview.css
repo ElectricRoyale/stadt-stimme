@@ -27,7 +27,7 @@
 }
 
 @media (min-width: 1024px) {
-  .ov { padding: 32px 32px 48px; }
+  .ov { padding: 32px; }
 }
 
 @media (min-width: 1200px) {

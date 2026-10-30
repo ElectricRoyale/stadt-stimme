@@ -36,7 +36,7 @@
 .dist-empty[hidden] { display: none; }
 
 /* Themen und Ziele */
-.dist-theme { padding: 8px; border: 1px solid var(--ss-edge); border-radius: 12px; background: var(--ss-sheet); }
+.dist-theme { padding: 8px; border: 1px solid var(--ss-edge); border-radius: 20px; background: var(--ss-sheet); }
 .dist-theme[hidden] { display: none; }
 .dist-theme__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px var(--ss-space-4); padding: 4px 8px 8px; }
 .dist-theme__head h2 { display: flex; align-items: center; gap: var(--ss-space-2); margin: 0; font-size: var(--ss-fs-section); line-height: var(--ss-lh-body); font-weight: 700; letter-spacing: 0; }
@@ -93,7 +93,7 @@
 .stepper__btn--plus:hover:not(:disabled) { background: var(--ss-red-dark); }
 .stepper__btn--plus:disabled { background: var(--ss-red-pale); color: #FFFFFF; }
 .stepper__btn[hidden] { display: none; }
-.stepper__input { box-sizing: border-box; width: var(--ss-hit); height: var(--ss-hit); padding: 0; border: 1px solid var(--ss-red-pale); border-radius: var(--ss-radius); background: var(--ss-sheet); color: var(--ss-text); font: inherit; font-size: var(--ss-fs-body); font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+.stepper__input { box-sizing: border-box; width: var(--ss-hit); height: var(--ss-hit); padding: 0; border: 1px solid var(--ss-red-pale); border-radius: var(--ss-radius-sm); background: var(--ss-sheet); color: var(--ss-text); font: inherit; font-size: var(--ss-fs-body); font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
 .stepper__input.is-zero { font-weight: 400; color: var(--ss-text-faint); }
 .stepper__input[aria-invalid="true"] { border: 2px solid var(--ss-red); }
 .dist :is(button, input, summary):focus-visible { outline: var(--ss-focus-outline); outline-offset: 2px; box-shadow: none; }
@@ -168,7 +168,7 @@
 }
 
 @media (min-width: 1024px) {
-  .dist { padding: 32px 32px 48px; }
+  .dist { padding: 32px; }
   .dist-grid { grid-template-columns: minmax(0, 1fr) var(--ss-side-col); gap: var(--ss-space-6) var(--ss-space-8); align-items: start; }
   .dist-list { grid-column: 1; grid-row: 1; order: 0; }
   .dist-rail {

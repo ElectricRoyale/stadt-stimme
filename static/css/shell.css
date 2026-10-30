@@ -191,7 +191,7 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     border: 1px solid var(--ss-edge);
-    border-radius: 12px;
+    border-radius: 42px;
   }
 }
 
