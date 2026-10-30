@@ -193,3 +193,11 @@
   .ledger__cell, .dist-bar { animation: none; }
   .target, .cmp__bar, .stepper__btn, .target__chevron, .ledger__cell { transition: none; }
 }
+
+/* Zurückgekommene und verfallene Punkte der letzten 30 Tage (ADR-027) */
+.dist-recent { margin-top: var(--ss-space-4); padding: var(--ss-space-3); border-radius: var(--ss-radius-control); background: var(--ss-notice-bg); color: var(--ss-notice-ink); font-size: var(--ss-fs-small); }
+.dist-recent__title { display: flex; gap: 8px; align-items: center; margin: 0 0 6px; font-size: var(--ss-fs-small); }
+.dist-recent__list { margin: 0; padding-left: 1.25rem; }
+.dist-recent__list li + li { margin-top: 4px; }
+.dist-recent__date { margin-left: 4px; white-space: nowrap; opacity: 0.8; }
+.dist-recent__hint { margin: 6px 0 0; }

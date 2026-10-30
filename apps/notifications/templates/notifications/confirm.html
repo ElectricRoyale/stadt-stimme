@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}E-Mail bestätigen · StadtStimme{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notify">
+  {% if done %}
+    <h1>E-Mail bestätigt</h1>
+    <p class="notify__lead">Danke. Wir melden uns, wenn deine Punkte bald verfallen oder zu dir zurückkommen.</p>
+    <p><a class="btn-ink" href="{% url 'points:distribute' %}">Zu meinen Punkten</a></p>
+  {% elif valid %}
+    <h1>E-Mail bestätigen</h1>
+    <p class="notify__lead">Möchtest du Hinweise von StadtStimme per E-Mail bekommen?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn-ink">Ja, E-Mail bestätigen</button>
+    </form>
+  {% else %}
+    <h1>Link nicht mehr gültig</h1>
+    <p class="notify__lead">Der Link ist abgelaufen oder wurde schon benutzt. Unter „Mein Bereich“ kannst du dir einen neuen schicken lassen.</p>
+    <p><a class="btn-outline" href="{% url 'notifications:settings' %}">Hinweise per E-Mail</a></p>
+  {% endif %}
+</div>
+{% endblock %}

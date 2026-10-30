@@ -1,0 +1,8 @@
+{% autoescape off %}Hallo,
+
+du warst länger nicht bei StadtStimme {{ city_name }}. Deine Punkte zählen noch bis zum {{ valid_until|date:"j. F Y" }}. Danach verfallen sie.
+
+Ein Besuch reicht, damit sie weiter zählen:
+{{ points_url }}
+
+{% include "notifications/email/_footer.txt" %}{% endautoescape %}

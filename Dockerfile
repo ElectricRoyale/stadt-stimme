@@ -20,7 +20,7 @@ RUN DJANGO_SECRET_KEY=build-only python manage.py collectstatic --noinput
 # den unprivilegierten Benutzer sonst nicht lesbar (PermissionError beim Start).
 RUN useradd --system --uid 10001 --no-create-home app \
     && chmod -R a+rX,go-w /app \
-    && chmod +x docker/entrypoint.sh
+    && chmod +x docker/entrypoint.sh docker/daily.sh
 USER app
 
 EXPOSE 8000

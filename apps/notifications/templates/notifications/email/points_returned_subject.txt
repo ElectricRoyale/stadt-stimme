@@ -1,0 +1,1 @@
+{{ points }} Punkte sind zu dir zurückgekommen

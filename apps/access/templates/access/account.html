@@ -10,4 +10,7 @@
   <p>Du bist angemeldet. Auf diesem Gerät bleibst du angemeldet, bis du dich abmeldest.</p>
   <p><a class="btn-ink" href="{% url 'points:distribute' %}">Punkte verteilen</a></p>
   <p class="hint">Auf einem anderen Gerät meldest du dich einfach mit demselben Code an.</p>
+  <h2>Hinweise per E-Mail</h2>
+  <p>Freiwillig: Wir sagen dir Bescheid, bevor deine Punkte verfallen oder wenn sie zu dir zurückkommen.</p>
+  <p><a class="btn-outline" href="{% url 'notifications:settings' %}">E-Mail für Hinweise einrichten</a></p>
 {% endblock %}

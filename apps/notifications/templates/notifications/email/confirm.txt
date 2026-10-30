@@ -1,0 +1,10 @@
+{% autoescape off %}Hallo,
+
+du möchtest Hinweise von StadtStimme {{ city_name }} per E-Mail bekommen: wenn deine Punkte bald verfallen oder zu dir zurückkommen.
+
+Bitte bestätige das mit diesem Link (gültig {{ hours }} Stunden):
+{{ confirm_url }}
+
+Warst du das nicht? Dann ignoriere diese E-Mail. Ohne Bestätigung schicken wir nichts weiter.
+
+{% include "notifications/email/_footer.txt" %}{% endautoescape %}

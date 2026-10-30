@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Abmelden · StadtStimme{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="notify">
+  {% if posted %}
+    <h1>Abgemeldet</h1>
+    <p class="notify__lead">{% if done %}Deine E-Mail-Adresse ist gelöscht. Wir schreiben dir nicht mehr.{% else %}Zu diesem Link gibt es keine E-Mail-Adresse mehr. Wir schreiben dir nicht.{% endif %} Deine Punkte bleiben, wie sie sind.</p>
+  {% else %}
+    <h1>Keine E-Mails mehr?</h1>
+    <p class="notify__lead">Wir löschen deine E-Mail-Adresse. Deine Punkte bleiben, wie sie sind.</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn-ink">Abmelden und Adresse löschen</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

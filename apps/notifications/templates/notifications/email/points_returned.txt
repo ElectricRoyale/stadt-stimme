@@ -1,0 +1,8 @@
+{% autoescape off %}Hallo,
+
+die Stadt setzt „{{ measure }}“ bei {{ facility }} jetzt um. Deine {{ points }} Punkte für {{ facility }} sind deshalb zu dir zurückgekommen.
+
+Du kannst sie neu verteilen:
+{{ points_url }}
+
+{% include "notifications/email/_footer.txt" %}{% endautoescape %}

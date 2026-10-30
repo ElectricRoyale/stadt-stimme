@@ -1,0 +1,15 @@
+/* Hinweise per E-Mail (ADR-004): Eintragen, Bestätigen, Abmelden. Mobile-first, eine Spalte. */
+.notify { display: grid; gap: var(--ss-space-4); max-width: 40rem; }
+.notify h1 { margin: 0; }
+.notify__lead { margin: 0; }
+.notify__state { display: flex; gap: 10px; align-items: flex-start; margin: 0; padding: var(--ss-space-3); border-radius: var(--ss-radius-control); background: var(--ss-notice-bg); color: var(--ss-notice-ink); font-size: var(--ss-fs-small); }
+.notify__state svg { flex-shrink: 0; margin-top: 2px; }
+.notify__form { display: grid; gap: 6px; }
+.notify__form .btn-ink { justify-self: start; margin-top: var(--ss-space-2); }
+.notify__label { font-weight: 700; }
+.notify__input { box-sizing: border-box; width: 100%; height: 48px; padding: 0 var(--ss-space-3); border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); background: var(--ss-sheet); color: var(--ss-text); font: inherit; font-size: var(--ss-fs-body); }
+.notify__input[aria-invalid="true"] { border-color: var(--ss-red); }
+.notify__hint, .notify__error, .notify__privacy { margin: 0; font-size: var(--ss-fs-small); color: var(--ss-text-muted); }
+.notify__error { font-weight: 700; color: var(--ss-red-dark); }
+.notify__alert { padding: var(--ss-space-3); border-radius: var(--ss-radius-control); background: var(--ss-red-tint); color: var(--ss-red-dark); font-size: var(--ss-fs-small); font-weight: 700; }
+.notify__alert p { margin: 0; }

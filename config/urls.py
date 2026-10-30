@@ -11,6 +11,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("", include("apps.reporting.urls")),
     path("vorschlaege/", include("apps.proposals.urls")),
     path("suche/", include("apps.catalog.urls")),
+    path("benachrichtigung/", include("apps.notifications.urls")),
 ]
 
 if settings.DEMO_MODE:

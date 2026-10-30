@@ -21,6 +21,7 @@
 .va-slot--3 { order: 3; }
 .va-slot--4 { order: 4; }
 .va-slot--5 { order: 5; }
+.va-slot--6 { order: 6; }
 
 /* Zeilen in Listen: Aufgaben und Vorschläge */
 .va-list { margin: 0 -8px; padding: 0; list-style: none; }
@@ -122,7 +123,8 @@
 .va-field { display: grid; gap: 6px; }
 .va-field label { font-weight: 700; }
 .va-field textarea,
-.va-field select { box-sizing: border-box; width: 100%; min-height: var(--ss-hit); padding: 10px 12px; border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); background: var(--ss-sheet); color: var(--ss-text); font: inherit; }
+.va-field select,
+.va-field input { box-sizing: border-box; width: 100%; min-height: var(--ss-hit); padding: 10px 12px; border: 1px solid var(--ss-control); border-radius: var(--ss-radius-control); background: var(--ss-sheet); color: var(--ss-text); font: inherit; }
 .va-field textarea[aria-invalid="true"] { border-color: var(--ss-red); }
 .va-hint { margin: 0; font-size: var(--ss-fs-small); color: var(--ss-text-muted); }
 .va-field-error,

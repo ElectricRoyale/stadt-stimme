@@ -1,8 +1,10 @@
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 from django.contrib.auth.models import Permission, User
 from django.test import Client, override_settings
+from django.utils import timezone
 from pytest_django.fixtures import Settings
 
 from apps.catalog.models import Facility, Measure
@@ -130,3 +132,33 @@ def test_deciding_needs_change_permission(client: Client, catalog: Catalog) -> N
     url = f"{URL}vorschlaege/{proposal.pk}/"
     assert client.get(url).status_code == 200
     assert client.post(url, {"verdict": "annehmen", "answer": LONG_ANSWER}).status_code == 403
+
+
+def test_snapshot_csv_from_the_log(staff_client: Client, catalog: Catalog) -> None:
+    from apps.points.services import Target, save_distribution
+
+    save_distribution(new_person(), {Target("f", catalog.bad.pk): 30})
+    save_distribution(
+        new_person(), {Target("f", catalog.bad.pk): 20, Target("c", catalog.sport.pk): 5}
+    )
+
+    assert "CSV herunterladen" in staff_client.get(URL).content.decode()
+    response = staff_client.get(f"{URL}stichtag.csv", {"datum": timezone.localdate().isoformat()})
+
+    assert response.status_code == 200
+    lines = response.content.decode("utf-8-sig").splitlines()
+    assert lines[1:] == [
+        "Art;Name;Thema;Punkte;Unterstützer",
+        "Einrichtung;Hallenbad;Sport;50;2",
+        "Ganzes Thema;Sport allgemein;Sport;5;1",
+    ]
+    yesterday = timezone.localdate() - timedelta(days=1)
+    empty = staff_client.get(f"{URL}stichtag.csv", {"datum": yesterday.isoformat()})
+    assert empty.content.decode("utf-8-sig").splitlines()[1:] == [
+        "Art;Name;Thema;Punkte;Unterstützer"
+    ]
+
+
+def test_snapshot_needs_a_valid_date(staff_client: Client) -> None:
+    assert staff_client.get(f"{URL}stichtag.csv", {"datum": "gestern"}).status_code == 400
+    assert staff_client.get(f"{URL}stichtag.csv").status_code == 400
