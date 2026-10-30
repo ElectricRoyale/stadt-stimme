@@ -180,7 +180,9 @@ def test_mark_facility_done_returns_points(staff_client: Client, catalog: Catalo
 
     response = staff_client.post(url, follow=True)
 
-    assert "50 Punkte sind an 2 Personen zurückgegangen" in response.content.decode()
+    content = response.content.decode()
+    assert "fehlt jetzt in „Punkte verteilen“. 50 Punkte sind an 2 Personen zurück" in content
+    assert "Wieder öffnen" in content
     assert points_of(anna) == {Target("c", catalog.sport.pk): 5}
     assert points_of(ben) == {}
     catalog.bad.refresh_from_db()
@@ -201,3 +203,42 @@ def test_marking_done_needs_change_permission(client: Client, catalog: Catalog) 
     assert "Recht „Einrichtung ändern“" in client.get(url).content.decode()
     assert client.post(url).status_code == 403
     assert points_of(person) == {Target("f", catalog.bad.pk): 30}
+
+
+def test_done_facility_can_be_reopened(staff_client: Client, catalog: Catalog) -> None:
+    from django.utils import timezone as tz
+
+    Facility.objects.filter(pk=catalog.bad.pk).update(done_at=tz.now())
+
+    # Erledigt: die Rückfrage führt zurück, statt doppelt zu erledigen.
+    assert staff_client.get(f"{URL}einrichtungen/{catalog.bad.pk}/erledigt/").status_code == 302
+    response = staff_client.post(f"{URL}einrichtungen/{catalog.bad.pk}/wieder-oeffnen/")
+
+    assert response.status_code == 302
+    catalog.bad.refresh_from_db()
+    assert catalog.bad.done_at is None
+
+
+def test_reopen_needs_change_permission(client: Client, catalog: Catalog) -> None:
+    from django.utils import timezone as tz
+
+    Facility.objects.filter(pk=catalog.bad.pk).update(done_at=tz.now())
+    client.force_login(User.objects.create_user("lesend", is_staff=True))
+
+    assert client.post(f"{URL}einrichtungen/{catalog.bad.pk}/wieder-oeffnen/").status_code == 403
+
+
+def test_accepting_a_proposal_at_a_done_place_reopens_it(
+    staff_client: Client, catalog: Catalog
+) -> None:
+    from django.utils import timezone as tz
+
+    Facility.objects.filter(pk=catalog.bad.pk).update(done_at=tz.now())
+    proposal = _proposal(catalog, "Wieder Wasser im Becken", facility=catalog.bad)
+
+    staff_client.post(
+        f"{URL}vorschlaege/{proposal.pk}/", {"verdict": "annehmen", "answer": LONG_ANSWER}
+    )
+
+    catalog.bad.refresh_from_db()
+    assert catalog.bad.done_at is None

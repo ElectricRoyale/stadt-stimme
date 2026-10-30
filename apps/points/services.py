@@ -14,12 +14,14 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from apps.access.models import Participant
+from apps.catalog.models import Facility
 from apps.points import ledger
 from apps.points.models import POINTS_BUDGET, Allocation, PointEvent, PointEventKind
 from apps.points.targets import Target, TargetKind
 
 __all__ = [
     "BudgetExceededError",
+    "DoneFacilityError",
     "Target",
     "TargetKind",
     "active_allocations",
@@ -27,6 +29,16 @@ __all__ = [
     "expire_points_of",
     "save_distribution",
 ]
+
+
+class DoneFacilityError(ValueError):
+    """Punkte an eine erledigte Einrichtung, z. B. aus einem Formular von vor dem Erledigen."""
+
+    def __init__(self, names: list[str]) -> None:
+        super().__init__(
+            f"{', '.join(names)} ist inzwischen erledigt und nicht mehr wählbar. "
+            "Bitte verteile diese Punkte neu."
+        )
 
 
 class BudgetExceededError(ValueError):
@@ -73,6 +85,11 @@ def save_distribution(participant: Participant, points: Mapping[Target, int]) ->
         raise BudgetExceededError(total)
 
     with transaction.atomic():
+        done = Facility.objects.filter(
+            pk__in=[t.pk for t in wanted if t.kind == "f"], done_at__isnull=False
+        )
+        if done.exists():
+            raise DoneFacilityError(sorted(done.values_list("name", flat=True)))
         # Zwei Tabs, Verfall und Rückfluss laufen für denselben Zugang nacheinander.
         _lock(participant.pk)
         before = points_of(participant)

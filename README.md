@@ -99,7 +99,8 @@ Verwaltungsseite.
 **Rückfluss:** Setzt die Stadt eine Maßnahme auf „in Umsetzung“ (Admin, Verwaltung oder
 CSV-Import), bekommen alle Unterstützer ihre Punkte auf dieser Einrichtung zurück und können sie
 neu verteilen. Dasselbe passiert, wenn die Verwaltung eine Einrichtung unter `/verwaltung/` als
-erledigt markiert (ADR-029); sie bleibt danach wählbar. Punkte an ein ganzes Thema bleiben stehen.
+erledigt markiert (ADR-029). Sie fehlt dann in „Punkte verteilen“, bis die Stadt einen neuen
+Vorschlag an diesem Ort annimmt oder sie wieder öffnet. Punkte an ein ganzes Thema bleiben stehen.
 
 **Verfall:** Punkte verfallen nach 183 Tagen ohne Aktivität (ADR-003,
 `STADTSTIMME_POINTS_EXPIRY_DAYS`). Ergebnisse zählen verfallene Punkte sofort nicht mehr mit.
