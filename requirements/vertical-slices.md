@@ -29,7 +29,7 @@ Migrationen, Constraints), jeweils mit Tests. Nach jedem Slice ist die Anwendung
 
 1. **Abhängigkeiten zuerst:** Ein Slice kommt erst, wenn alles, worauf er fachlich aufbaut,
    fertig ist (z. B. Rückfluss braucht das Ereignis-Log).
-2. **Kernnutzen vor Ausbau:** Muss vor Soll vor Kann. Das Beteiligungsverfahren selbst (Punkte
+2. **Kernnutzen vor Erweiterung:** Muss vor Soll vor Kann. Das Beteiligungsverfahren selbst (Punkte
    geben, Ergebnis sehen) kommt vor Komfort und Kommunikation.
 3. **Risiko früh:** Teile mit hohem Risiko für Datenintegrität (Budget, Log, Rückfluss) kommen
    früh, solange die Datenmenge klein ist und Migrationen billig sind.
@@ -47,15 +47,16 @@ Migrationen, Constraints), jeweils mit Tests. Nach jedem Slice ist die Anwendung
 | S7 | Hinweise per E-Mail | Bürger | 7 | S3, S6 |
 | S8 | Zugänge verwalten und löschen | Bürger, Verwaltung | 3 | S3, S4, S7 |
 | S9 | Finden und teilen | Besucher, Bürger | 3 | S2, S4 |
-| S10 | Ausbau | alle | 6 | je nach FR |
+| S10 | Briefdruck und Berichte für den Gemeinderat | Verwaltung | 2 | S3 |
+| S11 | Mitwirkung erweitern | Bürger | 4 | S4, S5, S7 |
 
 Summe: 80 FRs. S1 bis S8 enthalten alle Muss-Anforderungen; danach ist StadtStimme reif für
-den Pilot (Phase 6). S9 und S10 sind Ausbau.
+den Pilot (Phase 6). S9 bis S11 erweitern die Anwendung um *Soll*- und *Kann*-Anforderungen.
 
 ```
 S1 ─► S2 ─► S4 ─► S5 ─► S6 ─► S7 ─► S8
  └──► S3 ────────► S5        S2 + S4 ─► S9
-                             S10: einzeln, je nach Voraussetzung
+                             S3 ─► S10      S7 ─► S11
 ```
 
 ---
@@ -143,6 +144,10 @@ Ziele schneller und vergleichen ihre Verteilung mit allen.
 **Abnahme:** Ergebnisseite zeigt für die Demo-Einrichtungen die Lücke in Prozentpunkten; Klick
 auf einen Kreis öffnet das Detail mit Maßnahmen; CSV öffnet sich in einer deutschen
 Tabellenkalkulation in Spalten; Karte funktioniert auch, wenn der Kachelserver nicht antwortet.
+
+Gebäude ([FR-016](functional-requirements.md#fr-016)) und der Vergleich der eigenen Verteilung
+([FR-026](functional-requirements.md#fr-026)) sind *Kann*, stecken aber hier, weil sie im selben
+Schnitt mit geringem Aufwand anfallen.
 
 **Warum hier:** Erfüllt das zweite Produktziel (Vergleich mit den Ausgaben) vollständig und
 braucht nur S1. Die Karte ist Grundlage für Vorschläge mit Ort (S4).
@@ -287,7 +292,7 @@ verteilen“, ein altes Formular mit Punkten darauf wird abgewiesen; angenommene
 diesem Ort öffnet sie wieder.
 
 **Warum hier:** Braucht das Log (S3) und für „wieder öffnen“ die Entscheidung über Vorschläge
-(S5). Hohes Integritätsrisiko, daher vor dem Ausbau.
+(S5). Hohes Integritätsrisiko, daher vor den Erweiterungen S9 bis S11.
 
 ---
 
@@ -349,7 +354,7 @@ Code lässt sich nicht erneut einlösen; Verwaltung findet einen Zugang über 8 
 ihn → die offene Sitzung auf einem anderen Gerät ist sofort abgemeldet.
 
 **Warum hier:** Löschen muss Log (S3), Vorschläge (S4) und E-Mail (S7) berücksichtigen, also
-erst nach ihnen. Es ist Muss für den Pilot und kommt deshalb vor dem Ausbau.
+erst nach ihnen. Es ist Muss für den Pilot und kommt deshalb vor den Erweiterungen S9 bis S11.
 
 ---
 
@@ -376,23 +381,69 @@ Vorschlagslink öffnet ohne Anmeldung genau diesen Vorschlag; der QR-Code eines 
 
 ---
 
-## S10 – Ausbau
+## S10 – Briefdruck und Berichte für den Gemeinderat
 
-Diese Anforderungen sind *Kann* oder zurückgestellt. Jede ist für sich ein kleiner Slice und
-wird erst nach Teamentscheidung umgesetzt; die Reihenfolge ist eine Empfehlung.
+**Mehrwert:** Die Verwaltung bringt die Codes ohne Umweg über die Kommandozeile in den
+Briefdruck und legt dem Gemeinderat aufbereitete Berichte statt roher CSV-Dateien vor.
 
-| Reihenfolge | FR | Voraussetzung |
-| --- | --- | --- |
-| 1 | [FR-067](functional-requirements.md#fr-067) Berichte auf der Verwaltungsseite | Snapshots (S3) |
-| 2 | [FR-074](functional-requirements.md#fr-074) Erinnerung an freie Punkte | E-Mail (S7) |
-| 3 | [FR-053](functional-requirements.md#fr-053) Vorschläge melden | Moderation (S5) |
-| 4 | [FR-013](functional-requirements.md#fr-013) Spitzname | ADR zu Moderation und Datenschutz |
-| 5 | [FR-012](functional-requirements.md#fr-012) Codes für den Briefdruck exportieren | Teamentscheid zum Druckprozess |
-| 6 | [FR-054](functional-requirements.md#fr-054) Foto zum Vorschlag | ADR zu Speicher, Datenschutz, Moderation |
+**Anforderungen:** [FR-012](functional-requirements.md#fr-012) Codes für den Briefdruck exportieren,
+[FR-067](functional-requirements.md#fr-067) Berichte auf der Verwaltungsseite.
 
-Gebäude ([FR-016](functional-requirements.md#fr-016)) und der Vergleich der eigenen Verteilung
-([FR-026](functional-requirements.md#fr-026)) sind zwar *Kann*, stecken aber in S2, weil sie
-dort mit geringem Aufwand im selben Schnitt anfallen.
+**Technischer Schnitt**
+
+- **Datenbank:** Druckauftrag je Charge (wann, von wem, wie viele Codes), damit kein Code
+  zweimal ausgegeben wird; Berichte verweisen auf Snapshots aus S3.
+- **Backend:** Export einer Charge als Druckdatei (Klartext nur in diesem Moment, danach nicht
+  mehr abrufbar, [AR-015](architecture-requirements.md#ar-015)); Bericht aus einem Snapshot oder
+  dem Vergleich zweier Snapshots für einen gewählten Zeitraum.
+- **Frontend:** Bereich „Zugänge“ auf der Verwaltungsseite mit Druckexport je Charge;
+  Berichtsseite mit Zeitraum, Druckansicht und Download.
+
+**Erstmals relevante ARs:** [AR-040](architecture-requirements.md#ar-040) (Druckexport und
+Bericht sind protokollierte Verwaltungsaktionen).
+
+**Abnahme:** Neue Charge mit 20 Codes erzeugen → als Druckdatei exportieren → ein zweiter
+Export derselben Charge ist nicht möglich; Bericht aus den Snapshots zweier Gemeinderatstermine
+zeigt die Veränderung je Thema und lässt sich drucken.
+
+**Warum hier:** Beides baut auf S3 (Chargen, Snapshots) auf und ist *Kann*. Der Briefversand
+funktioniert bis dahin über den Befehl aus S1, Gemeinderatsvorlagen über Stichtag und Snapshot.
+
+---
+
+## S11 – Mitwirkung erweitern
+
+**Mehrwert:** Bürger beteiligen sich persönlicher und anschaulicher: mit einem Spitznamen bei
+ihren Vorschlägen, mit einem Foto vom Ort, mit einer Meldung, wenn etwas Unpassendes
+öffentlich steht, und mit einer Erinnerung, wenn noch Punkte frei sind.
+
+**Anforderungen:** [FR-013](functional-requirements.md#fr-013) Spitzname, [FR-054](functional-requirements.md#fr-054) Foto zum Vorschlag,
+[FR-053](functional-requirements.md#fr-053) Vorschläge melden, [FR-074](functional-requirements.md#fr-074) Erinnerung an freie Punkte.
+
+**Technischer Schnitt**
+
+- **Datenbank:** Spitzname am Zugang; Foto am Vorschlag (Datei außerhalb der Datenbank, Größe
+  und Typ begrenzt); Meldung je Vorschlag und Zugang (einmal); Zeitpunkt der letzten
+  Erinnerung am Kontakt.
+- **Backend:** Prüfung des Spitznamens (Länge, keine Links); Foto-Upload mit Entfernen der
+  Metadaten (Standort); Meldungen landen auf der Verwaltungsseite bei „Inhalte moderieren“
+  aus S5; Erinnerung als weiterer Schritt in `run_daily_tasks`.
+- **Frontend:** Spitzname in „Mein Bereich“ mit Hinweis, keinen echten Namen zu verwenden;
+  Foto im Schritt „Anliegen“; Knopf „Melden“ am Vorschlag; neue Hinweisart in den
+  E-Mail-Einstellungen.
+
+**Erstmals relevante ARs:** [AR-020](architecture-requirements.md#ar-020) und
+[AR-023](architecture-requirements.md#ar-023) (neue personenbezogene Daten: Spitzname, Foto),
+[AR-017](architecture-requirements.md#ar-017) (Limit für Uploads und Meldungen).
+
+**Abnahme:** Spitzname setzen → erscheint bei den eigenen Vorschlägen; Vorschlag mit Foto
+einreichen → Foto ohne Standortdaten sichtbar; zwei Meldungen zum selben Vorschlag →
+Verwaltungsseite zeigt ihn mit Zahl der Meldungen; Zugang mit freien Punkten und bestätigter
+E-Mail → Erinnerung nach dem eingestellten Abstand, abbestellbar.
+
+**Warum zuletzt:** Alle vier sind *Kann* und bauen auf Vorschlägen (S4), Moderation (S5) und
+E-Mail (S7) auf. Spitzname und Foto bringen neue personenbezogene Daten und Moderationsaufwand
+und kommen deshalb erst, wenn der Kern im Pilot läuft.
 
 ---
 
@@ -412,8 +463,8 @@ dort mit geringem Aufwand im selben Schnitt anfallen.
 | [FR-010](functional-requirements.md#fr-010) | S3 | [FR-030](functional-requirements.md#fr-030) | S3 | [FR-050](functional-requirements.md#fr-050) | S4 | [FR-070](functional-requirements.md#fr-070) | S7 |
 | [FR-011](functional-requirements.md#fr-011) | S1 | [FR-031](functional-requirements.md#fr-031) | S6 | [FR-051](functional-requirements.md#fr-051) | S5 | [FR-071](functional-requirements.md#fr-071) | S7 |
 | [FR-012](functional-requirements.md#fr-012) | S10 | [FR-032](functional-requirements.md#fr-032) | S3 | [FR-052](functional-requirements.md#fr-052) | S5 | [FR-072](functional-requirements.md#fr-072) | S7 |
-| [FR-013](functional-requirements.md#fr-013) | S10 | [FR-033](functional-requirements.md#fr-033) | S6 | [FR-053](functional-requirements.md#fr-053) | S10 | [FR-073](functional-requirements.md#fr-073) | S7 |
-| [FR-014](functional-requirements.md#fr-014) | S1 | [FR-034](functional-requirements.md#fr-034) | S3 | [FR-054](functional-requirements.md#fr-054) | S10 | [FR-074](functional-requirements.md#fr-074) | S10 |
+| [FR-013](functional-requirements.md#fr-013) | S11 | [FR-033](functional-requirements.md#fr-033) | S6 | [FR-053](functional-requirements.md#fr-053) | S11 | [FR-073](functional-requirements.md#fr-073) | S7 |
+| [FR-014](functional-requirements.md#fr-014) | S1 | [FR-034](functional-requirements.md#fr-034) | S3 | [FR-054](functional-requirements.md#fr-054) | S11 | [FR-074](functional-requirements.md#fr-074) | S11 |
 | [FR-015](functional-requirements.md#fr-015) | S1 | [FR-035](functional-requirements.md#fr-035) | S3 | [FR-055](functional-requirements.md#fr-055) | S4 | [FR-075](functional-requirements.md#fr-075) | S7 |
 | [FR-016](functional-requirements.md#fr-016) | S2 | [FR-036](functional-requirements.md#fr-036) | S1 | [FR-056](functional-requirements.md#fr-056) | S9 | [FR-076](functional-requirements.md#fr-076) | S7 |
 | [FR-017](functional-requirements.md#fr-017) | S2 | [FR-037](functional-requirements.md#fr-037) | S2 | [FR-057](functional-requirements.md#fr-057) | S5 | [FR-077](functional-requirements.md#fr-077) | S7 |

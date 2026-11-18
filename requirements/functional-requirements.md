@@ -610,9 +610,3 @@ erreichbar ist.
 andere Kommunen die Anwendung ohne Codeänderung nutzen können.
 **Rolle:** System
 **Priorität:** Soll
-
----
-## Offene Punkte
-
-- **Personas und Akzeptanzkriterien** sind nicht dokumentiert. Prioritäten oben sind aus dem
-  Produktziel und den ADRs abgeleitet und sollten im Team bestätigt werden.
