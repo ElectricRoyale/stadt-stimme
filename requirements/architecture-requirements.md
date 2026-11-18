@@ -3,7 +3,9 @@
 Dieses Dokument beschreibt, **wie** StadtStimme gebaut sein muss: Technologie, Struktur,
 Sicherheit, Datenschutz, Betrieb und Qualität. Die fachlichen Anforderungen stehen in
 [functional-requirements.md](functional-requirements.md) (FR-…). Abgeleitet aus dem Code
-(`config/`, `apps/`, `compose.yaml`, CI), der README und [docs/DECISIONS.md](../docs/DECISIONS.md).
+(`config/`, `apps/`, `compose.yaml`, CI), der README und [docs/DECISIONS.md](../docs/DECISIONS.md)
+und mit dem Anforderungskatalog des Teams (NFA-01 bis NFA-11) abgeglichen. Die Zuordnung NFA → AR
+steht am Ende des Dokuments.
 
 - **Verbindlichkeit:** Akzeptierte ADRs gehen vor; der Bezug steht in Klammern.
 - **Prüfbarkeit:** Jede Anforderung nennt, woran ihre Einhaltung erkennbar ist (**Nachweis**).
@@ -158,8 +160,12 @@ werden im Betrieb nie geändert; ohne eigenen Wert gilt `DJANGO_SECRET_KEY` (ADR
 ### AR-016: Sichere HTTP-Standards
 **Beschreibung:** CSRF-Schutz für alle zustandsändernden Anfragen, nur POST für Änderungen,
 `HttpOnly`-Cookies, `Secure`-Cookies im Betrieb (`DJANGO_SECURE_COOKIES`), `X-Frame-Options:
-DENY`, `nosniff`, `Referrer-Policy: same-origin`. Im Betrieb zusätzlich HTTPS-Weiterleitung,
-HSTS und eine Content-Security-Policy.
+DENY`, `nosniff`, `Referrer-Policy: same-origin`. Im Betrieb laufen alle Verbindungen
+verschlüsselt (HTTPS-Weiterleitung, HSTS) mit einer Content-Security-Policy. Zugangscodes,
+Benutzernamen und Passwörter stehen nie in URLs, Exporten oder Logs.
+**Hinweis:** Der QR-Code auf dem Brief übergibt den Code heute als `?code=` in der URL (FR-001).
+Er landet damit in Browserverlauf und Server-Logs. Empfehlung: Code im URL-Fragment (`#code=`)
+übergeben, das nicht an den Server geht.
 **Begründung:** Schutz gegen CSRF, Clickjacking, Session-Diebstahl, XSS.
 **Nachweis:** `config/settings.py`, `manage.py check --deploy` ohne Warnungen im Betrieb.
 **Priorität:** Muss
@@ -177,7 +183,9 @@ Anmelden (atomar in PostgreSQL, ADR-009), Vorschläge je Tag und Zugang, Bestät
 der Aktion („Vorschlag ändern“, „Einrichtung ändern“). Admin und Verwaltungsseite sind ohne
 Demo-Modus nicht geroutet, bis das Admin-Login-Konzept steht (ADR-026).
 **Begründung:** Trennung von Lesen und Entscheiden im Team der Stadt.
-**Nachweis:** `config/urls.py`, View-Tests mit und ohne Recht.
+Rechte werden bei jeder Anfrage serverseitig ermittelt, nie aus Angaben des Browsers.
+**Nachweis:** `config/urls.py`; je Endpunkt Tests für Besucher, Bürger, Mitarbeitende ohne und
+mit Recht (Rechte-Matrix), die unberechtigte Zugriffe mit 302/403 abweisen.
 **Priorität:** Muss
 
 ### AR-019: Ausgaben gegen Injektion schützen
@@ -192,8 +200,9 @@ Exporte schützen Texte gegen Formel-Injektion.
 ## 5. Datenschutz (DSGVO)
 
 ### AR-020: Datensparsamkeit und Pseudonymität
-**Beschreibung:** Ein Zugang kennt keinen Namen, keine Adresse und keine Klartext-IP. Die
-Verbindung zur Person besteht nur über den Brief der Stadt. Neue personenbezogene Felder
+**Beschreibung:** Ein Zugang kennt keinen Namen, keine Adresse und keine Klartext-IP. Bürger
+brauchen weder Benutzernamen noch Passwort; sichtbar unterscheidbar sind sie höchstens über einen
+freiwilligen Spitznamen (FR-073). Die Verbindung zur Person besteht nur über den Brief der Stadt. Neue personenbezogene Felder
 brauchen einen dokumentierten Zweck.
 **Begründung:** Art. 5 DSGVO (Datenminimierung); Vertrauen in die Beteiligung.
 **Nachweis:** Models in `apps/access`, Review neuer Felder.
@@ -209,7 +218,8 @@ Ereignis-Log bleibt beim Löschen eines Zugangs pseudonym erhalten (ADR-004, ADR
 
 ### AR-022: Nur aggregierte Auswertung für die Verwaltung
 **Beschreibung:** Verwaltung und Öffentlichkeit sehen Beteiligung und Punkte nur als Summen.
-Keine Ansicht zeigt, wie ein einzelner Zugang verteilt hat (ADR-026).
+Keine Ansicht, kein Export, kein geteilter Link und kein QR-Code legt E-Mail-Adressen,
+Zugangscodes oder die Zuordnung zwischen Zugang und Punkteverteilung offen (ADR-026).
 **Begründung:** Schutz vor Rückschlüssen auf Einzelne, insbesondere bei kleinen Chargen.
 **Nachweis:** Templates und Querysets in `cityadmin` und `reporting`.
 **Priorität:** Muss
@@ -227,15 +237,19 @@ Regelbetrieb: eigener Kachelserver oder Vertrag (ADR-012, ADR-018).
 ## 6. Performance und Skalierung
 
 ### AR-024: Antwortzeiten bei kommunaler Last
-**Beschreibung:** Öffentliche Seiten und „Punkte verteilen“ antworten bei einer Großstadt im
-Pilot (Größenordnung 10⁴ Zugänge, 10² Einrichtungen) serverseitig in unter 500 ms (p95). Listen
+**Beschreibung:** Jede Seite ist für Nutzer innerhalb von 2 Sekunden bedienbar, ein Speichern
+innerhalb von 1 Sekunde bestätigt. Serverseitig antworten öffentliche Seiten und „Punkte
+verteilen“ bei einer Großstadt im Pilot (Größenordnung 10⁴ Zugänge, 10² Einrichtungen) in unter
+500 ms (p95). Listen
 werden ohne N+1-Abfragen geladen (`select_related`/`prefetch_related`, Aggregation in SQL).
 **Begründung:** Mobile Nutzung über schwache Verbindungen; Ergebnisse werden live berechnet.
 **Nachweis:** Abfragezahl in Tests (`django_assert_num_queries`), Lasttest vor dem Pilot.
 **Priorität:** Soll
 
 ### AR-025: Zuerst messen, dann cachen
-**Beschreibung:** Ergebnisse werden live aus dem Read Model berechnet. Caches oder zusätzliche
+**Beschreibung:** Ergebnisse werden live aus dem Read Model berechnet, sodass eine gespeicherte
+Änderung beim nächsten Aufruf sofort sichtbar ist und Diagramme, Karte und Export denselben
+Stand zeigen. Caches oder zusätzliche
 Summentabellen werden erst eingeführt, wenn Messungen das belegen, und dann mit klarer
 Invalidierung (ADR-027).
 **Begründung:** Abgeleitete Daten können auseinanderlaufen; YAGNI.
@@ -272,7 +286,8 @@ Demo-Modus aktiv. Ohne ihn startet die Anwendung nur mit eigenen Secrets.
 ### AR-029: Beobachtbarkeit
 **Beschreibung:** Ein Health-Check prüft App und Datenbank. Logs gehen strukturiert auf stdout
 (Level über `DJANGO_LOG_LEVEL`) und enthalten keine Codes, Tokens, E-Mail-Adressen oder IPs.
-Fehler externer Dienste (SMTP, Kacheln) werden geloggt, brechen aber keine fachliche Aktion ab.
+Der Ausfall eines Dienstes (SMTP, Kacheln) wird geloggt, blockiert aber keine anderen Dienste
+und keine fachliche Aktion.
 **Begründung:** Betrieb ohne Zugriff auf personenbezogene Daten.
 **Nachweis:** `/healthz/`, Review der Log-Aufrufe.
 **Priorität:** Soll
@@ -330,11 +345,74 @@ aus `Category.color` abgeleitet (ADR-010, ADR-015, ADR-017).
 
 ### AR-036: Barrierefreiheit nach WCAG 2.1 AA
 **Beschreibung:** Alle Seiten erfüllen WCAG 2.1 AA (Pflicht für öffentliche Stellen nach BITV
-2.0): semantisches HTML, Tastaturbedienung, sichtbarer Fokus, ausreichende Kontraste, Karten
-mit gleichwertiger Liste (ADR-012), responsives Layout ab 320 px.
+2.0): semantisches HTML, vollständige Bedienung mit Tastatur und Screenreader, sichtbarer
+Fokus, ausreichende Kontraste, responsives Layout ab 320 px. Punkte, Themen und Status sind
+nicht nur über Farbe unterscheidbar (zusätzlich Symbol, Text oder Muster); jede Karte und jedes
+Diagramm hat eine gleichwertige Text- oder Tabellenalternative (ADR-012).
 **Begründung:** Gesetzliche Pflicht für kommunale Angebote; alle Bürger sollen teilnehmen.
 **Nachweis:** Accessibility-Audit vor dem Pilot (Phase 6).
 **Priorität:** Muss
+
+### AR-037: Farbenblind-Modus
+**Beschreibung:** Zusätzlich zu AR-036 lässt sich eine Darstellung wählen, deren Themenfarben
+für die häufigsten Formen der Farbfehlsichtigkeit unterscheidbar sind. Die Wahl wird je Gerät
+gespeichert.
+**Begründung:** Themenfarben tragen viel Bedeutung (ADR-017).
+**Nachweis:** Prüfung der Palette mit Simulation für Protanopie, Deuteranopie, Tritanopie.
+**Priorität:** Kann
+
+### AR-038: Unterstützte Browser und Geräte
+**Beschreibung:** Die Anwendung ist für Smartphone und Desktop optimiert und wird vor jedem
+Release in den aktuellen Versionen von Chrome, Firefox und Safari auf Desktop und Smartphone
+getestet.
+**Begründung:** Bürger nutzen überwiegend das Telefon; die Verwaltung den Desktop.
+**Nachweis:** Testmatrix im Release-Protokoll, Screenshots je Breite (320, 1280, 1920 px).
+**Priorität:** Soll
+
+### AR-039: Selbsterklärende Bedienung
+**Beschreibung:** Nutzer ohne Vorkenntnisse führen alle Kernabläufe ohne Hilfe aus. Jede
+Speicherung wird sichtbar bestätigt, ungespeicherte Änderungen sind erkennbar.
+**Begründung:** Beteiligung darf nicht an der Bedienung scheitern.
+**Nachweis:** Usability-Test mit mindestens 5 Testpersonen vor dem Pilot (Gate Phase 3:
+5 Testpersonen in unter 5 Minuten).
+**Priorität:** Soll
+
+### AR-040: Nachvollziehbare Verwaltungsaktionen
+**Beschreibung:** Für jede Verwaltungsaktion mit Wirkung auf Bürger (Zugang schließen oder
+wieder öffnen, Einrichtung erledigt oder entfernt, Vorschlag entscheiden oder entfernen) sind
+Zeitpunkt, verantwortliches Verwaltungskonto, betroffener Eintrag und Aktion unveränderlich
+gespeichert und für berechtigte Mitarbeitende einsehbar.
+**Begründung:** Rechenschaft gegenüber Gemeinderat und Bürgern.
+**Nachweis:** Protokolltabelle mit Schreibschutz wie beim Ereignis-Log; Tests je Aktion.
+**Priorität:** Soll
+**Hinweis:** ADR-026 stellt das Protokoll zurück. Heute speichert `Proposal` nur
+`decided_at`, nicht das verantwortliche Konto.
+
+---
+
+## Abgleich mit dem Anforderungskatalog des Teams
+
+| NFA | AR | Art |
+| --- | --- | --- |
+| NFA-01 | AR-036 | ergänzt (Screenreader) |
+| NFA-02 | AR-036, AR-037 | ergänzt, neu (Farbenblind-Modus) |
+| NFA-03 (Geräte, Browser) | AR-036, AR-038 | neu (Testmatrix) |
+| NFA-03 (Usability; doppelte Nummer im Katalog) | AR-039 | neu |
+| NFA-04 | AR-024 | ergänzt (2 s Seite, 1 s Speichern) |
+| NFA-05 | AR-025 | ergänzt |
+| NFA-06 | AR-029 | ergänzt |
+| NFA-07 | AR-020 | ergänzt (siehe Konflikte) |
+| NFA-08 | AR-018, AR-032 | ergänzt (Rechte-Matrix) |
+| NFA-09 | AR-016 | ergänzt (siehe Konflikte) |
+| NFA-10 | AR-022 | ergänzt |
+| NFA-11 | AR-040 | neu |
+
+### Konflikte mit akzeptierten Entscheidungen oder dem Code
+
+| NFA | Widerspruch | Empfehlung |
+| --- | --- | --- |
+| NFA-07 | „Keine Passwörter für Bürger“ widerspricht der zurückgestellten Gerätebindung mit Passkey oder Passwort (FR-067). | Bei der Entscheidung zu FR-067 Passkey bevorzugen, kein Passwort. |
+| NFA-09 | Der QR-Code auf dem Brief überträgt den Code als URL-Parameter (FR-001). | Code im URL-Fragment übergeben (AR-016). |
 
 ---
 

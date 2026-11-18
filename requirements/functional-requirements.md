@@ -2,13 +2,17 @@
 
 Dieses Dokument beschreibt, **was** StadtStimme fachlich leisten muss. Es ist aus dem
 implementierten Code (Models, Services, Views, URLs, Templates), der README und den
-Architekturentscheidungen in [docs/DECISIONS.md](../docs/DECISIONS.md) abgeleitet.
+Architekturentscheidungen in [docs/DECISIONS.md](../docs/DECISIONS.md) abgeleitet und mit dem
+Anforderungskatalog des Teams („Anforderungen StadtStimme“, FA-01 bis FA-41) abgeglichen. Die
+Zuordnung FA → FR steht am Ende des Dokuments.
 
 - **Verbindlichkeit:** Akzeptierte ADRs gehen vor. Widerspricht eine Anforderung einem ADR,
   gilt das ADR, und diese Datei wird angepasst. Der ADR-Bezug steht jeweils in Klammern.
-- **Abgrenzung:** Architektur- und nicht-funktionale Anforderungen (Sicherheit, Datenschutz,
-  Performance, Betrieb, Barrierefreiheit) stehen in
-  [architecture-requirements.md](architecture-requirements.md) (AR-…).
+  Ein **Hinweis** unter einer Anforderung nennt einen offenen Konflikt oder eine Voraussetzung.
+- **IDs sind stabil:** Neue Anforderungen bekommen die nächste freie Nummer und stehen in ihrem
+  Themenbereich, auch wenn die Reihenfolge der Nummern dadurch springt.
+- **Abgrenzung:** Architektur- und nicht-funktionale Anforderungen (AR-…) werden intern in
+  `architecture-requirements.md` gepflegt; FR verweisen dort, wo nötig, auf AR-Nummern.
 - **Konfigurierbare Werte** stehen mit ihrem Standardwert und der Einstellung, z. B.
   „183 Tage (`STADTSTIMME_POINTS_EXPIRY_DAYS`)“.
 
@@ -77,7 +81,9 @@ die Sitzung auf diesem Gerät.
 
 ### FR-007: Mein Bereich
 **Beschreibung:** Angemeldete Bürger haben einen Bereich „Mein Bereich“ mit Anmeldestatus,
-Link zu „Punkte verteilen“ und zu den E-Mail-Hinweisen.
+ihrem Punktestand (vergeben und frei), ihren eigenen Vorschlägen mit Schritt und ihren
+Einstellungen für E-Mail-Hinweise, jeweils mit Link zu „Punkte verteilen“, „Vorschläge“ und den
+Hinweis-Einstellungen.
 **Rolle:** Bürger
 **Priorität:** Soll
 
@@ -92,7 +98,10 @@ weitergeleitet.
 ### FR-009: Anmeldung der Verwaltung
 **Beschreibung:** Auf der Anmeldeseite wählt man zwischen „Bürgerin oder Bürger“ (Code) und
 „Stadtverwaltung“ (Benutzername und Passwort). Nur Benutzer mit Mitarbeiter-Status gelangen
-auf die Verwaltungsseite. Bis zum Admin-Login-Konzept ist das nur im Demo-Modus verfügbar;
+auf die Verwaltungsseite. Jede Verwaltungsfunktion prüft ihr eigenes Recht (z. B.
+„Vorschlag ändern“, „Einrichtung ändern“, Datenpflege je Katalogliste), sodass sich
+Mitarbeitende über Gruppen unterschiedliche Rechte-Kategorien zuweisen lassen. Bis zum
+Admin-Login-Konzept ist das nur im Demo-Modus verfügbar;
 sonst zeigt die Seite einen Hinweis (DECISIONS.md, „Zurückgestellt“).
 **Rolle:** Verwaltung
 **Priorität:** Muss
@@ -102,6 +111,15 @@ sonst zeigt die Seite einen Hinweis (DECISIONS.md, „Zurückgestellt“).
 der Charge. Die Ausgabe enthält die Klartexte einmalig zur Weitergabe an den Druck.
 **Rolle:** Verwaltung
 **Priorität:** Muss
+
+### FR-073: Spitzname
+**Beschreibung:** Bürger können in „Mein Bereich“ freiwillig einen Spitznamen wählen, der bei
+ihren Vorschlägen angezeigt wird. Bei der Eingabe weist die Anwendung darauf hin, keinen echten
+Namen zu verwenden. Ohne Spitzname bleibt der Zugang anonym.
+**Rolle:** Bürger
+**Priorität:** Kann
+**Hinweis:** ADR-014 stellt „Vornamen zeigen“ zurück; vor der Umsetzung braucht es ein ADR zu
+Moderation und Datenschutz (AR-020).
 
 ---
 
@@ -178,9 +196,13 @@ darf 100 nie überschreiten; ein Speichern darüber wird abgewiesen (ADR-011).
 **Priorität:** Muss
 
 ### FR-021: Verteilung bearbeiten und speichern
-**Beschreibung:** Bürger erhöhen oder verringern Punkte je Ziel in Einerschritten (ADR-019),
-sehen jederzeit den Rest ihres Budgets und speichern die ganze Verteilung auf einmal. Sie
-können jederzeit umverteilen.
+**Beschreibung:** Bürger ändern Punkte je Ziel per Plus/Minus in Einerschritten (ADR-019) oder
+per direkter Zahleneingabe; zulässig sind nur ganze, nicht negative Zahlen. Vergebene und freie
+Punkte sowie die Summe je Thema aktualisieren sich bei jeder Änderung sofort, als Zahl und als
+Raster aus 100 Feldern, in dem Punkte an ein ganzes Thema erkennbar sind. Gespeichert wird die
+ganze Verteilung auf einmal; ein Teil des Budgets darf frei bleiben. Bürger können jederzeit
+umverteilen. Für die Auswertung zählt je Zugang nur die zuletzt erfolgreich gespeicherte
+Verteilung.
 **Rolle:** Bürger
 **Priorität:** Muss
 
@@ -208,6 +230,23 @@ Einrichtung oder, ohne Einrichtung, beim Thema („… allgemein“), mit Link z
 sind kein eigenes Punkteziel (ADR-023).
 **Rolle:** Bürger
 **Priorität:** Soll
+
+### FR-078: Ziele per QR-Code verlinken
+**Beschreibung:** Für jede Einrichtung und jedes Thema gibt es einen direkten Link auf das Ziel in
+„Punkte verteilen“, den die Verwaltung als QR-Code ausgeben kann (z. B. als Aushang vor Ort).
+Der QR-Code enthält keinen Zugangscode.
+**Rolle:** Verwaltung
+**Priorität:** Kann
+
+### FR-076: Abstimmungszeitraum
+**Beschreibung:** Die Verwaltung legt Abstimmungszeiträume (Runden) mit Beginn und Ende fest.
+Übersicht und Ergebnisse zeigen den laufenden Zeitraum; Snapshots und Entscheidungen beziehen
+sich auf ihn.
+**Rolle:** Verwaltung
+**Priorität:** Kann
+**Hinweis:** Das heutige Modell ist eine fortlaufende Beteiligung mit Verfall nach Inaktivität
+(ADR-003). Runden sind eine Produktentscheidung mit Folgen für Verfall, Ergebnisse und
+Vorschläge und brauchen ein eigenes ADR.
 
 ### FR-026: Verlauf zurückgekommener und verfallener Punkte
 **Beschreibung:** „Punkte verteilen“ zeigt Punkte, die in den letzten 30 Tagen zurückgekommen
@@ -252,14 +291,17 @@ manuell startbar, und ein Fehler im einen hält den anderen nicht auf (ADR-028).
 
 ### FR-031: Öffentliche Übersicht
 **Beschreibung:** Die Übersicht ist ohne Anmeldung erreichbar und zeigt den Vergleich je Thema
-(Anteil Bürgerpunkte gegen Anteil Ist-Ausgaben), eine Karte der Einrichtungen, die Beteiligung,
-aktuelle Vorschläge und Neuigkeiten (ADR-012, ADR-017).
+(Anteil Bürgerpunkte gegen Anteil Ist-Ausgaben), eine Karte mit Liste der Einrichtungen, den
+Datenstand, die Zahl der Teilnehmenden, die meistunterstützten Vorschläge mit Link und
+Neuigkeiten (ADR-012, ADR-017).
 **Rolle:** Besucher
 **Priorität:** Muss
 
 ### FR-032: Eigene Punkte in der Übersicht
 **Beschreibung:** Angemeldete Bürger sehen in der Übersicht zusätzlich ihre eigene Verteilung
-und bis wann ihre Punkte gültig sind.
+im Vergleich zum Anteil aller Bürgerpunkte und zu den Ausgaben, ihre vergebenen und freien
+Punkte als Zahl und Raster aus 100 Feldern mit Link zu „Punkte verteilen“, ihre eigenen
+Vorschläge und bis wann ihre Punkte gültig sind.
 **Rolle:** Bürger
 **Priorität:** Soll
 
@@ -278,7 +320,8 @@ Punkte des Themas inkl. „… allgemein“ und alle Ausgaben des Themas (ADR-01
 
 ### FR-035: Detail je Einrichtung
 **Beschreibung:** Zu jeder Einrichtung lassen sich in den Ergebnissen Punkte, Ausgaben und
-zugehörige Maßnahmen im Detail ansehen.
+zugehörige Maßnahmen im Detail ansehen. Die Auswahl erfolgt über die Liste oder die
+Markierung auf der Ergebniskarte.
 **Rolle:** Besucher
 **Priorität:** Soll
 
@@ -298,7 +341,11 @@ geschützt.
 
 ### FR-038: Karten der Einrichtungen
 **Beschreibung:** Übersicht, „Punkte verteilen“, Ergebnisse und Vorschläge zeigen Einrichtungen
-mit Koordinaten auf einer Karte. Fällt der Kachelserver aus, wechselt die Karte auf einen
+mit Koordinaten auf einer zoombaren Karte, immer zusammen mit einer gleichwertigen Liste.
+Markierungen zeigen das Thema (Farbe und Symbol) und mit ihrer Größe den Anteil an den
+Bürgerpunkten. Ein Klick auf eine Markierung führt zum zugehörigen Ziel bzw. zu seinen Details.
+Angemeldete Bürger können zwischen allen Einrichtungen und den von ihnen gewichteten
+umschalten. Fällt der Kachelserver aus, wechselt die Karte auf einen
 Ersatz und zeigt danach mindestens die Marker (ADR-018, ADR-020, ADR-030).
 **Rolle:** Besucher
 **Priorität:** Soll
@@ -309,7 +356,9 @@ Ersatz und zeigt danach mindestens die Marker (ADR-018, ADR-020, ADR-030).
 
 ### FR-039: Vorschlag einreichen
 **Beschreibung:** Angemeldete Bürger reichen einen Vorschlag in drei Schritten ein: Anliegen
-(Titel 8–80 Zeichen, Beschreibung optional bis 600 Zeichen), Einordnen, Prüfen (ADR-014).
+(Titel 8–80 Zeichen, Beschreibung optional bis 600 Zeichen), Einordnen, Prüfen (ADR-014). Vor
+dem Einreichen können sie zu jedem vorherigen Schritt zurückkehren und korrigieren, ohne
+Eingaben zu verlieren.
 **Rolle:** Bürger
 **Priorität:** Muss
 
@@ -340,16 +389,19 @@ unterstützbar (ADR-025).
 **Priorität:** Muss
 
 ### FR-044: Vorschlag unterstützen
-**Beschreibung:** Angemeldete Bürger unterstützen offene Vorschläge anderer höchstens einmal
-und können die Unterstützung zurückziehen. Eigene sowie entschiedene Vorschläge sind nicht
-unterstützbar (ADR-016, ADR-025).
+**Beschreibung:** Angemeldete Bürger unterstützen beliebig viele offene Vorschläge anderer,
+jeden höchstens einmal, und können die Unterstützung zurückziehen. Unterstützungen sind
+unabhängig vom Budget der 100 Punkte. Eigene sowie entschiedene Vorschläge sind nicht
+unterstützbar; abgelehnte Vorschläge erscheinen nicht mehr unter den eigenen unterstützten
+(ADR-016, ADR-025).
 **Rolle:** Bürger
 **Priorität:** Muss
 
 ### FR-045: Weg eines Vorschlags
 **Beschreibung:** Jeder Vorschlag zeigt seinen Schritt: „Sammelt“ (unter der Schwelle von
 50 Unterstützungen, `STADTSTIMME_PROPOSAL_SUPPORT_THRESHOLD`), „In Prüfung“ (Schwelle erreicht,
-seit dem Zeitpunkt der N-ten Unterstützung) und „Entschieden“ (angenommen oder abgelehnt). Die
+seit dem Zeitpunkt der N-ten Unterstützung) und „Entschieden“ (angenommen oder abgelehnt).
+Solange ein Vorschlag sammelt, zeigt er die noch benötigten Unterstützungen. Die
 Liste lässt sich nach Schritt filtern, auch ohne JavaScript (ADR-016, ADR-025).
 **Rolle:** Besucher
 **Priorität:** Muss
@@ -367,6 +419,19 @@ Einrichtung an (Name = Titel, Thema und Koordinaten vom Vorschlag, externe ID
 und Ergebnissen enthalten (ADR-024).
 **Rolle:** System
 **Priorität:** Soll
+
+### FR-079: Vorschlagsliste durchsuchen, filtern und sortieren
+**Beschreibung:** Die Vorschlagsliste ist nach Titel und Ort durchsuchbar, nach Thema und Schritt
+filterbar und nach Zahl der Unterstützungen sortierbar. Angemeldete Bürger wählen zwischen allen
+und nur ihren eigenen Vorschlägen. Filter und Sortierung funktionieren ohne JavaScript.
+**Rolle:** Besucher
+**Priorität:** Soll
+
+### FR-077: Vorschlag teilen
+**Beschreibung:** Jeder Vorschlag hat einen dauerhaften, öffentlichen Link, den Ersteller und
+andere teilen können. Der Link enthält keinen Zugangscode und keine Angabe zum Ersteller.
+**Rolle:** Bürger
+**Priorität:** Kann
 
 ---
 
@@ -409,8 +474,11 @@ einem Link zur Datenpflege (ADR-026).
 ### FR-053: Einrichtung als erledigt markieren
 **Beschreibung:** Die Verwaltung markiert eine Einrichtung als erledigt, auch ohne passende
 Maßnahme. Vorher bestätigt sie eine Rückfrage mit Zahl der Unterstützer und Punkte. Danach
-gehen alle Punkte an dieser Einrichtung an die Unterstützer zurück; Themenpunkte bleiben.
-Erfordert das Recht „Einrichtung ändern“ (ADR-029).
+gehen alle Punkte an dieser Einrichtung an die Unterstützer zurück, und Betroffene mit
+E-Mail-Hinweis werden benachrichtigt; Themenpunkte bleiben. Dasselbe gilt, wenn eine Einrichtung
+dauerhaft aus dem Katalog genommen wird: Sie wird dann als erledigt archiviert statt gelöscht,
+weil das Ereignis-Log auf sie verweist (AR-011). Erfordert das Recht „Einrichtung ändern“
+(ADR-029).
 **Rolle:** Verwaltung
 **Priorität:** Muss
 
@@ -423,7 +491,8 @@ als bekannter Ort bei Vorschlägen bleibt sie immer sichtbar (ADR-029).
 
 ### FR-055: Stichtags-Export
 **Beschreibung:** Die Verwaltung lädt für einen Stichtag eine CSV mit Punkten und Unterstützern
-je Ziel zum Tagesende herunter. Die Werte werden aus dem Ereignis-Log berechnet und sind für
+je Ziel zum Tagesende herunter, ergänzt um die Zahl der Teilnehmenden und die Ist-Ausgaben je
+Ziel. Die Werte werden aus dem Ereignis-Log berechnet und sind für
 denselben Stichtag reproduzierbar (ADR-027).
 **Rolle:** Verwaltung
 **Priorität:** Muss
@@ -436,9 +505,29 @@ denselben Stichtag reproduzierbar (ADR-027).
 
 ### FR-057: Inhalte moderieren
 **Beschreibung:** Die Verwaltung kann unpassende Vorschläge mit Begründung ablehnen (FR-049)
-oder im Admin löschen (ADR-025).
+oder doppelte und unzulässige Vorschläge mit Begründung entfernen (ADR-025). Ein entfernter
+Vorschlag ist öffentlich nicht mehr sichtbar; sein Ersteller sieht in „Mein Bereich“, dass und
+warum er entfernt wurde.
 **Rolle:** Verwaltung
 **Priorität:** Muss
+
+### FR-074: Zugang finden und einsehen
+**Beschreibung:** Die Verwaltung findet einen Zugang über die letzten 8 Zeichen seines Codes
+(z. B. bei einer Anfrage per Telefon) und sieht Status, Charge, Zeitpunkt des Einlösens und
+letzte Aktivität. Sie kann dort nichts im Namen des Bürgers ändern.
+**Rolle:** Verwaltung
+**Priorität:** Soll
+**Hinweis:** Codes liegen nur als Hash vor (AR-015); für die Suche braucht es einen eigenen
+Hash der letzten 8 Zeichen. Die im Katalog gewünschte Einsicht in Verteilung und Vorschläge des
+Zugangs widerspricht AR-022 und ist deshalb nicht übernommen (siehe Abgleich).
+
+### FR-075: Zugang schließen und wieder öffnen
+**Beschreibung:** Die Verwaltung schließt einen Zugang (z. B. bei Wegzug) und öffnet ihn bei
+Bedarf wieder. Das Schließen wirkt sofort, auch auf bestehende Anmeldungen. Alle Punkte des
+Zugangs werden entzogen (Ereignis „entzogen“); seine Vorschläge und Unterstützungen bleiben
+erhalten. Erfordert ein eigenes Recht.
+**Rolle:** Verwaltung
+**Priorität:** Soll
 
 ---
 
@@ -446,7 +535,7 @@ oder im Admin löschen (ADR-025).
 
 ### FR-058: E-Mail freiwillig hinterlegen
 **Beschreibung:** Bürger hinterlegen freiwillig eine E-Mail-Adresse für Hinweise, ändern oder
-entfernen sie. Die Adresse wird verschlüsselt und getrennt von den Punkten gespeichert und mit
+entfernen sie und wählen, welche Arten von Hinweisen sie erhalten. Die Adresse wird verschlüsselt und getrennt von den Punkten gespeichert und mit
 dem Zugang gelöscht (ADR-004, ADR-028).
 **Rolle:** Bürger
 **Priorität:** Soll
@@ -469,6 +558,19 @@ möglich (ADR-028).
 ### FR-061: Hinweis bei Rückfluss
 **Beschreibung:** Bestätigte Empfänger erhalten eine E-Mail, wenn Punkte zu ihnen
 zurückkommen (Maßnahme in Umsetzung oder Einrichtung erledigt) (ADR-027, ADR-028, ADR-029).
+**Rolle:** System
+**Priorität:** Soll
+
+### FR-080: Erinnerung an freie Punkte
+**Beschreibung:** Bestätigte Empfänger mit freien Punkten erhalten eine Erinnerung, ihre Punkte
+zu verteilen. Die Erinnerung wiederholt sich in einem konfigurierbaren Abstand, solange Punkte
+frei sind, und lässt sich einzeln abbestellen.
+**Rolle:** System
+**Priorität:** Kann
+
+### FR-081: Hinweis zu eigenen und unterstützten Vorschlägen
+**Beschreibung:** Bestätigte Empfänger erhalten einen Hinweis, wenn ein eigener oder unterstützter
+Vorschlag die Schwelle erreicht, angenommen, abgelehnt oder von der Stadt beantwortet wird.
 **Rolle:** System
 **Priorität:** Soll
 
@@ -520,9 +622,9 @@ Passwort; der Code ist danach nicht mehr allein der Login (ADR-001, zurückgeste
 **Rolle:** Bürger
 **Priorität:** Kann
 
-### FR-068: Codes für den Briefdruck exportieren und sperren
-**Beschreibung:** Die Verwaltung exportiert Codes für den Druck und sperrt einzelne Codes,
-z. B. bei Verlust (DECISIONS.md, zurückgestellt).
+### FR-068: Codes für den Briefdruck exportieren
+**Beschreibung:** Die Verwaltung exportiert Codes für den Druck (DECISIONS.md, zurückgestellt).
+Sperren und Wiederöffnen eines Zugangs regelt FR-075.
 **Rolle:** Verwaltung
 **Priorität:** Kann
 
@@ -545,12 +647,76 @@ Speicher, Datenschutz und Moderation).
 **Priorität:** Kann
 
 ### FR-072: Berichte und Protokoll auf der Verwaltungsseite
-**Beschreibung:** Die Verwaltung erstellt Berichte zu Stichtagen, wählt den Zeitraum der
-Auswertung und sieht ein Protokoll der Verwaltungsaktionen (ADR-026, zurückgestellt).
+**Beschreibung:** Die Verwaltung erstellt datierte Snapshots einer Abstimmung (Punkte,
+Teilnehmende, Ziele, Ausgaben), sieht sie in der Anwendung ein, vergleicht Snapshots
+miteinander und wählt den Zeitraum der Auswertung (ADR-026, zurückgestellt). Das Protokoll der
+Verwaltungsaktionen regelt AR-040.
 **Rolle:** Verwaltung
 **Priorität:** Kann
 
 ---
+
+## Abgleich mit dem Anforderungskatalog des Teams
+
+Jede FA ist einer FR zugeordnet. „Gleich“ heißt: Die FR beschreibt dasselbe und blieb unverändert.
+„Ergänzt“ heißt: Die FR wurde um Details aus der FA erweitert. „Neu“ heißt: Die FR ist neu.
+
+| FA | FR | Art |
+| --- | --- | --- |
+| FA-01 | FR-001 | gleich |
+| FA-02 | FR-009 | gleich |
+| FA-03 | FR-009 | ergänzt |
+| FA-04 | FR-007, FR-073 | ergänzt, neu (Spitzname) |
+| FA-05 | FR-074 | neu, teilweise (siehe Konflikte) |
+| FA-06 | FR-075 | neu |
+| FA-07 | FR-032 | ergänzt |
+| FA-08 | FR-031, FR-076 | ergänzt, neu (Zeitraum) |
+| FA-09 | FR-050 | gleich |
+| FA-10 | FR-038 | ergänzt |
+| FA-11 | FR-021, FR-032 | ergänzt |
+| FA-12 | FR-031, FR-032 | ergänzt |
+| FA-13 | FR-001, FR-002 | gleich |
+| FA-14 | FR-020 | nicht übernommen (siehe Konflikte) |
+| FA-15 | FR-021 | ergänzt |
+| FA-16 | FR-021 | ergänzt |
+| FA-17 | FR-021 | ergänzt |
+| FA-18 | FR-038 | ergänzt |
+| FA-19 | FR-024, FR-028, FR-053 | gleich |
+| FA-20 | FR-031, FR-032, FR-034 | gleich |
+| FA-21 | FR-035, FR-038 | ergänzt |
+| FA-22 | FR-037 | gleich |
+| FA-23 | FR-039 | ergänzt |
+| FA-24 | FR-045 | gleich |
+| FA-25 | FR-076 | neu (hängt am Zeitraum) |
+| FA-26 | FR-077 | neu |
+| FA-27 | FR-078 | neu |
+| FA-28 | FR-079 | neu |
+| FA-29 | FR-044 | ergänzt |
+| FA-30 | FR-045, FR-047 | ergänzt (siehe Konflikte) |
+| FA-31 | FR-049, FR-057 | ergänzt |
+| FA-32 | FR-015, FR-016 | gleich |
+| FA-33 | FR-012, FR-014 | gleich |
+| FA-34 | FR-053 | ergänzt |
+| FA-35 | FR-055 | ergänzt |
+| FA-36 | FR-072 | ergänzt |
+| FA-37 | FR-047, FR-049 | gleich |
+| FA-38 | FR-044 | ergänzt |
+| FA-39 | FR-058 | ergänzt |
+| FA-40 | FR-061, FR-080 | neu (Erinnerung an freie Punkte) |
+| FA-41 | FR-081 | neu |
+
+### Konflikte mit akzeptierten Entscheidungen
+
+Diese Punkte aus dem Katalog widersprechen einem akzeptierten ADR und sind deshalb nicht oder nur
+teilweise übernommen. Sie brauchen eine bewusste Entscheidung im Team.
+
+| FA | Widerspruch | Empfehlung |
+| --- | --- | --- |
+| FA-14 | Maßnahmen und Projekte als eigenes Punkteziel. ADR-011 und ADR-023 legen fest: Punkte gehen nur an Einrichtung oder Thema; ein eigenes Ziel je Maßnahme wurde verworfen (Migration, Ergebnisse ohne Ausgaben je Maßnahme). | Bei ADR-011 bleiben. Maßnahmen sind über ihre Einrichtung erreichbar. |
+| FA-30, FA-37 | „Angenommener Vorschlag wird Ziel.“ Nach ADR-023/024 wird nur ein Vorschlag mit neuem Ort eine Einrichtung; sonst erscheint er als Hinweis an Einrichtung oder Thema. | Bei ADR-023/024 bleiben; FR-047 und FR-025 decken den Zweck. |
+| FA-05 | Verwaltung sieht die Auswahl eines einzelnen Zugangs. Widerspricht AR-022 und ADR-026 („nur Summen“) und schwächt das Vertrauen in die anonyme Beteiligung. | Nicht übernehmen; nur Status und Aktivität zeigen (FR-074). |
+| FA-08, FA-25 | Voting-Zeitraum. Das heutige Modell ist fortlaufend mit Verfall (ADR-003). | Als FR-076 (Kann) aufgenommen; vor Umsetzung ADR. |
+| FA-31, FA-41 | Mehrere Kommentare der Stadt je Vorschlag. Heute gibt es genau eine öffentliche Antwort (ADR-016). | Eine Antwort beibehalten, bis ein Bedarf für Verläufe belegt ist. |
 
 ## Offene Punkte
 
