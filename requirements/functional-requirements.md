@@ -6,9 +6,9 @@ Architekturentscheidungen in [docs/DECISIONS.md](../docs/DECISIONS.md) abgeleite
 
 - **Verbindlichkeit:** Akzeptierte ADRs gehen vor. Widerspricht eine Anforderung einem ADR,
   gilt das ADR, und diese Datei wird angepasst. Der ADR-Bezug steht jeweils in Klammern.
-- **Abgrenzung:** Nicht-funktionale Anforderungen (Barrierefreiheit, Performance, Betrieb,
-  Design) gehören in ein eigenes Dokument und sind hier nur genannt, wo sie das Verhalten
-  bestimmen (z. B. Nutzbarkeit ohne JavaScript).
+- **Abgrenzung:** Architektur- und nicht-funktionale Anforderungen (Sicherheit, Datenschutz,
+  Performance, Betrieb, Barrierefreiheit) stehen in
+  [architecture-requirements.md](architecture-requirements.md) (AR-…).
 - **Konfigurierbare Werte** stehen mit ihrem Standardwert und der Einstellung, z. B.
   „183 Tage (`STADTSTIMME_POINTS_EXPIRY_DAYS`)“.
 
