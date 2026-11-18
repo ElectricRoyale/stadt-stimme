@@ -238,15 +238,15 @@ Der QR-Code enthält keinen Zugangscode.
 **Rolle:** Verwaltung
 **Priorität:** Kann
 
-### FR-076: Abstimmungszeitraum
-**Beschreibung:** Die Verwaltung legt Abstimmungszeiträume (Runden) mit Beginn und Ende fest.
-Übersicht und Ergebnisse zeigen den laufenden Zeitraum; Snapshots und Entscheidungen beziehen
-sich auf ihn.
+### FR-076: Snapshot als Abstimmungszeitpunkt
+**Beschreibung:** Die Beteiligung bleibt fortlaufend ohne feste Runden (ADR-003). Die Verwaltung
+hält zu einem beliebigen Zeitpunkt einen benannten, datierten Snapshot fest (aggregierte Punkte
+je Ziel, Teilnehmende, Ziele, Ist-Ausgaben). Snapshots sind unveränderlich, werden aus dem
+Ereignis-Log berechnet (FR-027, FR-055), lassen sich in der Anwendung einsehen, als CSV
+herunterladen und miteinander vergleichen. So kann sich die Stadt, z. B. für eine
+Gemeinderatssitzung, auf einen festen Abstimmungsstand beziehen.
 **Rolle:** Verwaltung
-**Priorität:** Kann
-**Hinweis:** Das heutige Modell ist eine fortlaufende Beteiligung mit Verfall nach Inaktivität
-(ADR-003). Runden sind eine Produktentscheidung mit Folgen für Verfall, Ergebnisse und
-Vorschläge und brauchen ein eigenes ADR.
+**Priorität:** Soll
 
 ### FR-026: Verlauf zurückgekommener und verfallener Punkte
 **Beschreibung:** „Punkte verteilen“ zeigt Punkte, die in den letzten 30 Tagen zurückgekommen
@@ -408,7 +408,9 @@ Liste lässt sich nach Schritt filtern, auch ohne JavaScript (ADR-016, ADR-025).
 
 ### FR-046: Öffentliche Antwort der Stadt
 **Beschreibung:** Entschiedene Vorschläge zeigen die öffentliche Begründung der Stadt, das
-Entscheidungsdatum und gegebenenfalls die daraus entstandene Maßnahme (ADR-016).
+Entscheidungsdatum und gegebenenfalls die daraus entstandene Maßnahme (ADR-016). Angenommene
+und abgelehnte Vorschläge bleiben dauerhaft sichtbar, weil es keine abgeschlossenen Runden gibt
+(FR-076).
 **Rolle:** Besucher
 **Priorität:** Muss
 
@@ -513,13 +515,14 @@ warum er entfernt wurde.
 
 ### FR-074: Zugang finden und einsehen
 **Beschreibung:** Die Verwaltung findet einen Zugang über die letzten 8 Zeichen seines Codes
-(z. B. bei einer Anfrage per Telefon) und sieht Status, Charge, Zeitpunkt des Einlösens und
-letzte Aktivität. Sie kann dort nichts im Namen des Bürgers ändern.
+(z. B. bei einer Anfrage per Telefon) und sieht Status, Charge, Zeitpunkt des Einlösens,
+letzte Aktivität und die Vorschläge des Zugangs. Die Punkteverteilung des Zugangs sieht sie
+nicht (AR-022). Von dort kann sie den Zugang schließen und wieder öffnen (FR-075), aber nichts
+im Namen des Bürgers ändern.
 **Rolle:** Verwaltung
 **Priorität:** Soll
 **Hinweis:** Codes liegen nur als Hash vor (AR-015); für die Suche braucht es einen eigenen
-Hash der letzten 8 Zeichen. Die im Katalog gewünschte Einsicht in Verteilung und Vorschläge des
-Zugangs widerspricht AR-022 und ist deshalb nicht übernommen (siehe Abgleich).
+Hash der letzten 8 Zeichen.
 
 ### FR-075: Zugang schließen und wieder öffnen
 **Beschreibung:** Die Verwaltung schließt einen Zugang (z. B. bei Wegzug) und öffnet ihn bei
@@ -646,10 +649,9 @@ Speicher, Datenschutz und Moderation).
 **Rolle:** Bürger
 **Priorität:** Kann
 
-### FR-072: Berichte und Protokoll auf der Verwaltungsseite
-**Beschreibung:** Die Verwaltung erstellt datierte Snapshots einer Abstimmung (Punkte,
-Teilnehmende, Ziele, Ausgaben), sieht sie in der Anwendung ein, vergleicht Snapshots
-miteinander und wählt den Zeitraum der Auswertung (ADR-026, zurückgestellt). Das Protokoll der
+### FR-072: Berichte auf der Verwaltungsseite
+**Beschreibung:** Die Verwaltung erstellt aus Snapshots (FR-076) aufbereitete Berichte für den
+Gemeinderat und wählt den Zeitraum der Auswertung (ADR-026, zurückgestellt). Das Protokoll der
 Verwaltungsaktionen regelt AR-040.
 **Rolle:** Verwaltung
 **Priorität:** Kann
@@ -667,16 +669,16 @@ Jede FA ist einer FR zugeordnet. „Gleich“ heißt: Die FR beschreibt dasselbe
 | FA-02 | FR-009 | gleich |
 | FA-03 | FR-009 | ergänzt |
 | FA-04 | FR-007, FR-073 | ergänzt, neu (Spitzname) |
-| FA-05 | FR-074 | neu, teilweise (siehe Konflikte) |
+| FA-05 | FR-074 | neu, ohne Einsicht in Punkte (entschieden) |
 | FA-06 | FR-075 | neu |
 | FA-07 | FR-032 | ergänzt |
-| FA-08 | FR-031, FR-076 | ergänzt, neu (Zeitraum) |
+| FA-08 | FR-031, FR-076 | ergänzt, neu (Snapshot statt Zeitraum, entschieden) |
 | FA-09 | FR-050 | gleich |
 | FA-10 | FR-038 | ergänzt |
 | FA-11 | FR-021, FR-032 | ergänzt |
 | FA-12 | FR-031, FR-032 | ergänzt |
 | FA-13 | FR-001, FR-002 | gleich |
-| FA-14 | FR-020 | nicht übernommen (siehe Konflikte) |
+| FA-14 | FR-020 | nicht übernommen (entschieden) |
 | FA-15 | FR-021 | ergänzt |
 | FA-16 | FR-021 | ergänzt |
 | FA-17 | FR-021 | ergänzt |
@@ -687,18 +689,18 @@ Jede FA ist einer FR zugeordnet. „Gleich“ heißt: Die FR beschreibt dasselbe
 | FA-22 | FR-037 | gleich |
 | FA-23 | FR-039 | ergänzt |
 | FA-24 | FR-045 | gleich |
-| FA-25 | FR-076 | neu (hängt am Zeitraum) |
+| FA-25 | FR-046 | ergänzt (dauerhaft sichtbar, entschieden) |
 | FA-26 | FR-077 | neu |
 | FA-27 | FR-078 | neu |
 | FA-28 | FR-079 | neu |
 | FA-29 | FR-044 | ergänzt |
-| FA-30 | FR-045, FR-047 | ergänzt (siehe Konflikte) |
+| FA-30 | FR-045, FR-047 | ergänzt (entschieden) |
 | FA-31 | FR-049, FR-057 | ergänzt |
 | FA-32 | FR-015, FR-016 | gleich |
 | FA-33 | FR-012, FR-014 | gleich |
 | FA-34 | FR-053 | ergänzt |
-| FA-35 | FR-055 | ergänzt |
-| FA-36 | FR-072 | ergänzt |
+| FA-35 | FR-055, FR-076 | ergänzt |
+| FA-36 | FR-076 | ergänzt |
 | FA-37 | FR-047, FR-049 | gleich |
 | FA-38 | FR-044 | ergänzt |
 | FA-39 | FR-058 | ergänzt |
@@ -707,16 +709,16 @@ Jede FA ist einer FR zugeordnet. „Gleich“ heißt: Die FR beschreibt dasselbe
 
 ### Konflikte mit akzeptierten Entscheidungen
 
-Diese Punkte aus dem Katalog widersprechen einem akzeptierten ADR und sind deshalb nicht oder nur
-teilweise übernommen. Sie brauchen eine bewusste Entscheidung im Team.
+Diese Punkte aus dem Katalog widersprechen einem akzeptierten ADR. Pascal hat am 18.11.2026 über
+sie entschieden; die Spalte „Entscheidung“ ist verbindlich.
 
-| FA | Widerspruch | Empfehlung |
+| FA | Widerspruch | Entscheidung |
 | --- | --- | --- |
-| FA-14 | Maßnahmen und Projekte als eigenes Punkteziel. ADR-011 und ADR-023 legen fest: Punkte gehen nur an Einrichtung oder Thema; ein eigenes Ziel je Maßnahme wurde verworfen (Migration, Ergebnisse ohne Ausgaben je Maßnahme). | Bei ADR-011 bleiben. Maßnahmen sind über ihre Einrichtung erreichbar. |
+| FA-14 | Maßnahmen und Projekte als eigenes Punkteziel. ADR-011 und ADR-023 legen fest: Punkte gehen nur an Einrichtung oder Thema; ein eigenes Ziel je Maßnahme wurde verworfen (Migration, Ergebnisse ohne Ausgaben je Maßnahme). | Bei ADR-011 bleiben. Maßnahmen sind über ihre Einrichtung erreichbar. Nicht übernommen. |
 | FA-30, FA-37 | „Angenommener Vorschlag wird Ziel.“ Nach ADR-023/024 wird nur ein Vorschlag mit neuem Ort eine Einrichtung; sonst erscheint er als Hinweis an Einrichtung oder Thema. | Bei ADR-023/024 bleiben; FR-047 und FR-025 decken den Zweck. |
-| FA-05 | Verwaltung sieht die Auswahl eines einzelnen Zugangs. Widerspricht AR-022 und ADR-026 („nur Summen“) und schwächt das Vertrauen in die anonyme Beteiligung. | Nicht übernehmen; nur Status und Aktivität zeigen (FR-074). |
-| FA-08, FA-25 | Voting-Zeitraum. Das heutige Modell ist fortlaufend mit Verfall (ADR-003). | Als FR-076 (Kann) aufgenommen; vor Umsetzung ADR. |
-| FA-31, FA-41 | Mehrere Kommentare der Stadt je Vorschlag. Heute gibt es genau eine öffentliche Antwort (ADR-016). | Eine Antwort beibehalten, bis ein Bedarf für Verläufe belegt ist. |
+| FA-05 | Verwaltung sieht die Auswahl eines einzelnen Zugangs. Widerspricht AR-022 und ADR-026 („nur Summen“) und schwächt das Vertrauen in die anonyme Beteiligung. | Grundfunktion übernehmen (FR-074, FR-075), aber ohne Einsicht in die Punkte des Zugangs. |
+| FA-08, FA-25 | Voting-Zeitraum. Das heutige Modell ist fortlaufend mit Verfall (ADR-003). | Fortlaufendes Modell bleibt. Statt Runden gibt es Snapshots zu einem Abstimmungszeitpunkt (FR-076); entschiedene Vorschläge bleiben sichtbar. |
+| FA-31, FA-41 | Mehrere Kommentare der Stadt je Vorschlag. Heute gibt es genau eine öffentliche Antwort (ADR-016). | Eine öffentliche Antwort je Vorschlag beibehalten, bis ein Bedarf für Verläufe belegt ist. |
 
 ## Offene Punkte
 
