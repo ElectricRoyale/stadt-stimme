@@ -222,7 +222,7 @@ Exporte schützen Texte gegen Formel-Injektion.
 ### AR-020: Datensparsamkeit und Pseudonymität
 **Beschreibung:** Ein Zugang kennt keinen Namen, keine Adresse und keine Klartext-IP. Bürger
 brauchen weder Benutzernamen noch Passwort; sichtbar unterscheidbar sind sie höchstens über einen
-freiwilligen Spitznamen ([FR-073](functional-requirements.md#fr-073)). Die Verbindung zur Person besteht nur über den Brief der Stadt. Neue personenbezogene Felder
+freiwilligen Spitznamen ([FR-012](functional-requirements.md#fr-012)). Die Verbindung zur Person besteht nur über den Brief der Stadt. Neue personenbezogene Felder
 brauchen einen dokumentierten Zweck.
 **Begründung:** Art. 5 DSGVO (Datenminimierung); Vertrauen in die Beteiligung.
 **Nachweis:** Models in `apps/access`, Review neuer Felder.
@@ -451,7 +451,7 @@ gespeichert und für berechtigte Mitarbeitende einsehbar.
 
 | NFA | Widerspruch | Empfehlung |
 | --- | --- | --- |
-| NFA-07 | „Keine Passwörter für Bürger“ widerspricht der zurückgestellten Gerätebindung mit Passkey oder Passwort ([FR-067](functional-requirements.md#fr-067)). | Bei der Entscheidung zu [FR-067](functional-requirements.md#fr-067) Passkey bevorzugen, kein Passwort. |
+| NFA-07 | „Keine Passwörter für Bürger“ widerspricht der zurückgestellten Gerätebindung mit Passkey oder Passwort (DECISIONS.md, „Zurückgestellt“). | Bei der Entscheidung zur Gerätebindung Passkey bevorzugen, kein Passwort. |
 | NFA-09 | Der QR-Code auf dem Brief überträgt den Code als URL-Parameter ([FR-001](functional-requirements.md#fr-001)). | Code im URL-Fragment übergeben ([AR-016](#ar-016)). |
 
 ---
