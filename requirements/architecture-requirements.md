@@ -222,7 +222,7 @@ Exporte schützen Texte gegen Formel-Injektion.
 ### AR-020: Datensparsamkeit und Pseudonymität
 **Beschreibung:** Ein Zugang kennt keinen Namen, keine Adresse und keine Klartext-IP. Bürger
 brauchen weder Benutzernamen noch Passwort; sichtbar unterscheidbar sind sie höchstens über einen
-freiwilligen Spitznamen ([FR-012](functional-requirements.md#fr-012)). Die Verbindung zur Person besteht nur über den Brief der Stadt. Neue personenbezogene Felder
+freiwilligen Spitznamen ([FR-013](functional-requirements.md#fr-013)). Die Verbindung zur Person besteht nur über den Brief der Stadt. Neue personenbezogene Felder
 brauchen einen dokumentierten Zweck.
 **Begründung:** Art. 5 DSGVO (Datenminimierung); Vertrauen in die Beteiligung.
 **Nachweis:** Models in `apps/access`, Review neuer Felder.
