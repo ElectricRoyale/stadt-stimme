@@ -9,6 +9,10 @@ Sortiert nach Meilenstein, damit ihr sie der Reihe nach anlegen könnt.
 `[API]` Backend und Endpunkt, `[DB]` Datenbank, `[UI]` React-Oberfläche, `[Test]` geforderter Test.
 Endpunkt-Pfade sind Vorschläge und dürfen bei der Umsetzung angepasst werden.
 
+**Abhängigkeiten:** „Abhängig von“ nennt nur die direkten Voraussetzungen, „Blockiert“ die Issues,
+die auf dieses warten. Keine Abhängigkeit zeigt auf einen späteren Meilenstein, und es gibt keine Zyklen.
+In Gitea nach dem Anlegen unter „Abhängigkeiten“ mit den Issue-Nummern eintragen.
+
 **Definition of Done für jedes Issue** (gilt zusätzlich, steht deshalb nicht in jedem Issue):
 - [ ] Alle Akzeptanzkriterien erfüllt und im Browser geprüft (Handy und Desktop)
 - [ ] Backend: pytest gegen PostgreSQL, Ruff und Mypy grün; neue Endpunkte prüfen Rechte
@@ -24,6 +28,9 @@ Endpunkt-Pfade sind Vorschläge und dürfen bei der Umsetzung angepasst werden.
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-003, FR-011
+**Blockiert:** FR-002, FR-004, FR-005, FR-006, FR-022
+
 **Anforderung:** Bürger melden sich mit dem Code aus dem Brief der Stadt an. Ein Code ist 16 Zeichen Crockford-Base32 (80 Bit); Eingaben mit Bindestrichen, Leerzeichen oder Kleinbuchstaben werden normalisiert. Ein QR-Code auf dem Brief füllt den Code vor; eingelöst wird erst nach dem Absenden. Ein gültiger Code legt beim ersten Einlösen genau einen Zugang an; jedes weitere Einlösen desselben Codes (auch auf einem anderen Gerät) führt in denselben Zugang. Der Code ist bis zur Entscheidung über die Gerätebindung zugleich der Login.
 
 **Akzeptanzkriterien:**
@@ -42,6 +49,9 @@ Quelle: `requirements/functional-requirements.md` → FR-001
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-001
+**Blockiert:** –
+
 **Anforderung:** Jeder Code berechtigt zu genau einem Zugang mit einem Budget. Mehrfaches Teilnehmen mit demselben Code ist ausgeschlossen, auch bei gleichzeitigen Anfragen.
 
 **Akzeptanzkriterien:**
@@ -58,6 +68,9 @@ Quelle: `requirements/functional-requirements.md` → FR-002
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** – (keine)
+**Blockiert:** FR-001, FR-011
+
 **Anforderung:** Das System speichert keinen Code im Klartext, sondern nur einen HMAC-Hash mit einem eigenen Pepper (`STADTSTIMME_CODE_PEPPER`, sonst `DJANGO_SECRET_KEY`). Der Klartext eines neuen Codes ist nur in der Ausgabe beim Erzeugen sichtbar.
 
 **Akzeptanzkriterien:**
@@ -74,6 +87,9 @@ Quelle: `requirements/functional-requirements.md` → FR-003
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-001
+**Blockiert:** FR-010
+
 **Anforderung:** Nach 10 fehlgeschlagenen Anmeldeversuchen (`STADTSTIMME_MAX_FAILED_ATTEMPTS`) pro Client wird die Anmeldung für 60 Minuten (`STADTSTIMME_LOCKOUT_MINUTES`) gesperrt. Die IP-Adresse wird dafür nur als Hash gespeichert. Die Sperre gilt für Code-Anmeldung und Verwaltungsanmeldung gleichermaßen.
 
 **Akzeptanzkriterien:**
@@ -91,6 +107,9 @@ Quelle: `requirements/functional-requirements.md` → FR-004
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-001
+**Blockiert:** –
+
 **Anforderung:** Bei falsch formatiertem, unbekanntem oder gesperrtem Code sowie bei aktiver Sperre nach Fehlversuchen erhält der Bürger je eine eigene, verständliche Meldung mit dem nächsten Schritt. Eine Hilfe erklärt, wo der Code steht.
 
 **Akzeptanzkriterien:**
@@ -107,6 +126,9 @@ Quelle: `requirements/functional-requirements.md` → FR-005
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-001
+**Blockiert:** FR-007, FR-009, FR-034
+
 **Anforderung:** Nach dem Einlösen bleibt der Bürger auf dem Gerät angemeldet (Sitzungsdauer 183 Tage, `STADTSTIMME_SESSION_DAYS`), bis er sich abmeldet. Abmelden beendet die Sitzung auf diesem Gerät.
 
 **Akzeptanzkriterien:**
@@ -123,6 +145,9 @@ Quelle: `requirements/functional-requirements.md` → FR-006
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-006
+**Blockiert:** FR-024, FR-044
+
 **Anforderung:** Punkte verteilen, Vorschläge einreichen und unterstützen sowie E-Mail-Hinweise verwalten sind nur mit gültigem Zugang möglich. Ohne Anmeldung werden Besucher zur Code-Eingabe geleitet. Bereits angemeldete Bürger werden von der Code-Eingabe zur Übersicht weitergeleitet.
 
 **Akzeptanzkriterien:**
@@ -139,6 +164,9 @@ Quelle: `requirements/functional-requirements.md` → FR-009
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-003
+**Blockiert:** FR-001, FR-012, FR-059, FR-065, FR-068, FR-078
+
 **Anforderung:** Die Verwaltung erzeugt Codes in Chargen (z. B. je Briefversand) mit Angabe der Charge. Die Ausgabe enthält die Klartexte einmalig zur Weitergabe an den Druck.
 
 **Akzeptanzkriterien:**
@@ -155,6 +183,9 @@ Quelle: `requirements/functional-requirements.md` → FR-011
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** – (keine)
+**Blockiert:** FR-015, FR-023, FR-044
+
 **Anforderung:** Die Verwaltung pflegt Themen (Kategorien) mit eindeutigem Namen. Übliche Themen erhalten automatisch Farbe und Symbol, andere reihum; die Farbe ist änderbar.
 
 **Akzeptanzkriterien:**
@@ -171,6 +202,9 @@ Quelle: `requirements/functional-requirements.md` → FR-014
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-014
+**Blockiert:** FR-016, FR-017, FR-018, FR-019, FR-021, FR-023, FR-043
+
 **Anforderung:** Die Verwaltung pflegt Einrichtungen mit externer ID, Name, Thema, Adresse, Kurzbeschreibung und optionalen Koordinaten. Breiten- und Längengrad sind nur gemeinsam gültig. Eine Einrichtung ohne Koordinaten erscheint nicht auf Karten.
 
 **Akzeptanzkriterien:**
@@ -187,6 +221,9 @@ Quelle: `requirements/functional-requirements.md` → FR-015
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-015
+**Blockiert:** FR-019, FR-036, FR-038
+
 **Anforderung:** Die Verwaltung pflegt Ist-Ausgaben je Einrichtung und Haushaltsjahr. Diese Werte sind die Grundlage für den Vergleich mit den Bürgerpunkten.
 
 **Akzeptanzkriterien:**
@@ -202,6 +239,9 @@ Quelle: `requirements/functional-requirements.md` → FR-018
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-015, FR-018
+**Blockiert:** FR-016, FR-017, FR-020, FR-078
+
 **Anforderung:** Einrichtungen, Gebäude, Maßnahmen und Ausgaben lassen sich per CSV importieren, einzeln über die Oberfläche mit Vorschau vor dem Speichern oder alle vier auf einmal per Befehl. Der Gesamtimport läuft in einer Transaktion (bei einem Fehler wird nichts gespeichert), bietet einen Probelauf und ist wiederholbar: Zeilen werden über die externe ID aktualisiert statt doppelt angelegt.
 
 **Akzeptanzkriterien:**
@@ -219,6 +259,9 @@ Quelle: `requirements/functional-requirements.md` → FR-019
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-001
+**Blockiert:** FR-024
+
 **Anforderung:** Jeder Zugang hat ein Budget von 100 Punkten. Die Summe der vergebenen Punkte darf 100 nie überschreiten; ein Speichern darüber wird abgewiesen.
 
 **Akzeptanzkriterien:**
@@ -235,6 +278,9 @@ Quelle: `requirements/functional-requirements.md` → FR-022
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-014, FR-015
+**Blockiert:** FR-024, FR-036
+
 **Anforderung:** Bürger vergeben Punkte an einzelne Einrichtungen oder an ein ganzes Thema („… allgemein“). Je Ziel gibt es höchstens eine Vergabe pro Zugang.
 
 **Akzeptanzkriterien:**
@@ -250,6 +296,9 @@ Quelle: `requirements/functional-requirements.md` → FR-023
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-009, FR-022, FR-023
+**Blockiert:** FR-007, FR-025, FR-026, FR-027, FR-028, FR-029, FR-031, FR-032, FR-037, FR-074
+
 **Anforderung:** Bürger ändern Punkte je Ziel per Plus/Minus in Einerschritten oder per direkter Zahleneingabe; zulässig sind nur ganze, nicht negative Zahlen. Vergebene und freie Punkte sowie die Summe je Thema aktualisieren sich bei jeder Änderung sofort, als Zahl und als Raster aus 100 Feldern, in dem Punkte an ein ganzes Thema erkennbar sind. Gespeichert wird die ganze Verteilung auf einmal; ein Teil des Budgets darf frei bleiben. Bürger können jederzeit umverteilen. Für die Auswertung zählt je Zugang nur die zuletzt erfolgreich gespeicherte Verteilung.
 
 **Akzeptanzkriterien:**
@@ -267,6 +316,9 @@ Quelle: `requirements/functional-requirements.md` → FR-024
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-018, FR-023, FR-038
+**Blockiert:** FR-026, FR-037, FR-039, FR-041
+
 **Anforderung:** Die Übersicht ist ohne Anmeldung erreichbar und zeigt den Vergleich je Thema (Anteil Bürgerpunkte gegen Anteil Ist-Ausgaben), eine Karte mit Liste der Einrichtungen, den Datenstand, die Zahl der Teilnehmenden, die meistunterstützten Vorschläge mit Link und Neuigkeiten.
 
 **Akzeptanzkriterien:**
@@ -283,6 +335,9 @@ Quelle: `requirements/functional-requirements.md` → FR-036
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-018
+**Blockiert:** FR-036
+
 **Anforderung:** Alle Vergleiche verwenden die Ist-Ausgaben des letzten abgeschlossenen Haushaltsjahres. Fehlen solche Ausgaben, zeigt die Seite das ausdrücklich an.
 
 **Akzeptanzkriterien:**
@@ -298,6 +353,9 @@ Quelle: `requirements/functional-requirements.md` → FR-038
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-011, FR-019
+**Blockiert:** –
+
 **Anforderung:** Im Demo-Modus lädt das System fiktive Testdaten (Mannheim) in einen leeren Katalog, legt Demo-Codes und einen Demo-Admin an und macht Admin und Verwaltungsseite erreichbar. Ohne Demo-Modus sind beide nicht erreichbar.
 
 **Akzeptanzkriterien:**
@@ -313,6 +371,9 @@ Quelle: `requirements/functional-requirements.md` → FR-078
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Soll`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** – (keine)
+**Blockiert:** –
+
 **Anforderung:** Ein öffentlicher Endpunkt meldet, ob die Anwendung läuft und die Datenbank erreichbar ist.
 
 **Akzeptanzkriterien:**
@@ -327,6 +388,9 @@ Quelle: `requirements/functional-requirements.md` → FR-079
 Meilenstein: **S1 – MVP: Prioritäten setzen und Ergebnis sehen** · Labels: `Priorität/Soll`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** – (keine)
+**Blockiert:** –
+
 **Anforderung:** Der Stadtname in Logo und Texten kommt aus `STADTSTIMME_CITY_NAME`, damit andere Kommunen die Anwendung ohne Codeänderung nutzen können.
 
 **Akzeptanzkriterien:**
@@ -345,6 +409,9 @@ Quelle: `requirements/functional-requirements.md` → FR-080
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Kann`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-015, FR-019
+**Blockiert:** –
+
 **Anforderung:** Eine Einrichtung kann Gebäude haben. Maßnahmen lassen sich einem Gebäude ihrer Einrichtung zuordnen; Punkte und Vergleiche bleiben pro Einrichtung.
 
 **Akzeptanzkriterien:**
@@ -361,6 +428,9 @@ Quelle: `requirements/functional-requirements.md` → FR-016
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-015, FR-019
+**Blockiert:** FR-021, FR-033, FR-040, FR-047
+
 **Anforderung:** Die Verwaltung pflegt Maßnahmen je Einrichtung mit Status (offen, beschlossen, in Umsetzung, abgeschlossen, verworfen). Maßnahmen zeigen, wofür eine Einrichtung Geld braucht, tragen aber selbst keine Punkte.
 
 **Akzeptanzkriterien:**
@@ -376,6 +446,9 @@ Quelle: `requirements/functional-requirements.md` → FR-017
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Soll`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-019
+**Blockiert:** –
+
 **Anforderung:** Jede Katalogliste lässt sich als CSV exportieren.
 
 **Akzeptanzkriterien:**
@@ -391,6 +464,9 @@ Quelle: `requirements/functional-requirements.md` → FR-020
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Soll`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-024, FR-043
+**Blockiert:** –
+
 **Anforderung:** In „Punkte verteilen“ lassen sich Ziele nach Thema filtern und Einrichtungen auf einer Karte finden. Eine Liste ist die gleichwertige Alternative zur Karte.
 
 **Akzeptanzkriterien:**
@@ -406,6 +482,9 @@ Quelle: `requirements/functional-requirements.md` → FR-025
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Kann`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-024, FR-036
+**Blockiert:** –
+
 **Anforderung:** Bürger sehen ihre eigene Verteilung neben der Verteilung aller Teilnehmenden.
 
 **Akzeptanzkriterien:**
@@ -421,6 +500,9 @@ Quelle: `requirements/functional-requirements.md` → FR-026
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Soll`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-024, FR-036
+**Blockiert:** –
+
 **Anforderung:** Angemeldete Bürger sehen in der Übersicht zusätzlich ihre eigene Verteilung im Vergleich zum Anteil aller Bürgerpunkte und zu den Ausgaben, ihre vergebenen und freien Punkte als Zahl und Raster aus 100 Feldern mit Link zu „Punkte verteilen“, ihre eigenen Vorschläge und bis wann ihre Punkte gültig sind.
 
 **Akzeptanzkriterien:**
@@ -437,6 +519,9 @@ Quelle: `requirements/functional-requirements.md` → FR-037
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Muss`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-036
+**Blockiert:** FR-040, FR-042, FR-061
+
 **Anforderung:** Die Ergebnisseite zeigt je Einrichtung und je ganzem Thema die Lücke in Prozentpunkten: Anteil Bürgerpunkte minus Anteil Ist-Ausgaben. Der Themenvergleich enthält alle Punkte des Themas inkl. „… allgemein“ und alle Ausgaben des Themas.
 
 **Akzeptanzkriterien:**
@@ -453,6 +538,9 @@ Quelle: `requirements/functional-requirements.md` → FR-039
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Soll`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-017, FR-039
+**Blockiert:** –
+
 **Anforderung:** Zu jeder Einrichtung lassen sich in den Ergebnissen Punkte, Ausgaben und zugehörige Maßnahmen im Detail ansehen. Die Auswahl erfolgt über die Liste oder die Markierung auf der Ergebniskarte.
 
 **Akzeptanzkriterien:**
@@ -468,6 +556,9 @@ Quelle: `requirements/functional-requirements.md` → FR-040
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Soll`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-036
+**Blockiert:** –
+
 **Anforderung:** Die Ergebnisse nennen Stand, Zahl der Mitmachenden, vergebene Punkte, durchschnittliche Punkte je Person, Anteil an ganze Themen und Summe der Ausgaben sowie den Hinweis, dass die Zahlen nicht repräsentativ sind.
 
 **Akzeptanzkriterien:**
@@ -483,6 +574,9 @@ Quelle: `requirements/functional-requirements.md` → FR-041
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Soll`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-039
+**Blockiert:** –
+
 **Anforderung:** Die Ergebnistabelle lässt sich als CSV herunterladen (Semikolon, Dezimalkomma, BOM für deutsche Tabellenprogramme). Texte werden gegen Formel-Injektion geschützt.
 
 **Akzeptanzkriterien:**
@@ -499,6 +593,9 @@ Quelle: `requirements/functional-requirements.md` → FR-042
 Meilenstein: **S2 – Wunsch und Haushalt im Detail vergleichen** · Labels: `Priorität/Soll`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-015
+**Blockiert:** FR-025, FR-045
+
 **Anforderung:** Übersicht, „Punkte verteilen“, Ergebnisse und Vorschläge zeigen Einrichtungen mit Koordinaten auf einer zoombaren Karte, immer zusammen mit einer gleichwertigen Liste. Markierungen zeigen das Thema (Farbe und Symbol) und mit ihrer Größe den Anteil an den Bürgerpunkten. Ein Klick auf eine Markierung führt zum zugehörigen Ziel bzw. zu seinen Details. Angemeldete Bürger können zwischen allen Einrichtungen und den von ihnen gewichteten umschalten. Fällt der Kachelserver aus, wechselt die Karte auf einen Ersatz und zeigt danach mindestens die Marker.
 
 **Akzeptanzkriterien:**
@@ -520,6 +617,9 @@ Quelle: `requirements/functional-requirements.md` → FR-043
 Meilenstein: **S3 – Ereignis-Log, Verfall und Stichtag** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-004
+**Blockiert:** FR-012, FR-029, FR-057, FR-059, FR-060, FR-061, FR-064, FR-065, FR-068
+
 **Anforderung:** Auf der Anmeldeseite wählt man zwischen „Bürgerin oder Bürger“ (Code) und „Stadtverwaltung“ (Benutzername und Passwort). Nur Benutzer mit Mitarbeiter-Status gelangen auf die Verwaltungsseite. Jede Verwaltungsfunktion prüft ihr eigenes Recht (z. B. „Vorschlag ändern“, „Einrichtung ändern“, Datenpflege je Katalogliste), sodass sich Mitarbeitende über Gruppen unterschiedliche Rechte-Kategorien zuweisen lassen. Bis zum Admin-Login-Konzept ist das nur im Demo-Modus verfügbar; sonst zeigt die Seite einen Hinweis.
 
 **Akzeptanzkriterien:**
@@ -537,6 +637,9 @@ Quelle: `requirements/functional-requirements.md` → FR-010
 Meilenstein: **S3 – Ereignis-Log, Verfall und Stichtag** · Labels: `Priorität/Soll`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-064
+**Blockiert:** FR-067
+
 **Anforderung:** Die Beteiligung bleibt fortlaufend ohne feste Runden. Die Verwaltung hält zu einem beliebigen Zeitpunkt einen benannten, datierten Snapshot fest (aggregierte Punkte je Ziel, Teilnehmende, Ziele, Ist-Ausgaben). Snapshots sind unveränderlich, werden aus dem Ereignis-Log berechnet (FR-032, FR-064), lassen sich in der Anwendung einsehen, als CSV herunterladen und miteinander vergleichen. So kann sich die Stadt, z. B. für eine Gemeinderatssitzung, auf einen festen Abstimmungsstand beziehen.
 
 **Akzeptanzkriterien:**
@@ -553,6 +656,9 @@ Quelle: `requirements/functional-requirements.md` → FR-030
 Meilenstein: **S3 – Ereignis-Log, Verfall und Stichtag** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-024
+**Blockiert:** FR-008, FR-031, FR-033, FR-034, FR-062, FR-064, FR-069
+
 **Anforderung:** Jede Punkteänderung (vergeben, entzogen, zurückgegeben, verfallen) wird in derselben Transaktion als unveränderliches Ereignis mit Delta, Zeitpunkt und optional der auslösenden Maßnahme gespeichert. Ändern und Löschen von Ereignissen ist ausgeschlossen. Beim Löschen eines Zugangs bleibt das Log pseudonym erhalten.
 
 **Akzeptanzkriterien:**
@@ -569,6 +675,9 @@ Quelle: `requirements/functional-requirements.md` → FR-032
 Meilenstein: **S3 – Ereignis-Log, Verfall und Stichtag** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-006, FR-032
+**Blockiert:** FR-035, FR-072
+
 **Anforderung:** Alle Punkte eines Zugangs verfallen nach 183 Tagen ohne Aktivität (`STADTSTIMME_POINTS_EXPIRY_DAYS`). Ergebnisse zählen verfallene Punkte sofort nicht mehr mit. Entzogen werden sie, sobald die Person zurückkommt, oder durch den täglichen Lauf. Jede Nutzung mit dem Zugang verlängert die Frist.
 
 **Akzeptanzkriterien:**
@@ -585,6 +694,9 @@ Quelle: `requirements/functional-requirements.md` → FR-034
 Meilenstein: **S3 – Ereignis-Log, Verfall und Stichtag** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-034
+**Blockiert:** –
+
 **Anforderung:** Ein täglicher Lauf (Standard 02:00 UTC, `DAILY_TASKS_AT`) verschickt zuerst Verfallswarnungen und lässt danach Punkte verfallen. Beide Schritte sind idempotent, jederzeit manuell startbar, und ein Fehler im einen hält den anderen nicht auf.
 
 **Akzeptanzkriterien:**
@@ -601,6 +713,9 @@ Quelle: `requirements/functional-requirements.md` → FR-035
 Meilenstein: **S3 – Ereignis-Log, Verfall und Stichtag** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-011
+**Blockiert:** –
+
 **Anforderung:** Die Verwaltung sieht die Beteiligung nur als Summen: eingelöste Codes je Woche, eingelöste Codes und Zugänge mit vergebenen Punkten. Rückschlüsse auf einzelne Personen sind nicht möglich.
 
 **Akzeptanzkriterien:**
@@ -615,6 +730,9 @@ Quelle: `requirements/functional-requirements.md` → FR-059
 Meilenstein: **S3 – Ereignis-Log, Verfall und Stichtag** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-032
+**Blockiert:** FR-030
+
 **Anforderung:** Die Verwaltung lädt für einen Stichtag eine CSV mit Punkten und Unterstützern je Ziel zum Tagesende herunter, ergänzt um die Zahl der Teilnehmenden und die Ist-Ausgaben je Ziel. Die Werte werden aus dem Ereignis-Log berechnet und sind für denselben Stichtag reproduzierbar.
 
 **Akzeptanzkriterien:**
@@ -630,6 +748,9 @@ Quelle: `requirements/functional-requirements.md` → FR-064
 Meilenstein: **S3 – Ereignis-Log, Verfall und Stichtag** · Labels: `Priorität/Soll`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-011
+**Blockiert:** –
+
 **Anforderung:** Die Verwaltung sieht je Charge, wie viele Codes ausgegeben und eingelöst sind.
 
 **Akzeptanzkriterien:**
@@ -648,6 +769,9 @@ Quelle: `requirements/functional-requirements.md` → FR-065
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Soll`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-006, FR-024, FR-044
+**Blockiert:** FR-008, FR-013, FR-070
+
 **Anforderung:** Angemeldete Bürger haben einen Bereich „Mein Bereich“ mit Anmeldestatus, ihrem Punktestand (vergeben und frei), ihren eigenen Vorschlägen mit Schritt und ihren Einstellungen für E-Mail-Hinweise, jeweils mit Link zu „Punkte verteilen“, „Vorschläge“ und den Hinweis-Einstellungen.
 
 **Akzeptanzkriterien:**
@@ -664,6 +788,9 @@ Quelle: `requirements/functional-requirements.md` → FR-007
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-009, FR-014
+**Blockiert:** FR-007, FR-045, FR-046, FR-047, FR-048, FR-054
+
 **Anforderung:** Angemeldete Bürger reichen einen Vorschlag in drei Schritten ein: Anliegen (Titel 8–80 Zeichen, Beschreibung optional bis 600 Zeichen), Einordnen, Prüfen. Vor dem Einreichen können sie zu jedem vorherigen Schritt zurückkehren und korrigieren, ohne Eingaben zu verlieren.
 
 **Akzeptanzkriterien:**
@@ -680,6 +807,9 @@ Quelle: `requirements/functional-requirements.md` → FR-044
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-043, FR-044
+**Blockiert:** FR-052
+
 **Anforderung:** Ein Vorschlag hat immer ein Thema. Der Ort ist „allgemein“, eine bekannte Einrichtung passend zum Thema oder ein neuer Punkt auf der Karte (per Klick oder Kartenmitte für Tastaturnutzung). Einrichtung und Punkt sind nie gleichzeitig gesetzt. Ohne JavaScript stehen „allgemein“ und „bekannter Ort“ zur Verfügung.
 
 **Akzeptanzkriterien:**
@@ -696,6 +826,9 @@ Quelle: `requirements/functional-requirements.md` → FR-045
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-044
+**Blockiert:** –
+
 **Anforderung:** Ein Zugang darf höchstens 5 Vorschläge pro Tag einreichen (`STADTSTIMME_PROPOSALS_PER_DAY`); darüber wird mit Hinweis abgewiesen.
 
 **Akzeptanzkriterien:**
@@ -711,6 +844,9 @@ Quelle: `requirements/functional-requirements.md` → FR-046
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Soll`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-017, FR-044
+**Blockiert:** –
+
 **Anforderung:** Beim Schreiben zeigt „Gibt es das schon?“ ähnliche Vorschläge und offene Maßnahmen (Abgleich über Wortstämme), damit Doppelungen vermieden werden.
 
 **Akzeptanzkriterien:**
@@ -726,6 +862,9 @@ Quelle: `requirements/functional-requirements.md` → FR-047
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-044
+**Blockiert:** FR-049, FR-053, FR-056
+
 **Anforderung:** Ein eingereichter Vorschlag ist ohne Freigabe sofort öffentlich sichtbar und unterstützbar.
 
 **Akzeptanzkriterien:**
@@ -740,6 +879,9 @@ Quelle: `requirements/functional-requirements.md` → FR-048
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-048
+**Blockiert:** FR-050
+
 **Anforderung:** Angemeldete Bürger unterstützen beliebig viele offene Vorschläge anderer, jeden höchstens einmal, und können die Unterstützung zurückziehen. Unterstützungen sind unabhängig vom Budget der 100 Punkte. Eigene sowie entschiedene Vorschläge sind nicht unterstützbar; abgelehnte Vorschläge erscheinen nicht mehr unter den eigenen unterstützten.
 
 **Akzeptanzkriterien:**
@@ -756,6 +898,9 @@ Quelle: `requirements/functional-requirements.md` → FR-049
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Muss`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-049
+**Blockiert:** FR-055, FR-057, FR-060, FR-075
+
 **Anforderung:** Jeder Vorschlag zeigt seinen Schritt: „Sammelt“ (unter der Schwelle von 50 Unterstützungen, `STADTSTIMME_PROPOSAL_SUPPORT_THRESHOLD`), „In Prüfung“ (Schwelle erreicht, seit dem Zeitpunkt der N-ten Unterstützung) und „Entschieden“ (angenommen oder abgelehnt). Solange ein Vorschlag sammelt, zeigt er die noch benötigten Unterstützungen. Die Liste lässt sich nach Schritt filtern, auch ohne JavaScript.
 
 **Akzeptanzkriterien:**
@@ -772,6 +917,9 @@ Quelle: `requirements/functional-requirements.md` → FR-050
 Meilenstein: **S4 – Vorschläge einreichen und unterstützen** · Labels: `Priorität/Soll`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-050
+**Blockiert:** –
+
 **Anforderung:** Die Vorschlagsliste ist nach Titel und Ort durchsuchbar, nach Thema und Schritt filterbar und nach Zahl der Unterstützungen sortierbar. Angemeldete Bürger wählen zwischen allen und nur ihren eigenen Vorschlägen. Filter und Sortierung funktionieren ohne JavaScript.
 
 **Akzeptanzkriterien:**
@@ -792,6 +940,9 @@ Quelle: `requirements/functional-requirements.md` → FR-055
 Meilenstein: **S5 – Stadt antwortet auf Vorschläge** · Labels: `Priorität/Soll`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-024, FR-058
+**Blockiert:** –
+
 **Anforderung:** Angenommene Vorschläge erscheinen in „Punkte verteilen“ als Hinweis an ihrer Einrichtung oder, ohne Einrichtung, beim Thema („… allgemein“), mit Link zum Vorschlag. Sie sind kein eigenes Punkteziel.
 
 **Akzeptanzkriterien:**
@@ -807,6 +958,9 @@ Quelle: `requirements/functional-requirements.md` → FR-028
 Meilenstein: **S5 – Stadt antwortet auf Vorschläge** · Labels: `Priorität/Muss`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-058
+**Blockiert:** –
+
 **Anforderung:** Entschiedene Vorschläge zeigen die öffentliche Begründung der Stadt, das Entscheidungsdatum und gegebenenfalls die daraus entstandene Maßnahme. Angenommene und abgelehnte Vorschläge bleiben dauerhaft sichtbar, weil es keine abgeschlossenen Runden gibt.
 
 **Akzeptanzkriterien:**
@@ -821,6 +975,9 @@ Quelle: `requirements/functional-requirements.md` → FR-051
 Meilenstein: **S5 – Stadt antwortet auf Vorschläge** · Labels: `Priorität/Soll`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-045, FR-058
+**Blockiert:** –
+
 **Anforderung:** Wird ein Vorschlag mit neuem Ort angenommen, legt das System daraus eine Einrichtung an (Name = Titel, Thema und Koordinaten vom Vorschlag, externe ID `VORSCHLAG-<Nr>`) und verknüpft den Vorschlag mit ihr. Sie ist danach wählbar und in Karten und Ergebnissen enthalten.
 
 **Akzeptanzkriterien:**
@@ -837,6 +994,9 @@ Quelle: `requirements/functional-requirements.md` → FR-052
 Meilenstein: **S5 – Stadt antwortet auf Vorschläge** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-050
+**Blockiert:** FR-058
+
 **Anforderung:** Die Verwaltungsseite listet Vorschläge in Prüfung mit ihrer Antwortfrist von 14 Tagen ab Erreichen der Schwelle (`STADTSTIMME_PROPOSAL_REVIEW_DAYS`), früheste Frist zuerst.
 
 **Akzeptanzkriterien:**
@@ -852,6 +1012,9 @@ Quelle: `requirements/functional-requirements.md` → FR-057
 Meilenstein: **S5 – Stadt antwortet auf Vorschläge** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-057
+**Blockiert:** FR-028, FR-051, FR-052, FR-063, FR-066, FR-075
+
 **Anforderung:** Die Verwaltung nimmt einen Vorschlag an oder lehnt ihn ab, jederzeit, auch vor Erreichen der Schwelle. Pflicht ist eine öffentliche Antwort mit mindestens 20 Zeichen, optional eine verknüpfte Maßnahme. Ein bereits entschiedener Vorschlag kann nicht erneut entschieden werden. Entscheiden erfordert das Recht „Vorschlag ändern“.
 
 **Akzeptanzkriterien:**
@@ -868,6 +1031,9 @@ Quelle: `requirements/functional-requirements.md` → FR-058
 Meilenstein: **S5 – Stadt antwortet auf Vorschläge** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-050
+**Blockiert:** –
+
 **Anforderung:** Die Verwaltung sieht alle Vorschläge gruppiert nach Schritt mit Zugang zur Entscheidungsseite.
 
 **Akzeptanzkriterien:**
@@ -882,6 +1048,9 @@ Quelle: `requirements/functional-requirements.md` → FR-060
 Meilenstein: **S5 – Stadt antwortet auf Vorschläge** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-058
+**Blockiert:** FR-053
+
 **Anforderung:** Die Verwaltung kann unpassende Vorschläge mit Begründung ablehnen (FR-058) oder doppelte und unzulässige Vorschläge mit Begründung entfernen. Ein entfernter Vorschlag ist öffentlich nicht mehr sichtbar; sein Ersteller sieht in „Mein Bereich“, dass und warum er entfernt wurde.
 
 **Akzeptanzkriterien:**
@@ -902,6 +1071,9 @@ Quelle: `requirements/functional-requirements.md` → FR-066
 Meilenstein: **S6 – Rückfluss: Erledigtes gibt Punkte frei** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-024, FR-062
+**Blockiert:** –
+
 **Anforderung:** Als erledigt markierte Einrichtungen fehlen in „Punkte verteilen“ (Liste und Karte). Ein Speichern mit Punkten an einer erledigten Einrichtung wird mit Hinweis abgewiesen.
 
 **Akzeptanzkriterien:**
@@ -918,6 +1090,9 @@ Quelle: `requirements/functional-requirements.md` → FR-027
 Meilenstein: **S6 – Rückfluss: Erledigtes gibt Punkte frei** · Labels: `Priorität/Soll`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-024, FR-032
+**Blockiert:** –
+
 **Anforderung:** „Punkte verteilen“ zeigt Punkte, die in den letzten 30 Tagen zurückgekommen oder verfallen sind, mit Anlass.
 
 **Akzeptanzkriterien:**
@@ -933,6 +1108,9 @@ Quelle: `requirements/functional-requirements.md` → FR-031
 Meilenstein: **S6 – Rückfluss: Erledigtes gibt Punkte frei** · Labels: `Priorität/Muss`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-017, FR-032
+**Blockiert:** FR-073
+
 **Anforderung:** Geht eine Maßnahme auf „in Umsetzung“ (über Admin, Verwaltungsseite oder CSV-Import, auch bei Neuanlage), erhalten alle Unterstützer ihre Punkte auf der zugehörigen Einrichtung zurück. Punkte an ein ganzes Thema bleiben. „Verworfen“ löst keinen Rückfluss aus. Parallel neu vergebene Punkte bleiben erhalten.
 
 **Akzeptanzkriterien:**
@@ -949,6 +1127,9 @@ Quelle: `requirements/functional-requirements.md` → FR-033
 Meilenstein: **S6 – Rückfluss: Erledigtes gibt Punkte frei** · Labels: `Priorität/Soll`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-039
+**Blockiert:** FR-062
+
 **Anforderung:** Die Verwaltung sieht Einrichtungen sortiert nach Lücke mit ihren Maßnahmen und einem Link zur Datenpflege.
 
 **Akzeptanzkriterien:**
@@ -964,6 +1145,9 @@ Quelle: `requirements/functional-requirements.md` → FR-061
 Meilenstein: **S6 – Rückfluss: Erledigtes gibt Punkte frei** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-032, FR-061
+**Blockiert:** FR-027, FR-063, FR-073
+
 **Anforderung:** Die Verwaltung markiert eine Einrichtung als erledigt, auch ohne passende Maßnahme. Vorher bestätigt sie eine Rückfrage mit Zahl der Unterstützer und Punkte. Danach gehen alle Punkte an dieser Einrichtung an die Unterstützer zurück, und Betroffene mit E-Mail-Hinweis werden benachrichtigt; Themenpunkte bleiben. Dasselbe gilt, wenn eine Einrichtung dauerhaft aus dem Katalog genommen wird: Sie wird dann als erledigt archiviert statt gelöscht, weil das Ereignis-Log auf sie verweist. Erfordert das Recht „Einrichtung ändern“.
 
 **Akzeptanzkriterien:**
@@ -981,6 +1165,9 @@ Quelle: `requirements/functional-requirements.md` → FR-062
 Meilenstein: **S6 – Rückfluss: Erledigtes gibt Punkte frei** · Labels: `Priorität/Muss`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-058, FR-062
+**Blockiert:** –
+
 **Anforderung:** Eine erledigte Einrichtung wird wieder wählbar über „Wieder öffnen“ oder automatisch, sobald die Stadt einen Vorschlag an diesem Ort annimmt. In Ergebnissen, Suche und als bekannter Ort bei Vorschlägen bleibt sie immer sichtbar.
 
 **Akzeptanzkriterien:**
@@ -1000,6 +1187,9 @@ Quelle: `requirements/functional-requirements.md` → FR-063
 Meilenstein: **S7 – Hinweise per E-Mail** · Labels: `Priorität/Soll`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-007
+**Blockiert:** FR-008, FR-071
+
 **Anforderung:** Bürger hinterlegen freiwillig eine E-Mail-Adresse für Hinweise, ändern oder entfernen sie und wählen, welche Arten von Hinweisen sie erhalten. Die Adresse wird verschlüsselt und getrennt von den Punkten gespeichert und mit dem Zugang gelöscht.
 
 **Akzeptanzkriterien:**
@@ -1016,6 +1206,9 @@ Quelle: `requirements/functional-requirements.md` → FR-070
 Meilenstein: **S7 – Hinweise per E-Mail** · Labels: `Priorität/Soll`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-070
+**Blockiert:** FR-072, FR-073, FR-074, FR-075, FR-076, FR-077
+
 **Anforderung:** Hinweise gehen erst nach Bestätigung über einen Link raus. Der Link ist 72 Stunden gültig, das Token wird nur als Hash gespeichert, und das Öffnen des Links bestätigt erst nach Klick auf einen Knopf. Eine neue Bestätigungsmail ist frühestens nach 10 Minuten möglich.
 
 **Akzeptanzkriterien:**
@@ -1032,6 +1225,9 @@ Quelle: `requirements/functional-requirements.md` → FR-071
 Meilenstein: **S7 – Hinweise per E-Mail** · Labels: `Priorität/Soll`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-034, FR-071
+**Blockiert:** –
+
 **Anforderung:** Bestätigte Empfänger erhalten 14 Tage vor dem Verfall (`STADTSTIMME_POINTS_EXPIRY_WARNING_DAYS`) eine Warnung, einmal je Inaktivitätsphase.
 
 **Akzeptanzkriterien:**
@@ -1047,6 +1243,9 @@ Quelle: `requirements/functional-requirements.md` → FR-072
 Meilenstein: **S7 – Hinweise per E-Mail** · Labels: `Priorität/Soll`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-033, FR-062, FR-071
+**Blockiert:** –
+
 **Anforderung:** Bestätigte Empfänger erhalten eine E-Mail, wenn Punkte zu ihnen zurückkommen (Maßnahme in Umsetzung oder Einrichtung erledigt).
 
 **Akzeptanzkriterien:**
@@ -1062,6 +1261,9 @@ Quelle: `requirements/functional-requirements.md` → FR-073
 Meilenstein: **S7 – Hinweise per E-Mail** · Labels: `Priorität/Soll`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-050, FR-058, FR-071
+**Blockiert:** –
+
 **Anforderung:** Bestätigte Empfänger erhalten einen Hinweis, wenn ein eigener oder unterstützter Vorschlag die Schwelle erreicht, angenommen, abgelehnt oder von der Stadt beantwortet wird.
 
 **Akzeptanzkriterien:**
@@ -1077,6 +1279,9 @@ Quelle: `requirements/functional-requirements.md` → FR-075
 Meilenstein: **S7 – Hinweise per E-Mail** · Labels: `Priorität/Soll`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-071
+**Blockiert:** –
+
 **Anforderung:** Jede Hinweis-Mail enthält einen Abmeldelink und `List-Unsubscribe` (Ein-Klick nach RFC 8058). Abmelden löscht die Adresse.
 
 **Akzeptanzkriterien:**
@@ -1092,6 +1297,9 @@ Quelle: `requirements/functional-requirements.md` → FR-076
 Meilenstein: **S7 – Hinweise per E-Mail** · Labels: `Priorität/Soll`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-071
+**Blockiert:** –
+
 **Anforderung:** Ist der Mailserver nicht erreichbar, schlägt keine fachliche Aktion fehl (z. B. Speichern einer Maßnahme); es wird lediglich keine Mail versendet.
 
 **Akzeptanzkriterien:**
@@ -1111,6 +1319,9 @@ Quelle: `requirements/functional-requirements.md` → FR-077
 Meilenstein: **S8 – Zugänge verwalten und löschen** · Labels: `Priorität/Muss`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-007, FR-032, FR-070
+**Blockiert:** –
+
 **Anforderung:** Bürger löschen ihren Zugang in „Mein Bereich“ nach einer Rückfrage, die die Folgen nennt. Alle Punkte werden entzogen (Ereignis „entzogen“), die E-Mail-Adresse für Hinweise wird gelöscht, und eigene Vorschläge und Unterstützungen werden entfernt. Das Ereignis-Log bleibt pseudonym erhalten (FR-032). Der Code ist danach gesperrt; neu teilnehmen kann die Person nur mit einem neuen Code der Stadt.
 
 **Akzeptanzkriterien:**
@@ -1128,6 +1339,9 @@ Quelle: `requirements/functional-requirements.md` → FR-008
 Meilenstein: **S8 – Zugänge verwalten und löschen** · Labels: `Priorität/Soll`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-011
+**Blockiert:** FR-069
+
 **Anforderung:** Die Verwaltung findet einen Zugang über die letzten 8 Zeichen seines Codes (z. B. bei einer Anfrage per Telefon) und sieht Status, Charge, Zeitpunkt des Einlösens, letzte Aktivität und die Vorschläge des Zugangs. Die Punkteverteilung des Zugangs sieht sie nicht. Von dort kann sie den Zugang schließen und wieder öffnen (FR-069), aber nichts im Namen des Bürgers ändern.
 
 **Hinweis:** Codes liegen nur als Hash vor; für die Suche braucht es einen eigenen Hash der letzten 8 Zeichen.
@@ -1146,6 +1360,9 @@ Quelle: `requirements/functional-requirements.md` → FR-068
 Meilenstein: **S8 – Zugänge verwalten und löschen** · Labels: `Priorität/Soll`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-032, FR-068
+**Blockiert:** –
+
 **Anforderung:** Die Verwaltung schließt einen Zugang (z. B. bei Wegzug) und öffnet ihn bei Bedarf wieder. Das Schließen wirkt sofort, auch auf bestehende Anmeldungen. Alle Punkte des Zugangs werden entzogen (Ereignis „entzogen“); seine Vorschläge und Unterstützungen bleiben erhalten. Erfordert ein eigenes Recht.
 
 **Akzeptanzkriterien:**
@@ -1166,6 +1383,9 @@ Quelle: `requirements/functional-requirements.md` → FR-069
 Meilenstein: **S9 – Finden und teilen** · Labels: `Priorität/Soll`, `Rolle/Besucher`
 
 ```markdown
+**Abhängig von:** FR-015, FR-017
+**Blockiert:** –
+
 **Anforderung:** Besucher durchsuchen Einrichtungen und passende Maßnahmen über eine Suchleiste. Treffer verlinken auf die Ergebnisse und auf „Punkte verteilen“. Die Suche ist ohne Anmeldung und ohne JavaScript nutzbar.
 
 **Akzeptanzkriterien:**
@@ -1182,6 +1402,9 @@ Quelle: `requirements/functional-requirements.md` → FR-021
 Meilenstein: **S9 – Finden und teilen** · Labels: `Priorität/Kann`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-024
+**Blockiert:** –
+
 **Anforderung:** Für jede Einrichtung und jedes Thema gibt es einen direkten Link auf das Ziel in „Punkte verteilen“, den die Verwaltung als QR-Code ausgeben kann (z. B. als Aushang vor Ort). Der QR-Code enthält keinen Zugangscode.
 
 **Akzeptanzkriterien:**
@@ -1198,6 +1421,9 @@ Quelle: `requirements/functional-requirements.md` → FR-029
 Meilenstein: **S9 – Finden und teilen** · Labels: `Priorität/Kann`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-048
+**Blockiert:** –
+
 **Anforderung:** Jeder Vorschlag hat einen dauerhaften, öffentlichen Link, den Ersteller und andere teilen können. Der Link enthält keinen Zugangscode und keine Angabe zum Ersteller.
 
 **Akzeptanzkriterien:**
@@ -1217,6 +1443,9 @@ Quelle: `requirements/functional-requirements.md` → FR-056
 Meilenstein: **S10 – Briefdruck und Gemeinderatsberichte** · Labels: `Priorität/Kann`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-010, FR-011
+**Blockiert:** –
+
 **Anforderung:** Die Verwaltung exportiert Codes für den Druck (DECISIONS.md, zurückgestellt). Sperren und Wiederöffnen eines Zugangs regelt FR-069.
 
 **Akzeptanzkriterien:**
@@ -1233,6 +1462,9 @@ Quelle: `requirements/functional-requirements.md` → FR-012
 Meilenstein: **S10 – Briefdruck und Gemeinderatsberichte** · Labels: `Priorität/Kann`, `Rolle/Verwaltung`
 
 ```markdown
+**Abhängig von:** FR-030
+**Blockiert:** –
+
 **Anforderung:** Die Verwaltung erstellt aus Snapshots (FR-030) aufbereitete Berichte für den Gemeinderat und wählt den Zeitraum der Auswertung. Das Protokoll der Verwaltungsaktionen regelt.
 
 **Akzeptanzkriterien:**
@@ -1252,6 +1484,9 @@ Quelle: `requirements/functional-requirements.md` → FR-067
 Meilenstein: **S11 – Mitwirkung erweitern** · Labels: `Priorität/Kann`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-007
+**Blockiert:** –
+
 **Anforderung:** Bürger können in „Mein Bereich“ freiwillig einen Spitznamen wählen, der bei ihren Vorschlägen angezeigt wird. Bei der Eingabe weist die Anwendung darauf hin, keinen echten Namen zu verwenden. Ohne Spitzname bleibt der Zugang anonym.
 
 **Akzeptanzkriterien:**
@@ -1268,6 +1503,9 @@ Quelle: `requirements/functional-requirements.md` → FR-013
 Meilenstein: **S11 – Mitwirkung erweitern** · Labels: `Priorität/Kann`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-048, FR-066
+**Blockiert:** –
+
 **Anforderung:** Bürger melden unpassende Vorschläge an die Verwaltung.
 
 **Akzeptanzkriterien:**
@@ -1283,6 +1521,9 @@ Quelle: `requirements/functional-requirements.md` → FR-053
 Meilenstein: **S11 – Mitwirkung erweitern** · Labels: `Priorität/Kann`, `Rolle/Bürger`
 
 ```markdown
+**Abhängig von:** FR-044
+**Blockiert:** –
+
 **Anforderung:** Bürger fügen einem Vorschlag ein Foto bei.
 
 **Akzeptanzkriterien:**
@@ -1299,6 +1540,9 @@ Quelle: `requirements/functional-requirements.md` → FR-054
 Meilenstein: **S11 – Mitwirkung erweitern** · Labels: `Priorität/Kann`, `Rolle/System`
 
 ```markdown
+**Abhängig von:** FR-024, FR-071
+**Blockiert:** –
+
 **Anforderung:** Bestätigte Empfänger mit freien Punkten erhalten eine Erinnerung, ihre Punkte zu verteilen. Die Erinnerung wiederholt sich in einem konfigurierbaren Abstand, solange Punkte frei sind, und lässt sich einzeln abbestellen.
 
 **Akzeptanzkriterien:**
